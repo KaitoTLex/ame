@@ -71,7 +71,6 @@
 
         # If you set this to true, Git will automatically be configured with the fullName and email set above.
         configureGitUser = true;
-
         # This is treated just like a standard `home.nix` home-manager
         # configuration file.
         configuration = {
@@ -81,6 +80,18 @@
           imports = [
             "${inputs.KaitoianOS}/home.nix"
           ];
+          wayland.windowManager.hyprland.settings.env = [
+            "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
+          ];
+
+          wayland.windowManager.hyprland.settings = {
+            monitor = [
+              "eDP-1,disable"
+              "HDMI-A-1,1920x1080@165,0x0,1"
+              "DP-2,1920x1080@60,1920x-600,1,transform,3"
+            ];
+          };
+
           # Or any other option, like
           # programs.neovim.enable = true;
           # programs.neovim.settings = { # --snip-- };
@@ -202,17 +213,7 @@
                   };
                 };
               };
-              wayland.windowManager.hyprland.settings.env = [
-                "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
-              ];
 
-              wayland.windowManager.hyprland.settings = {
-                monitor = [
-                  "eDP-1,disable"
-                  "HDMI-A-1,1920x1080@165,0x0,1"
-                  "DP-2,1920x1080@60,1920x-600,1,transform,3"
-                ];
-              };
               services.tlp = {
                 enable = true;
                 settings = {
@@ -273,9 +274,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBus.jpg";
-                  polarity = "light";
-                  base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
+                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
+                  polarity = "dark";
+                  base16Scheme = "${inputs.KaitoianOS}/scheme/mafuyu.yaml";
                 };
                 system = {
                   # Toggle true to enable audio production software, like
