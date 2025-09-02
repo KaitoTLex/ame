@@ -442,11 +442,11 @@
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1756838423,
-        "narHash": "sha256-5lN++old2n/ln5UIKzwa9GLLz/lo+1vma6j0h7JGa90=",
+        "lastModified": 1756852277,
+        "narHash": "sha256-uu2eokjoAeiyLJGQFePzKCfk8dh3TnlWmmBwccG8bL0=",
         "owner": "kaitotlex",
         "repo": "functorOS",
-        "rev": "9b34de91d0d8d9d90be1a107f2ed4e74869d559e",
+        "rev": "8d334a3b8d6686e6a7d9de67e453ed6dd0282a28",
         "type": "github"
       },
       "original": {
