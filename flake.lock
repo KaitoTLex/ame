@@ -88,11 +88,31 @@
     "apple-silicon": {
       "inputs": {
         "flake-compat": "flake-compat",
+        "nixpkgs": "nixpkgs",
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1756110286,
+        "narHash": "sha256-NE0HwcQCQTgM+HuYqmiemPf/5e+3fjwowceAyJj+ikU=",
+        "owner": "nix-community",
+        "repo": "nixos-apple-silicon",
+        "rev": "b99bf9bf7445416fe55da09034fc4a6cd733805c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixos-apple-silicon",
+        "type": "github"
+      }
+    },
+    "apple-silicon_2": {
+      "inputs": {
+        "flake-compat": "flake-compat_2",
         "nixpkgs": [
           "functorOS",
           "nixpkgs"
         ],
-        "treefmt-nix": "treefmt-nix"
+        "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
         "lastModified": 1756110286,
@@ -278,6 +298,21 @@
       }
     },
     "flake-compat_2": {
+      "locked": {
+        "lastModified": 1746162366,
+        "narHash": "sha256-5SSSZ/oQkwfcAz/o/6TlejlVGqeK08wyREBQ5qFFPhM=",
+        "owner": "nix-community",
+        "repo": "flake-compat",
+        "rev": "0f158086a2ecdbb138cd0429410e44994f1b7e4b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "flake-compat",
+        "type": "github"
+      }
+    },
+    "flake-compat_3": {
       "flake": false,
       "locked": {
         "lastModified": 1747046372,
@@ -293,7 +328,7 @@
         "type": "github"
       }
     },
-    "flake-compat_3": {
+    "flake-compat_4": {
       "flake": false,
       "locked": {
         "lastModified": 1747046372,
@@ -406,7 +441,7 @@
       "inputs": {
         "agenix": "agenix",
         "apple-firmware": "apple-firmware",
-        "apple-silicon": "apple-silicon",
+        "apple-silicon": "apple-silicon_2",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager_2",
@@ -418,21 +453,21 @@
         "nix-homebrew": "nix-homebrew",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "spicetify": "spicetify",
         "stylix": "stylix",
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1756776329,
-        "narHash": "sha256-d8qAXaOs6s57t8vPrNwecU5QzsoGqusrtSKBnmO1dy4=",
-        "owner": "youwen5",
+        "lastModified": 1756787623,
+        "narHash": "sha256-T7RvFOSh94knaieAuPdmfn9v1oVPiCshhFD6jE36TOE=",
+        "owner": "kaitotlex",
         "repo": "functorOS",
-        "rev": "b567e976b97df095403d22c048168d593977bd7d",
+        "rev": "9f58c47bcf0b906361542ee1c8a4b28f52cb86fb",
         "type": "github"
       },
       "original": {
-        "owner": "youwen5",
+        "owner": "kaitotlex",
         "repo": "functorOS",
         "type": "github"
       }
@@ -555,7 +590,7 @@
     "lanzaboote": {
       "inputs": {
         "crane": "crane_2",
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_4",
         "flake-parts": "flake-parts_2",
         "nixpkgs": [
           "nixpkgs"
@@ -690,7 +725,7 @@
     },
     "nixos-wsl": {
       "inputs": {
-        "flake-compat": "flake-compat_2",
+        "flake-compat": "flake-compat_3",
         "nixpkgs": [
           "functorOS",
           "nixpkgs"
@@ -711,6 +746,22 @@
       }
     },
     "nixpkgs": {
+      "locked": {
+        "lastModified": 1755615617,
+        "narHash": "sha256-HMwfAJBdrr8wXAkbGhtcby1zGFvs+StOp19xNsbqdOg=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "20075955deac2583bb12f07151c2df830ef346b4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1756125398,
         "narHash": "sha256-XexyKZpf46cMiO5Vbj+dWSAXOnr285GHsMch8FBoHbc=",
@@ -837,6 +888,7 @@
     "root": {
       "inputs": {
         "KaitoianOS": "KaitoianOS",
+        "apple-silicon": "apple-silicon",
         "flake-utils": "flake-utils",
         "functorOS": "functorOS",
         "lanzaboote": "lanzaboote",
@@ -1108,6 +1160,27 @@
       }
     },
     "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "apple-silicon",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1754847726,
+        "narHash": "sha256-2vX8QjO5lRsDbNYvN9hVHXLU6oMl+V/PsmIiJREG4rE=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "7d81f6fb2e19bf84f1c65135d1060d829fae2408",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "treefmt-nix_2": {
       "inputs": {
         "nixpkgs": [
           "functorOS",

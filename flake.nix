@@ -3,7 +3,7 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:youwen5/functorOS";
+    functorOS.url = "github:kaitotlex/functorOS";
     nixpkgs.follows = "functorOS/nixpkgs";
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
@@ -185,8 +185,7 @@
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
                 pkgs.supergfxctl
-              ]
-              ++ kaitoPkgs;
+              ] ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -273,9 +272,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBus.jpg";
+                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
                   polarity = "light";
-                  base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
+                  base16Scheme = "${inputs.KaitoianOS}/scheme/mafuyu.yaml";
                 };
                 system = {
                   # Toggle true to enable audio production software, like
@@ -361,8 +360,7 @@
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-              ]
-              ++ kaitoPkgs;
+              ] ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -418,7 +416,7 @@
               functorOS = {
                 # Set this to the absolute path of the location of this configuration flake
                 # to enable some UX enhanacements
-                flakeLocation = "/home/kaitotlex/.config/functorOS-config";
+                flakeLocation = "/home/kaitotlex/.config/ame";
 
                 # Allow functorOS's unfree packages
                 # This option doesn't set allowUnfree for the whole system,
@@ -460,6 +458,12 @@
                   # Set some sane defaults for nvidia graphics, like proprietary drivers.
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
                   graphics.nvidia.enable = false;
+
+                  # Set some asahi options
+                  asahi = {
+                    enable = true;
+                    firmware = ./hosts/kanade/firmware;
+                  };
                 };
               };
             };
