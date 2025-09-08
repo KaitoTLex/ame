@@ -69,10 +69,28 @@
         "type": "github"
       }
     },
+    "apple-firmware": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1745125417,
+        "narHash": "sha256-h1kseeQnL2I7933fsSUVMjCzZgkAgiGpJVxM60qse5Q=",
+        "owner": "binary-star-systems",
+        "repo": "apple-firmware",
+        "rev": "72b625c4b160444def3d9f4a9c0c4704cc1a6e60",
+        "type": "github"
+      },
+      "original": {
+        "owner": "binary-star-systems",
+        "repo": "apple-firmware",
+        "type": "github"
+      }
+    },
     "apple-silicon": {
       "inputs": {
         "flake-compat": "flake-compat",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
@@ -89,7 +107,7 @@
         "type": "github"
       }
     },
-    "asahi": {
+    "apple-silicon_2": {
       "inputs": {
         "flake-compat": "flake-compat_2",
         "nixpkgs": [
@@ -424,7 +442,8 @@
     "functorOS": {
       "inputs": {
         "agenix": "agenix",
-        "asahi": "asahi",
+        "apple-firmware": "apple-firmware",
+        "apple-silicon": "apple-silicon_2",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager_2",
@@ -436,21 +455,23 @@
         "nix-homebrew": "nix-homebrew",
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
         "spicetify": "spicetify",
         "stylix": "stylix",
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1756852277,
-        "narHash": "sha256-uu2eokjoAeiyLJGQFePzKCfk8dh3TnlWmmBwccG8bL0=",
-        "owner": "kaitotlex",
+        "lastModified": 1756988405,
+        "narHash": "sha256-D9BdubBKLzjo1MNqPGJ0xTQUvEXIYL0ST7BisCmB76E=",
+        "owner": "youwen5",
         "repo": "functorOS",
-        "rev": "8d334a3b8d6686e6a7d9de67e453ed6dd0282a28",
+        "rev": "32f95c9370d114767cde80f50a58336c132205ee",
         "type": "github"
       },
       "original": {
-        "owner": "kaitotlex",
+        "owner": "youwen5",
         "repo": "functorOS",
         "type": "github"
       }
@@ -730,33 +751,17 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1755615617,
-        "narHash": "sha256-HMwfAJBdrr8wXAkbGhtcby1zGFvs+StOp19xNsbqdOg=",
+        "lastModified": 1749969950,
+        "narHash": "sha256-t1qBWD45qnQabs+ystcKWvg7+k+ZcIwDwb3x2y84FcY=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "20075955deac2583bb12f07151c2df830ef346b4",
+        "rev": "4dd107af08fd31510f3de9417617ad1d0726e211",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-unstable",
         "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1756542300,
-        "narHash": "sha256-tlOn88coG5fzdyqz6R93SQL5Gpq+m/DsWpekNFhqPQk=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "d7600c775f877cd87b4f5a831c28aa94137377aa",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
+        "rev": "4dd107af08fd31510f3de9417617ad1d0726e211",
         "type": "github"
       }
     },
@@ -875,10 +880,7 @@
         "flake-utils": "flake-utils",
         "functorOS": "functorOS",
         "lanzaboote": "lanzaboote",
-        "nixpkgs": [
-          "functorOS",
-          "nixpkgs"
-        ],
+        "nixpkgs": "nixpkgs",
         "nixvim": "nixvim",
         "wallpapers": "wallpapers"
       }
@@ -1167,7 +1169,7 @@
       "inputs": {
         "nixpkgs": [
           "functorOS",
-          "asahi",
+          "apple-silicon",
           "nixpkgs"
         ]
       },
@@ -1188,11 +1190,11 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1756777407,
-        "narHash": "sha256-4KMoFwMpuWAM4QPymmHz+Fqb07FTZbuz9IkE8pqN59E=",
+        "lastModified": 1756875001,
+        "narHash": "sha256-vvYfSWc0M+wDrMfEVMcxeaRiWni4Ezhxtatw7QKNI0E=",
         "owner": "kaitotlex",
         "repo": "wallpaper",
-        "rev": "ad042e8676d0c6922e6ec177a23204970d889c84",
+        "rev": "1dcc6a26aac97e58c75701f8fc44d1fdbcc2db46",
         "type": "github"
       },
       "original": {

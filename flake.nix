@@ -4,7 +4,11 @@
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
     functorOS.url = "github:kaitotlex/functorOS";
-    nixpkgs.follows = "functorOS/nixpkgs";
+    functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
+    # nixpkgs.follows = "functorOS/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/4dd107af08fd31510f3de9417617ad1d0726e211";
+    functorOS.inputs.nixpkgs.follows = "nixpkgs";
+
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -12,7 +16,7 @@
     apple-silicon = {
       #url = "github:flokli/nixos-apple-silicon/mainline-mesa";
       url = "github:nix-community/nixos-apple-silicon";
-      #inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     wallpapers = {
       url = "github:kaitotlex/wallpaper";
@@ -196,8 +200,7 @@
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
                 pkgs.supergfxctl
-              ]
-              ++ kaitoPkgs;
+              ] ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -356,14 +359,31 @@
               # `flake.nix`, replacing the existing placeholder file.
               imports = [
                 ./hosts/kanade/hardware-configuration.nix
+                inputs.apple-silicon.nixosModules.default
                 "${inputs.KaitoianOS}/hardware"
+              ];
+
+              hardware.asahi.enable = true;
+              hardware.asahi.peripheralFirmwareDirectory = ./hosts/kanade/firmware;
+
+              nixpkgs.overlays = lib.mkAfter [
+                inputs.apple-silicon.overlays.default
+                (final: prev: {
+                  hyprlandPlugins.hyprscroller = prev.hyprlandPlugins.hyprscroller.overrideAttrs {
+                    src = prev.fetchFromGitHub {
+                      owner = "cpiber";
+                      repo = "hyprscroller";
+                      rev = "172542b1a4493f73659e3846b754bc9ebadc907b";
+                      hash = "sha256-BtklQtWpiIdgyX9n/MewwxZHoxh9jkxfWLfqytwKtaw=";
+                    };
+                  };
+                })
               ];
 
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-              ]
-              ++ kaitoPkgs;
+              ] ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -425,7 +445,7 @@
                 # This option doesn't set allowUnfree for the whole system,
                 # rather, it simply allows a specifically curated list of
                 # unfree packages in functorOS
-                config.allowUnfree = true;
+                config.allowUnfree = false;
 
                 # Set your default editor to any program.
                 defaultEditor = pkgs.neovim;
@@ -442,7 +462,7 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBus.jpg";
+                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
                   polarity = "light";
                   base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
                 };
@@ -452,6 +472,10 @@
                   # Windows-exclusive VSTs! Also sets realtime kernel
                   # configuration and other optimizations.
                   audio.prod.enable = false;
+                  asahi = {
+                    enable = true;
+                    firmware = "./hosts/kanade/firmware";
+                  };
 
                   networking = {
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
@@ -461,12 +485,6 @@
                   # Set some sane defaults for nvidia graphics, like proprietary drivers.
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
                   graphics.nvidia.enable = false;
-
-                  # Set some asahi options
-                  asahi = {
-                    enable = true;
-                    firmware = ./hosts/kanade/firmware;
-                  };
                 };
               };
             };
