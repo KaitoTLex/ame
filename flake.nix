@@ -3,11 +3,9 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:kaitotlex/functorOS";
-    functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
-    # nixpkgs.follows = "functorOS/nixpkgs";
-    nixpkgs.url = "github:nixos/nixpkgs/4dd107af08fd31510f3de9417617ad1d0726e211";
-    functorOS.inputs.nixpkgs.follows = "nixpkgs";
+    functorOS.url = "github:youwen5/functorOS";
+    #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
+    nixpkgs.follows = "functorOS/nixpkgs";
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
@@ -85,16 +83,19 @@
             "${inputs.KaitoianOS}/home.nix"
           ];
           wayland.windowManager.hyprland.settings.env = [
-            "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
+            "GSK_RENDERER,ngl"
           ];
-
-          wayland.windowManager.hyprland.settings = {
-            monitor = [
-              "eDP-1,disable"
-              "HDMI-A-1,1920x1080@165,0x0,1"
-              "DP-2,1920x1080@60,1920x-600,1,transform,3"
-            ];
-          };
+          # wayland.windowManager.hyprland.settings.env = [
+          #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
+          # ];
+          #
+          # wayland.windowManager.hyprland.settings = {
+          #   monitor = [
+          #     "eDP-1,disable"
+          #     "HDMI-A-1,1920x1080@165,0x0,1"
+          #     "DP-2,1920x1080@60,1920x-600,1,transform,3"
+          #   ];
+          # };
 
           # Or any other option, like
           # programs.neovim.enable = true;
@@ -200,7 +201,8 @@
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
                 pkgs.supergfxctl
-              ] ++ kaitoPkgs;
+              ]
+              ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -342,7 +344,6 @@
               };
             in
             {
-
               # This is treated just like a standard configuration.nix file.
 
               # You can set any arbitrary NixOS options here. For example, don't
@@ -362,28 +363,64 @@
                 inputs.apple-silicon.nixosModules.default
                 "${inputs.KaitoianOS}/hardware"
               ];
+              nix.settings = {
+                substituters = [ "https://hyprland.cachix.org" ];
+                trusted-substituters = [ "https://hyprland.cachix.org" ];
+                trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+              };
 
-              hardware.asahi.enable = true;
-              hardware.asahi.peripheralFirmwareDirectory = ./hosts/kanade/firmware;
+              boot = {
+                loader.systemd-boot.enable = true;
+                loader.efi.canTouchEfiVariables = false;
+                kernelParams = [ "apple_dcp.show_notch=1" ];
+                extraModprobeConfig = ''
+                  options hid_apple iso_layout=0
+                '';
+              };
+
+              hardware.asahi = {
+                enable = true;
+                peripheralFirmwareDirectory = ./hosts/kanade/firmware;
+              };
 
               nixpkgs.overlays = lib.mkAfter [
                 inputs.apple-silicon.overlays.default
                 (final: prev: {
-                  hyprlandPlugins.hyprscroller = prev.hyprlandPlugins.hyprscroller.overrideAttrs {
-                    src = prev.fetchFromGitHub {
-                      owner = "cpiber";
-                      repo = "hyprscroller";
-                      rev = "172542b1a4493f73659e3846b754bc9ebadc907b";
-                      hash = "sha256-BtklQtWpiIdgyX9n/MewwxZHoxh9jkxfWLfqytwKtaw=";
+                  aquamarine = prev.aquamarine.overrideAttrs (old: {
+                    src = final.fetchFromGitHub {
+                      owner = "hyprwm";
+                      repo = "aquamarine";
+                      rev = "498f46686dcf45589d820ede6a023175d7c8ad74";
+                      hash = "sha256-iGLp5IkBm6nYdaoSr0/O4U0Ea2f9DRHuKIc5q9bnhkU=";
                     };
-                  };
+                  });
+
+                  hyprutils = prev.hyprutils.overrideAttrs (old: {
+                    src = final.fetchFromGitHub {
+                      owner = "hyprwm";
+                      repo = "hyprutils";
+                      rev = "69efb6291c7343e936f2ddce622990ed018b7fdb";
+                      hash = "sha256-aWnI+0+qdCgwbbB/TH5RUW+PgC4u+z+xXnIceCxYUO4=";
+                    };
+                  });
+
+                  hyprland = prev.hyprland.overrideAttrs (old: {
+                    src = final.fetchFromGitHub {
+                      owner = "gulafaran";
+                      repo = "hyprland";
+                      fetchSubmodules = true;
+                      rev = "f08ce4211a2855730797cbade2604db02f59252f";
+                      hash = "sha256-tpaosPXe/JBPnFZ7HIDcOtkDU0CjEwgGh8pWOy7cn1E=";
+                    };
+                  });
                 })
               ];
 
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-              ] ++ kaitoPkgs;
+              ]
+              ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -445,7 +482,7 @@
                 # This option doesn't set allowUnfree for the whole system,
                 # rather, it simply allows a specifically curated list of
                 # unfree packages in functorOS
-                config.allowUnfree = false;
+                config.allowUnfree = true;
 
                 # Set your default editor to any program.
                 defaultEditor = pkgs.neovim;
@@ -462,25 +499,30 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
-                  polarity = "light";
-                  base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
+                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
+                  polarity = "dark";
+                  base16Scheme = "${inputs.KaitoianOS}/scheme/mafuyu.yaml";
+
+                  # light mode
+                  # wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
+                  # polarity = "light";
+                  # base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
                 };
                 system = {
                   # Toggle true to enable audio production software, like
                   # reaper, and yabridge + 64 bit wine for installing
                   # Windows-exclusive VSTs! Also sets realtime kernel
                   # configuration and other optimizations.
-                  audio.prod.enable = false;
-                  asahi = {
-                    enable = true;
-                    firmware = "./hosts/kanade/firmware";
-                  };
+                  audio.prod.enable = true;
+                  # asahi = {
+                  #   enable = true;
+                  #   firmware = ./hosts/kanade/firmware;
+                  # };
 
                   networking = {
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
                     # Use cloudflare's 1.1.1.1 DNS servers.
-                    cloudflareNameservers.enable = false;
+                    cloudflareNameservers.enable = true;
                   };
                   # Set some sane defaults for nvidia graphics, like proprietary drivers.
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
