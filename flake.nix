@@ -360,14 +360,14 @@
               # `flake.nix`, replacing the existing placeholder file.
               imports = [
                 ./hosts/kanade/hardware-configuration.nix
-                inputs.apple-silicon.nixosModules.default
+                inputs.apple-silicon.nixosModules.apple-silicon-support
                 "${inputs.KaitoianOS}/hardware"
               ];
-              nix.settings = {
-                substituters = [ "https://hyprland.cachix.org" ];
-                trusted-substituters = [ "https://hyprland.cachix.org" ];
-                trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-              };
+              # nix.settings = {
+              #   substituters = [ "https://hyprland.cachix.org" ];
+              #   trusted-substituters = [ "https://hyprland.cachix.org" ];
+              #   trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+              # };
 
               boot = {
                 loader.systemd-boot.enable = true;
@@ -377,6 +377,9 @@
                   options hid_apple iso_layout=0
                 '';
               };
+              services.udev.extraRules = ''
+                KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
+              '';
 
               hardware.asahi = {
                 enable = true;
@@ -384,7 +387,7 @@
               };
 
               nixpkgs.overlays = lib.mkAfter [
-                inputs.apple-silicon.overlays.default
+                inputs.apple-silicon.overlays.apple-silicon-overlay
                 (final: prev: {
                   aquamarine = prev.aquamarine.overrideAttrs (old: {
                     src = final.fetchFromGitHub {
@@ -513,7 +516,7 @@
                   # reaper, and yabridge + 64 bit wine for installing
                   # Windows-exclusive VSTs! Also sets realtime kernel
                   # configuration and other optimizations.
-                  audio.prod.enable = true;
+                  audio.prod.enable = false;
                   # asahi = {
                   #   enable = true;
                   #   firmware = ./hosts/kanade/firmware;
@@ -523,6 +526,7 @@
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
                     # Use cloudflare's 1.1.1.1 DNS servers.
                     cloudflareNameservers.enable = true;
+                    backend = "iwd";
                   };
                   # Set some sane defaults for nvidia graphics, like proprietary drivers.
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
