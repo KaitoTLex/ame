@@ -3,11 +3,11 @@
     "KaitoianOS": {
       "flake": false,
       "locked": {
-        "lastModified": 1758674272,
-        "narHash": "sha256-krKLSGxM70tomMppK6PSdxjWvEv76ldK66ZwQmhT9ME=",
+        "lastModified": 1758817417,
+        "narHash": "sha256-yH+Xart8D6jvq4efhQoSNX1V/NdM1ujRz+hY3dg52Mw=",
         "owner": "kaitotlex",
         "repo": "KaitoianOSmod",
-        "rev": "8b7050c6f547c4e39fd02960cf2aa77802ccdcd8",
+        "rev": "61aa0c702e56ba6d01e908ebe75b63aa5cfe1359",
         "type": "github"
       },
       "original": {
