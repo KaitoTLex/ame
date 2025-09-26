@@ -363,11 +363,11 @@
                 inputs.apple-silicon.nixosModules.apple-silicon-support
                 "${inputs.KaitoianOS}/hardware"
               ];
-              # nix.settings = {
-              #   substituters = [ "https://hyprland.cachix.org" ];
-              #   trusted-substituters = [ "https://hyprland.cachix.org" ];
-              #   trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
-              # };
+              nix.settings = {
+                substituters = [ "https://hyprland.cachix.org" ];
+                trusted-substituters = [ "https://hyprland.cachix.org" ];
+                trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+              };
 
               boot = {
                 loader.systemd-boot.enable = true;
@@ -387,7 +387,7 @@
               };
 
               nixpkgs.overlays = lib.mkAfter [
-                inputs.apple-silicon.overlays.apple-silicon-overlay
+                inputs.apple-silicon.overlays.apple-silicon-overlay                
                 (final: prev: {
                   aquamarine = prev.aquamarine.overrideAttrs (old: {
                     src = final.fetchFromGitHub {
@@ -463,7 +463,7 @@
               # this value at the release version of the first install of this system.
               # Before changing this value read the documentation for this option
               # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.05"; # Did you read the comment?
+              system.stateVersion = "24.11"; # Did you read the comment?
 
               # Other options such as
               # hardware.graphics.enable = true
@@ -525,6 +525,7 @@
                   networking = {
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
                     # Use cloudflare's 1.1.1.1 DNS servers.
+                    firewallPresets.vite = true;
                     cloudflareNameservers.enable = true;
                     backend = "iwd";
                   };
