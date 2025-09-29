@@ -453,7 +453,7 @@
                 defaultEditor = pkgs.neovim;
 
                 # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "compact";
+                formFactor = "desktop";
 
                 desktop.localization.chinese = {
                   input.enable = true;
