@@ -390,8 +390,8 @@
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-              ]
-              ++ kaitoPkgs;
+              ];
+              #++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
