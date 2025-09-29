@@ -82,9 +82,6 @@
           imports = [
             "${inputs.KaitoianOS}/home.nix"
           ];
-          wayland.windowManager.hyprland.settings.env = [
-            "GSK_RENDERER,ngl"
-          ];
           # wayland.windowManager.hyprland.settings.env = [
           #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
           # ];
@@ -387,36 +384,7 @@
               };
 
               nixpkgs.overlays = lib.mkAfter [
-                inputs.apple-silicon.overlays.apple-silicon-overlay                
-                (final: prev: {
-                  aquamarine = prev.aquamarine.overrideAttrs (old: {
-                    src = final.fetchFromGitHub {
-                      owner = "hyprwm";
-                      repo = "aquamarine";
-                      rev = "498f46686dcf45589d820ede6a023175d7c8ad74";
-                      hash = "sha256-iGLp5IkBm6nYdaoSr0/O4U0Ea2f9DRHuKIc5q9bnhkU=";
-                    };
-                  });
-
-                  hyprutils = prev.hyprutils.overrideAttrs (old: {
-                    src = final.fetchFromGitHub {
-                      owner = "hyprwm";
-                      repo = "hyprutils";
-                      rev = "69efb6291c7343e936f2ddce622990ed018b7fdb";
-                      hash = "sha256-aWnI+0+qdCgwbbB/TH5RUW+PgC4u+z+xXnIceCxYUO4=";
-                    };
-                  });
-
-                  hyprland = prev.hyprland.overrideAttrs (old: {
-                    src = final.fetchFromGitHub {
-                      owner = "gulafaran";
-                      repo = "hyprland";
-                      fetchSubmodules = true;
-                      rev = "f08ce4211a2855730797cbade2604db02f59252f";
-                      hash = "sha256-tpaosPXe/JBPnFZ7HIDcOtkDU0CjEwgGh8pWOy7cn1E=";
-                    };
-                  });
-                })
+                inputs.apple-silicon.overlays.apple-silicon-overlay
               ];
 
               # Set up a bootloader:
@@ -444,12 +412,6 @@
               };
               services.tlp = {
                 enable = true;
-                settings = {
-                  #Optional helps save long term battery health
-                  START_CHARGE_THRESH_BAT0 = 20; # 40 and bellow it starts to charge
-                  STOP_CHARGE_THRESH_BAT0 = 98; # 80 and above it stops charging
-
-                };
               };
 
               time.timeZone = "America/Los_Angeles";
@@ -491,7 +453,7 @@
                 defaultEditor = pkgs.neovim;
 
                 # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "laptop";
+                formFactor = "compact";
 
                 desktop.localization.chinese = {
                   input.enable = true;
