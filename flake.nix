@@ -410,9 +410,9 @@
                   };
                 };
               };
-              services.tlp = {
-                enable = true;
-              };
+              #services.tlp = {
+              #  enable = true;
+              #};
 
               time.timeZone = "America/Los_Angeles";
 
@@ -447,13 +447,13 @@
                 # This option doesn't set allowUnfree for the whole system,
                 # rather, it simply allows a specifically curated list of
                 # unfree packages in functorOS
-                config.allowUnfree = true;
+                config.allowUnfree = false;
 
                 # Set your default editor to any program.
                 defaultEditor = pkgs.neovim;
 
                 # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "desktop";
+                formFactor = "laptop";
 
                 desktop.localization.chinese = {
                   input.enable = true;
