@@ -1,0 +1,21 @@
+system: "base16"
+name: "mafuyu"
+author: "kaitotlex - Merge of Porple and Cappuchin"
+variant: "dark"
+palette:
+  base00: "#201B2C" # ----
+  base01: "#3B3344" # ---
+  base02: "#474160" # --
+  base03: "#65568a" # -
+  base04: "#8B7DAD" # +
+  base05: "#AA99C9" # ++
+  base06: "#B2A3D9" # +++
+  base07: "#CDC0F0" # ++++
+  base08: "#e78284" # red
+  base09: "#ef9f76" # peach
+  base0A: "#e5c890" # yellow
+  base0B: "#a6d189" # green
+  base0C: "#81c8be" # teal
+  base0D: "#8caaee" # blue
+  base0E: "#ca9ee6" # mauve
+  base0F: "#eebebe" # flamingo

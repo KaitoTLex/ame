@@ -21,13 +21,13 @@
       flake = false;
     };
     nixvim = {
-      url = "github:kaitotlex/vix1";
+      url = "github:kaitotlex/vix1/next";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    KaitoianOS = {
-      url = "github:kaitotlex/KaitoianOSmod";
-      flake = false;
-    };
+    # KaitoianOS = {
+    #   url = "github:kaitotlex/KaitoianOSmod";
+    #   flake = false;
+    # };
 
     # Alternatively, pin your own nixpkgs and set functorOS to follow it, as shown below.
 
@@ -80,7 +80,7 @@
           # home-manager configuration is in another file, then import it like
           # so:
           imports = [
-            "${inputs.KaitoianOS}/home.nix"
+            ./home.nix
           ];
           # wayland.windowManager.hyprland.settings.env = [
           #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
@@ -136,7 +136,7 @@
             { pkgs, lib, ... }:
             let
               # Import the KaitoianOSmod package definitions
-              kaitoPkgs = import "${inputs.KaitoianOS}/pkgs/default.nix" {
+              kaitoPkgs = import ./pkgs/default.nix {
                 inherit pkgs;
                 system = pkgs.stdenv.targetPlatform.system;
               };
@@ -160,7 +160,7 @@
               imports = [
                 ./hosts/kuroko/hardware-configuration.nix
                 inputs.lanzaboote.nixosModules.lanzaboote
-                "${inputs.KaitoianOS}/hardware"
+                ./hardware
               ];
 
               # Set up a bootloader:
@@ -256,7 +256,7 @@
               functorOS = {
                 # Set this to the absolute path of the location of this configuration flake
                 # to enable some UX enhanacements
-                flakeLocation = "/home/kaitotlex/.config/functorOS-config";
+                flakeLocation = "/home/kaitotlex/.config/ame";
 
                 # Allow functorOS's unfree packages
                 # This option doesn't set allowUnfree for the whole system,
@@ -281,7 +281,7 @@
                 theming = {
                   wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
                   polarity = "dark";
-                  base16Scheme = "${inputs.KaitoianOS}/scheme/mafuyu.yaml";
+                  base16Scheme = "./scheme/mafuyu.yaml";
                 };
                 system = {
                   # Toggle true to enable audio production software, like
@@ -338,7 +338,7 @@
             { pkgs, lib, ... }:
             let
               # Import the KaitoianOSmod package definitions
-              kaitoPkgs = import "${inputs.KaitoianOS}/pkgs/default.nix" {
+              kaitoPkgs = import ./pkgs/default.nix {
                 inherit pkgs;
                 system = pkgs.stdenv.targetPlatform.system;
               };
@@ -358,10 +358,11 @@
 
               # Simply copy that file over into the same directory as your
               # `flake.nix`, replacing the existing placeholder file.
+              nixpkgs.config.allowUnfree = true;
               imports = [
                 ./hosts/kanade/hardware-configuration.nix
                 inputs.apple-silicon.nixosModules.apple-silicon-support
-                "${inputs.KaitoianOS}/hardware"
+                ./hardware
               ];
               nix.settings = {
                 substituters = [ "https://hyprland.cachix.org" ];
@@ -384,6 +385,17 @@
               hardware.asahi = {
                 enable = true;
                 peripheralFirmwareDirectory = ./hosts/kanade/firmware;
+              };
+
+              #printing
+              services = {
+                printing.enable = true;
+                avahi = {
+
+                  enable = true;
+                  nssmdns4 = true;
+                  openFirewall = true;
+                };
               };
 
               nixpkgs.overlays = lib.mkAfter [
@@ -413,10 +425,10 @@
                   };
                 };
               };
-              services.tlp = {
-                enable = true;
-              };
-
+              #services.tlp = {
+              #  enable = true;
+              #};
+              services.tailscale.enable = true;
               time.timeZone = "America/Los_Angeles";
 
               # Make sure to set the state version of your NixOS install! Find
@@ -456,7 +468,7 @@
                 defaultEditor = pkgs.neovim;
 
                 # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "desktop";
+                formFactor = "laptop";
 
                 desktop.localization.chinese = {
                   input.enable = true;
@@ -469,7 +481,7 @@
                 theming = {
                   wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
                   polarity = "dark";
-                  base16Scheme = "${inputs.KaitoianOS}/scheme/mafuyu.yaml";
+                  base16Scheme = ./scheme/mafuyu.yaml;
 
                   # light mode
                   # wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
