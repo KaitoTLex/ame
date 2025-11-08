@@ -757,11 +757,11 @@
         "plugins-pomo-nvim": "plugins-pomo-nvim"
       },
       "locked": {
-        "lastModified": 1762400646,
-        "narHash": "sha256-JCGk1VmhClQs4ETc1/k2YyUzsgi4jKYCYwrZ+1r5BSA=",
+        "lastModified": 1762409486,
+        "narHash": "sha256-3j+OfZJZuEhovDbLTdWefgGsgLIvZSpeVse1TJ8M2Ow=",
         "owner": "kaitotlex",
         "repo": "vix1",
-        "rev": "c983e429775a710a33f58ec534ae49d4260879dd",
+        "rev": "3dc5f847fc0b4771300f4908ea68811f7aacbdb4",
         "type": "github"
       },
       "original": {
