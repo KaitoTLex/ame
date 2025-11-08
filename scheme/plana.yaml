@@ -3,19 +3,19 @@ name: "plana"
 author: "kaitotlex - Merge of Porple and Cappuchin"
 variant: "dark"
 palette:
-  base00: "#241c3b" # ----
+  base00: "#241c3b" # ---- (deep indigo background)
   base01: "#362c4c" # ---
   base02: "#473c5d" # --
   base03: "#5f5978" # -
   base04: "#7d769c" # +
   base05: "#9e98bc" # ++
   base06: "#c3b5d2" # +++
-  base07: "#eee5f7" # ++++
+  base07: "#f0b7d4" # ++++ (soft pink highlight tone)
   base08: "#e78284" # red
   base09: "#ef9f76" # peach
-  base0A: "#e5c890" # yellow
+  base0A: "#e08aa9" # pink-accent (replacing yellow)
   base0B: "#a6d189" # green
   base0C: "#81c8be" # teal
   base0D: "#8894d7" # blue
   base0E: "#ca9ee6" # mauve
-  # base0F: "#d8cae7" # extra
+  base0F: "#d8cae7" # extra
