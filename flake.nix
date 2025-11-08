@@ -86,13 +86,16 @@
           #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
           # ];
           #
-          # wayland.windowManager.hyprland.settings = {
-          #   monitor = [
-          #     "eDP-1,disable"
-          #     "HDMI-A-1,1920x1080@165,0x0,1"
-          #     "DP-2,1920x1080@60,1920x-600,1,transform,3"
-          #   ];
-          # };
+
+          wayland.windowManager.hyprland.xwayland.enable = true;
+          wayland.windowManager.hyprland.settings = {
+            monitor = [
+              "eDP-1,disabled"
+              # "eDP-1,1920x1200x120,0x0,1"
+              "HDMI-A-1,1920x1080@165,0x0,1"
+              "DP-2,1920x1080@60,1920x-600,1,transform,3"
+            ];
+          };
 
           # Or any other option, like
           # programs.neovim.enable = true;
