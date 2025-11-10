@@ -481,9 +481,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/yukino.png";
-                  polarity = "dark";
-                  base16Scheme = ./scheme/yukino.yaml;
+                  wallpaper = "${inputs.wallpapers}/anime/sanSuidreas.jpg";
+                  polarity = "light";
+                  base16Scheme = ./scheme/hoshimachi.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like

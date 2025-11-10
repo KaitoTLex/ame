@@ -716,11 +716,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1762721582,
-        "narHash": "sha256-aBbhdRpAXQJpzQIH77NdW2bPRHMxv7RkW97f+uhv29s=",
+        "lastModified": 1762798426,
+        "narHash": "sha256-kf9x51KNjnu59QtxCkkf4eju+wAoGMzlzzfgMkywe5o=",
         "owner": "futabalawrence",
         "repo": "nix-xilinx-post-2025",
-        "rev": "3a338f05939e61aebaa17be9ab6a2f5995b5c0bc",
+        "rev": "f25769c08a0cdf77b9a9f5c0ae1ef6f00bba663f",
         "type": "gitlab"
       },
       "original": {
@@ -1301,11 +1301,11 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1762570610,
-        "narHash": "sha256-+AW8MME7Wlu2YIDbY0TtMdalqLzcuvqi1topmCVUOIo=",
+        "lastModified": 1762806224,
+        "narHash": "sha256-lxxxiVaCF6/Zbwr5GSrtFNgEyL7ZxZRIVgHCkq+DlbY=",
         "owner": "kaitotlex",
         "repo": "wallpaper",
-        "rev": "3610a177ea294ce2600ccca630d242b7ab37e29a",
+        "rev": "896c7ee3eb2dc212c86f7c2b8f36d7eb83f73184",
         "type": "github"
       },
       "original": {

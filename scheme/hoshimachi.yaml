@@ -1,0 +1,21 @@
+system: "base16"
+name: "suisei-light"
+author: "kaitotlex – Inspired by Hoshimachi Suisei"
+variant: "light"
+palette:
+  base00: "#f8fbff" # very light background
+  base01: "#e6f3ff" # light subtle bluish
+  base02: "#cde5ff" # pale sky blue
+  base03: "#a9d1f9" # soft mid-blue
+  base04: "#78aee3" # moderate blue tone
+  base05: "#4a7ab5" # richer blue (for text on light background)
+  base06: "#2d4d82" # stronger blue/indigo
+  base07: "#1a2c53" # deepest tone in the light-variant
+  base08: "#ffb700" # accent gold (call-out colour)
+  base09: "#ff6a6a" # warm coral accent
+  base0A: "#0066ff" # signature bright blue accent (hair colour)
+  base0B: "#00d8b0" # teal accent (secondary)
+  base0C: "#66ffdf" # light aqua accent
+  base0D: "#e5e5e5" # neutral grey for less prominent UI
+  base0E: "#b78eff" # mauve/purple accent
+  base0F: "#ffdffc" # soft pink highlight
