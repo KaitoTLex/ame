@@ -28,7 +28,7 @@
       # Recommended if you also override the default nixpkgs flake, common among
       # nixos-unstable users:
       #inputs.nixpkgs.follows = "nixpkgs";
-      url = "gitlab:futabalawrence/nix-xilinx-post-2025";
+      url = "github:MIT-OpenCompute/xilinx-flake";
     };
 
     # KaitoianOS = {
@@ -425,9 +425,7 @@
                 enable = true;
                 settings = {
                   #Optional helps save long term battery health
-                  START_CHARGE_THRESH_BAT0 = 20; # 40 and bellow it starts to charge
                   STOP_CHARGE_THRESH_BAT0 = 90; # 80 and above it stops charging
-
                 };
               };
 
@@ -481,9 +479,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/sanSuidreas.jpg";
-                  polarity = "light";
-                  base16Scheme = ./scheme/hoshimachi.yaml;
+                  wallpaper = "${inputs.wallpapers}/anime/suiseiComets.jpg";
+                  polarity = "dark";
+                  base16Scheme = ./scheme/suisei.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like

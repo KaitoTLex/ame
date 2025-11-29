@@ -11,11 +11,11 @@ palette:
   base05: "#4a7ab5" # richer blue (for text on light background)
   base06: "#2d4d82" # stronger blue/indigo
   base07: "#1a2c53" # deepest tone in the light-variant
-  base08: "#ffb700" # accent gold (call-out colour)
-  base09: "#ff6a6a" # warm coral accent
-  base0A: "#0066ff" # signature bright blue accent (hair colour)
-  base0B: "#00d8b0" # teal accent (secondary)
-  base0C: "#66ffdf" # light aqua accent
-  base0D: "#e5e5e5" # neutral grey for less prominent UI
-  base0E: "#b78eff" # mauve/purple accent
-  base0F: "#ffdffc" # soft pink highlight
+  base08: "#e78b93" # red (rose)
+  base09: "#efb683" # orange-peach
+  base0A: "#f5d58c" # yellow (starlight)
+  base0B: "#9ed08b" # green (mint)
+  base0C: "#7fcad7" # cyan (sky reflection)
+  base0D: "#7da2f2" # blue (hair highlight)
+  base0E: "#b89ff5" # mauve (night glow)
+  base0F: "#d4c3f9" # extra (lavender-white)
