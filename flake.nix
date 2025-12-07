@@ -1,5 +1,5 @@
 {
-  description = "Minimal standalone functorOS system";
+  description = "KaitoTLex's modification to the already functional functorOS";
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
@@ -89,12 +89,12 @@
 
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
-            # monitor = [
-            #   # "eDP-1,disabled"
-            #   "eDP-1,1920x1200x120,0x0,1"
-            #   "HDMI-A-1,1920x1080@165,0x0,1"
-            #   "DP-2,1920x1080@60,1920x-600,1,transform,3"
-            # ];
+            monitor = [
+              # "eDP-1,disabled"
+              # "eDP-1,1920x1200x120,0x0,1"
+              "HDMI-A-1,1920x1080@165,0x0,1"
+              # "DP-2,1920x1080@60,1920x-600,1,transform,3"
+            ];
           };
 
           # Or any other option, like
