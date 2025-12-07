@@ -281,7 +281,7 @@
                 theming = {
                   wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
                   polarity = "dark";
-                  base16Scheme = "./scheme/mafuyu.yaml";
+                  base16Scheme = ./scheme/mafuyu.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
