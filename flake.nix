@@ -24,6 +24,13 @@
       url = "github:kaitotlex/vix1/next";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-xilinx = {
+      # Recommended if you also override the default nixpkgs flake, common among
+      # nixos-unstable users:
+      #inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:MIT-OpenCompute/xilinx-flake";
+    };
+
     # KaitoianOS = {
     #   url = "github:kaitotlex/KaitoianOSmod";
     #   flake = false;
@@ -90,10 +97,18 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
+<<<<<<< HEAD
               # "eDP-1,disabled"
               # "eDP-1,1920x1200x120,0x0,1"
               "HDMI-A-1,1920x1080@165,0x0,1"
               # "DP-2,1920x1080@60,1920x-600,1,transform,3"
+=======
+              #   # "eDP-1,disabled"
+              # "eDP-1,1920x1200x120,0x0,1"
+              "eDP-1,1920x1080x60.02,0x0,1"
+              #   "HDMI-A-1,1920x1080@165,0x0,1"
+              #   "DP-2,1920x1080@60,1920x-600,1,transform,3"
+>>>>>>> refs/remotes/origin/main
             ];
           };
 
@@ -381,7 +396,10 @@
                   pkiBundle = "/var/lib/sbctl";
                 };
               };
-              services.supergfxd.enable = true;
+
+              nixpkgs.overlays = lib.mkAfter [
+                inputs.nix-xilinx.overlay
+              ];
 
               nixpkgs.config.allowUnfree = true;
               environment.systemPackages = [
@@ -390,7 +408,10 @@
                 pkgs.fprintd
               ]
               ++ kaitoPkgs;
-              hardware.trackpoint.sensitivity = 70;
+              services.fprintd.enable = true;
+              # services.fprintd.tod.enable = true;
+              # services.fprintd.tod.driver = pkgs.fprintd-tod;
+              hardware.trackpoint.sensitivity = 57;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -411,9 +432,7 @@
                 enable = true;
                 settings = {
                   #Optional helps save long term battery health
-                  START_CHARGE_THRESH_BAT0 = 20; # 40 and bellow it starts to charge
                   STOP_CHARGE_THRESH_BAT0 = 90; # 80 and above it stops charging
-
                 };
               };
 
@@ -467,9 +486,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
+                  wallpaper = "${inputs.wallpapers}/anime/suiseiComets.jpg";
                   polarity = "dark";
-                  base16Scheme = ./scheme/mafuyu.yaml;
+                  base16Scheme = ./scheme/suisei.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
