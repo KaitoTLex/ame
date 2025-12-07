@@ -7,6 +7,9 @@
     qmk
     qmk-udev-rules
     qmk_hid
+    libftdi
+    libftdi1
+
     #nrf-udev
     #arm-trusted-firmware
     (writeTextFile {
@@ -193,6 +196,15 @@
       destination = "/etc/udev/rules.d/52-xilinx-ftdi-usb.rules";
       text = ''
         ACTION=="add", ATTR{idVendor}=="0403", ATTR{manufacturer}=="Xilinx", MODE:="666"
+      '';
+    })
+    (pkgs.writeTextFile {
+      name = "ftdi-rules";
+      destination = "/etc/udev/rules.d/69-ftdi.rules";
+      text = ''
+        ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", TAG+="uaccess"
+        ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6011", TAG+="uaccess"
+        ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", TAG+="uaccess"
       '';
     })
   ];

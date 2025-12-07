@@ -1,5 +1,5 @@
 {
-  description = "Minimal standalone functorOS system";
+  description = "KaitoTLex's modification to the already functional functorOS";
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
@@ -24,6 +24,13 @@
       url = "github:kaitotlex/vix1/next";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-xilinx = {
+      # Recommended if you also override the default nixpkgs flake, common among
+      # nixos-unstable users:
+      #inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:MIT-OpenCompute/xilinx-flake";
+    };
+
     # KaitoianOS = {
     #   url = "github:kaitotlex/KaitoianOSmod";
     #   flake = false;
@@ -90,10 +97,18 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              "eDP-1,disabled"
+<<<<<<< HEAD
+              # "eDP-1,disabled"
               # "eDP-1,1920x1200x120,0x0,1"
               "HDMI-A-1,1920x1080@165,0x0,1"
-              "DP-2,1920x1080@60,1920x-600,1,transform,3"
+              # "DP-2,1920x1080@60,1920x-600,1,transform,3"
+=======
+              #   # "eDP-1,disabled"
+              # "eDP-1,1920x1200x120,0x0,1"
+              "eDP-1,1920x1080x60.02,0x0,1"
+              #   "HDMI-A-1,1920x1080@165,0x0,1"
+              #   "DP-2,1920x1080@60,1920x-600,1,transform,3"
+>>>>>>> refs/remotes/origin/main
             ];
           };
 
@@ -316,6 +331,199 @@
               };
             };
         };
+        mafuyu = functorOSLib.system.instantiate {
+          hostname = "mafuyu";
+
+          # List of users generated with functorOSLib.user.instantiate.
+          users = [ kaitotlex ];
+          # users.users.kaitotlex = {
+          #   isNormalUser = true;
+          #   description = "KaitoTLex";
+          #   extraGroups = [
+          #     "networkmanager"
+          #     "wheel"
+          #     "disk"
+          #     "root"
+          #     "audio"
+          #   ];
+          # };
+
+          # Additional system configuration.
+          configuration =
+            { pkgs, lib, ... }:
+            let
+              # Import the KaitoianOSmod package definitions
+              kaitoPkgs = import ./pkgs/default.nix {
+                inherit pkgs;
+                system = pkgs.stdenv.targetPlatform.system;
+              };
+            in
+            {
+
+              # This is treated just like a standard configuration.nix file.
+
+              # You can set any arbitrary NixOS options here. For example, don't
+              # forget to import hardware-configuration.nix:
+
+              # The included hardware-configuration.nix in this template is a placeholder.
+              # The system WILL NOT build until you import your own!
+
+              # You need to import your `hardware-configuration.nix`. If you don't have it,
+              # run `nixos-generate-config` and it will be automatically populated at
+              # /etc/nixos/hardware-configuration.nix.
+
+              # Simply copy that file over into the same directory as your
+              # `flake.nix`, replacing the existing placeholder file.
+              imports = [
+                ./hosts/mafuyu/hardware-configuration.nix
+                inputs.lanzaboote.nixosModules.lanzaboote
+                ./hardware
+              ];
+
+              # Set up a bootloader:
+              boot = {
+                loader = {
+                  efi.canTouchEfiVariables = true;
+                  timeout = 15;
+                  # lanzaboote replaces systemd-boot
+                  systemd-boot.enable = lib.mkForce false;
+                };
+
+                # (optionally) Select a kernel.
+                kernelPackages = pkgs.linuxPackages_zen;
+                lanzaboote = {
+                  enable = true;
+                  pkiBundle = "/var/lib/sbctl";
+                };
+              };
+
+              nixpkgs.overlays = lib.mkAfter [
+                inputs.nix-xilinx.overlay
+              ];
+
+              nixpkgs.config.allowUnfree = true;
+              environment.systemPackages = [
+                inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
+                pkgs.libfprint
+                pkgs.fprintd
+              ]
+              ++ kaitoPkgs;
+              services.fprintd.enable = true;
+              # services.fprintd.tod.enable = true;
+              # services.fprintd.tod.driver = pkgs.fprintd-tod;
+              hardware.trackpoint.sensitivity = 57;
+              services.keyd = {
+                enable = true;
+                keyboards.default = {
+                  ids = [ "*" ];
+                  settings = {
+                    main = {
+                      capslock = "esc";
+                      leftalt = "leftcontrol";
+                      leftcontrol = "leftalt";
+                      y = "z";
+                      z = "y";
+                    };
+                  };
+                };
+              };
+
+              services.tlp = {
+                enable = true;
+                settings = {
+                  #Optional helps save long term battery health
+                  STOP_CHARGE_THRESH_BAT0 = 90; # 80 and above it stops charging
+                };
+              };
+
+              time.timeZone = "America/Los_Angeles";
+
+              # Make sure to set the state version of your NixOS install! Find
+              # it in your existing /etc/nixos/configuration.nix.
+
+              # This value determines the NixOS release from which the default
+              # settings for stateful data, like file locations and database versions
+              # on your system were taken. It‘s perfectly fine and recommended to leave
+              # this value at the release version of the first install of this system.
+              # Before changing this value read the documentation for this option
+              # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+              system.stateVersion = "25.05"; # Did you read the comment?
+
+              # Other options such as
+              # hardware.graphics.enable = true
+              # work fine here too.
+
+              # -----------------------------------------------------------------------
+
+              # The functorOS option below is a special option generated by
+              # functorOS, and used to configure it.
+
+              # Don't panic! Documentation for functorOS.* system options is
+              # available at <https://os.functor.systems>
+              functorOS = {
+                # Set this to the absolute path of the location of this configuration flake
+                # to enable some UX enhanacements
+                flakeLocation = "/home/kaitotlex/.config/ame";
+
+                # Allow functorOS's unfree packages
+                # This option doesn't set allowUnfree for the whole system,
+                # rather, it simply allows a specifically curated list of
+                # unfree packages in functorOS
+                config.allowUnfree = true;
+
+                # Set your default editor to any program.
+                defaultEditor = pkgs.neovim;
+
+                # Set to either "laptop" or "desktop" for some adjustments
+                formFactor = "laptop";
+
+                desktop.localization.chinese = {
+                  input.enable = true;
+                  script = "traditional";
+                };
+
+                # Set a wallpaper to whatever you want! You can use a local path as well.
+                # The colorscheme for the system is automatically generated from this
+                # wallpaper!
+                theming = {
+                  wallpaper = "${inputs.wallpapers}/anime/suiseiComets.jpg";
+                  polarity = "dark";
+                  base16Scheme = ./scheme/suisei.yaml;
+                };
+                system = {
+                  # Toggle true to enable audio production software, like
+                  # reaper, and yabridge + 64 bit wine for installing
+                  # Windows-exclusive VSTs! Also sets realtime kernel
+                  # configuration and other optimizations.
+                  audio.prod.enable = true;
+
+                  networking = {
+                    # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
+                    firewallPresets.vite = false;
+                    # Use cloudflare's 1.1.1.1 DNS servers.
+                    cloudflareNameservers.enable = true;
+                  };
+                  # Set some sane defaults for nvidia graphics, like proprietary drivers.
+                  # WARNING: requires functorOS.config.allowUnfree to be set to true.
+                  graphics.nvidia.enable = false;
+                };
+                extras.gaming = {
+                  # Enable gaming utilities, like Lutris, Steam, Prism Launcher, etc.
+                  enable = true;
+                  # Installs Roblox using Sober, as a flatpak. Note that this will enable
+                  # the impure flatpak service that automatically updates flatpaks every
+                  # week upon nixos-rebuild switch
+                  roblox.enable = false;
+
+                  utilities.gamemode = {
+                    # Enable the gamemoderun binary to maximize gaming performance
+                    enable = true;
+                  };
+                };
+              };
+            };
+        };
+
         kanade = functorOSLib.system.instantiate {
           hostname = "kanade";
 
@@ -479,9 +687,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
+                  wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
                   polarity = "dark";
-                  base16Scheme = ./scheme/mafuyu.yaml;
+                  base16Scheme = ./scheme/plana.yaml;
 
                   # light mode
                   # wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";

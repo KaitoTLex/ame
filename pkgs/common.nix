@@ -12,6 +12,7 @@ with pkgs;
   manga-tui
   prismlauncher
   libreoffice-qt
+  nicotine-plus
 
   #music
   #cider

@@ -1,0 +1,21 @@
+system: "base16"
+name: "suisei-dark"
+author: "kaitotlex – Inspired by Hoshimachi Suisei"
+variant: "dark"
+palette:
+  base00: "#020a1c" # darkest background (deep navy, night sky)
+  base01: "#071b33" # shadowed blue
+  base02: "#0f2f4d" # dim midblue
+  base03: "#1f4061" # muted slate-blue
+  base04: "#32527a" # softer blue-gray
+  base05: "#6086b2" # primary text tone
+  base06: "#a5c7f0" # light text / secondary highlight
+  base07: "#0a6ba0" # foreground accent
+  base08: "#e78284" # red
+  base09: "#ef9f76" # peach
+  base0A: "#e5c890" # yellow
+  base0B: "#a6d189" # green
+  base0C: "#81c8be" # teal
+  base0D: "#8894d7" # blue
+  base0E: "#ca9ee6" # mauve
+  base0F: "#d8cae7" # extra
