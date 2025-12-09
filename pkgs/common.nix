@@ -21,7 +21,7 @@ with pkgs;
   pass
   protonvpn-gui
   #contact
-  #cinny-desktop
+  cinny
   ungoogled-chromium
 
   #ee
