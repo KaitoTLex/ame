@@ -97,12 +97,13 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              # "eDP-1,1920x1200x120,0x0,1"
-              # "HDMI-A-1,1920x1080@165,0x0,1"
-              # "DP-2,1920x1080@60,1920x-600,1,transform,3"
-              # "eDP-1,disabled"
-              # "eDP-1,1920x1200x120,0x0,1"
-              "eDP-1,1920x1080x60.02,0x0,1"
+              # "eDP-1,3024x1964@60.0000,0x0,1" #kanade
+              # "HDMI-A-1,1920x1080@165,0x0,1"#kuroko docked primary
+              # "DP-2,1920x1080@60,1920x-600,1,transform,3"#kuroko docked potriat
+              # "eDP-1,disabled"#kuroko docked
+              # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
+              "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
+              "HDMI-A-1, preferred, auto,1" # external connections
             ];
           };
 
@@ -116,7 +117,7 @@
           # settings for stateful data, like file locations and database versions
           # on your system were taken. It‘s perfectly fine and recommended to leave
           # this value at the release version of the first install of home-manager.
-          home.stateVersion = "25.05";
+          home.stateVersion = "26.05";
         };
       };
     in
@@ -249,7 +250,7 @@
               # this value at the release version of the first install of this system.
               # Before changing this value read the documentation for this option
               # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.05"; # Did you read the comment?
+              system.stateVersion = "26.05"; # Did you read the comment?
 
               # Other options such as
               # hardware.graphics.enable = true
@@ -441,7 +442,7 @@
               # this value at the release version of the first install of this system.
               # Before changing this value read the documentation for this option
               # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.05"; # Did you read the comment?
+              system.stateVersion = "25.11"; # Did you read the comment?
 
               # Other options such as
               # hardware.graphics.enable = true
