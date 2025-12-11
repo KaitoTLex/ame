@@ -13,5 +13,6 @@ with pkgs;
   osu-lazer-bin
   tor-browser
   cider-2
+  davinci-resolve
 ]
 #formatter."x86_64-linux" = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
