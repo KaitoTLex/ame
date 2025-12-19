@@ -106,7 +106,7 @@
           wayland.windowManager.hyprland.settings = {
             monitor = [
               # TODO: fix displays for mutiple hosts
-              "eDP-1,3024x1964@60.0000,0x0,2" # kanade
+              "eDP-1,3024x1964@120.00,0x0,2" # kanade
               # "HDMI-A-1,1920x1080@165,0x0,1"#kuroko docked primary
               # "DP-2,1920x1080@60,1920x-600,1,transform,3"#kuroko docked potriat
               # "eDP-1,disabled"#kuroko docked
@@ -627,7 +627,6 @@
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-                pkgs.plusultra.tmux
               ]
               ++ kaitoPkgs;
               services.keyd = {
