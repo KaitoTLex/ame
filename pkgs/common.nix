@@ -32,7 +32,7 @@ with pkgs;
   kicad
   vscodium-fhs
   zulu
-  #julia
+  julia
 
   #hamradio
   #rtl-sdr

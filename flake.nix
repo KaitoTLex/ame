@@ -30,6 +30,15 @@
       #inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MIT-OpenCompute/xilinx-flake";
     };
+    snowfall-lib = {
+      url = "github:snowfallorg/lib";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    tmux = {
+      url = "github:jakehamilton/tmux";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # KaitoianOS = {
     #   url = "github:kaitotlex/KaitoianOSmod";
@@ -93,17 +102,17 @@
           #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
           # ];
           #
-
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              # "eDP-1,3024x1964@60.0000,0x0,1" #kanade
+              # TODO: fix displays for mutiple hosts
+              "eDP-1,3024x1964@60.0000,0x0,2" # kanade
               # "HDMI-A-1,1920x1080@165,0x0,1"#kuroko docked primary
               # "DP-2,1920x1080@60,1920x-600,1,transform,3"#kuroko docked potriat
               # "eDP-1,disabled"#kuroko docked
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
-              "HDMI-A-1, preferred, auto,1" # external connections
+              # "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
+              # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
 
@@ -572,7 +581,16 @@
                 trusted-substituters = [ "https://hyprland.cachix.org" ];
                 trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
               };
-
+              # temporary mesa downgrade
+              hardware.graphics.package =
+                let
+                  oldMesa =
+                    (import (fetchTarball {
+                      url = "https://github.com/NixOS/nixpkgs/archive/c5ae371f1a6a7fd27823bc500d9390b38c05fa55.tar.gz";
+                      sha256 = "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=";
+                    }) { localSystem = pkgs.stdenv.hostPlatform; }).mesa;
+                in
+                if pkgs.mesa.version >= "25.3.0" then oldMesa else pkgs.mesa;
               boot = {
                 loader.systemd-boot.enable = true;
                 loader.efi.canTouchEfiVariables = false;
@@ -603,11 +621,13 @@
 
               nixpkgs.overlays = lib.mkAfter [
                 inputs.apple-silicon.overlays.apple-silicon-overlay
+                inputs.tmux.overlay
               ];
 
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
+                pkgs.plusultra.tmux
               ]
               ++ kaitoPkgs;
               services.keyd = {
