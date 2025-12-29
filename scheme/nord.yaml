@@ -1,0 +1,21 @@
+system: "base16"
+name: "nord"
+author: "Nord Team, kaitotlex"
+variant: "dark"
+palette:
+  base00: "#2e3440" # darkest background (deep navy, night sky)
+  base01: "#3b4252" # shadowed blue
+  base02: "#434c5e" # dim midblue
+  base03: "#4c566a" # muted slate-blue
+  base04: "#eceff4" # softer blue-gray
+  base05: "#e9d66b" # primary text tone
+  base06: "#eceff4" # light text / secondary highlight
+  base07: "#e5e9f0" # foreground accent
+  base08: "#bf616a" # red
+  base09: "#d08770" # peach
+  base0A: "#ebcb8b" # yellow
+  base0B: "#a3be8c" # green
+  base0C: "#8fbcbb" # teal
+  base0D: "#81a1c1" # blue
+  base0E: "#b48ead" # mauve
+  base0F: "#d8cae7" # extra

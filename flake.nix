@@ -40,9 +40,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # KaitoianOS = {
-    #   url = "github:kaitotlex/KaitoianOSmod";
-    #   flake = false;
+    # muvm = {
+    #   url = "github:kaitotlex/fex-muvm";
     # };
 
     # Alternatively, pin your own nixpkgs and set functorOS to follow it, as shown below.
@@ -121,12 +120,14 @@
           # programs.neovim.settings = { # --snip-- };
 
           # Let's set the home-manager state version.
-
+          functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
+          functorOS.desktop.waybar.variant = "compact";
+          functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
           # This value determines the NixOS release from which the default
           # settings for stateful data, like file locations and database versions
           # on your system were taken. It‘s perfectly fine and recommended to leave
           # this value at the release version of the first install of home-manager.
-          home.stateVersion = "26.05";
+          home.stateVersion = "25.11";
         };
       };
     in
@@ -259,7 +260,7 @@
               # this value at the release version of the first install of this system.
               # Before changing this value read the documentation for this option
               # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "26.05"; # Did you read the comment?
+              system.stateVersion = "25.11"; # Did you read the comment?
 
               # Other options such as
               # hardware.graphics.enable = true
@@ -572,6 +573,7 @@
               # `flake.nix`, replacing the existing placeholder file.
               nixpkgs.config.allowUnfree = true;
               imports = [
+                # inputs.muvm.nixosModules.muvm
                 ./hosts/kanade/hardware-configuration.nix
                 inputs.apple-silicon.nixosModules.apple-silicon-support
                 ./hardware
@@ -581,16 +583,20 @@
                 trusted-substituters = [ "https://hyprland.cachix.org" ];
                 trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
               };
+              # muvm.enable = true;
+              # muvm.packages = [
+              # pkgs.steam-unwrapped
+              # ];
               # temporary mesa downgrade
-              hardware.graphics.package =
-                let
-                  oldMesa =
-                    (import (fetchTarball {
-                      url = "https://github.com/NixOS/nixpkgs/archive/c5ae371f1a6a7fd27823bc500d9390b38c05fa55.tar.gz";
-                      sha256 = "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=";
-                    }) { localSystem = pkgs.stdenv.hostPlatform; }).mesa;
-                in
-                if pkgs.mesa.version >= "25.3.0" then oldMesa else pkgs.mesa;
+              # hardware.graphics.package =
+              #   let
+              #     oldMesa =
+              #       (import (fetchTarball {
+              #         url = "https://github.com/NixOS/nixpkgs/archive/c5ae371f1a6a7fd27823bc500d9390b38c05fa55.tar.gz";
+              #         sha256 = "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=";
+              #       }) { localSystem = pkgs.stdenv.hostPlatform; }).mesa;
+              #   in
+              # if pkgs.mesa.version >= "25.3.0" then oldMesa else pkgs.mesa;
               boot = {
                 loader.systemd-boot.enable = true;
                 loader.efi.canTouchEfiVariables = false;
@@ -662,7 +668,7 @@
               # this value at the release version of the first install of this system.
               # Before changing this value read the documentation for this option
               # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "24.11"; # Did you read the comment?
+              system.stateVersion = "25.11"; # Did you read the comment?
 
               # Other options such as
               # hardware.graphics.enable = true
@@ -701,15 +707,16 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
+                  wallpaper = "${inputs.wallpapers}/vtubers/sui/nordSuisei.png";
                   polarity = "dark";
-                  base16Scheme = ./scheme/plana.yaml;
+                  base16Scheme = ./scheme/nord.yaml;
 
                   # light mode
                   # wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
                   # polarity = "light";
                   # base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
                 };
+
                 system = {
                   # Toggle true to enable audio production software, like
                   # reaper, and yabridge + 64 bit wine for installing

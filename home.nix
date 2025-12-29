@@ -95,10 +95,19 @@
   #   };
   # };
 
-  programs.firefox = {
-    enable = true;
-    package = pkgs.firefox-devedition;
-  };
+  programs.firefox =
+    # let
+    #   oldFf =
+    #     (import (fetchTarball {
+    #       url = "https://github.com/NixOS/nixpkgs/archive/c1e722a6fb379ae79064ddf9c4e0cc580e92a487.tar.gz";
+    #       sha256 = "sha256-074m6yha20lv0rjwk6gs93aj6ak7qdj7qzi8k84jzlwj1czcll4i";
+    #     }) { localSystem = pkgs.stdenv.hostPlatform; }).firefox-devedition;
+    # in
+    {
+      enable = true;
+      # package = pkgs.firefox-devedition;
+      # if pkgs.firefox-devedition.version >= "145.0b9" then oldFf else pkgs.firefox-devedition;
+    };
   programs.ripgrep.enable = true;
 
   # programs.oh-my-posh = {
@@ -193,7 +202,7 @@
   # configuration is compatible with. This helps avoid breakage
   # when a new home Manager release introduces backwards
   # incompatible changes.
-  home.stateVersion = "26.05";
+  home.stateVersion = "25.11";
   #
   # You can update home Manager without changing this value. See
   # the home Manager release notes for a list of state version
