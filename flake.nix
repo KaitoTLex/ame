@@ -707,7 +707,7 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/sui/nordSuisei.png";
+                  wallpaper = "${inputs.wallpapers}/vtubers/sui/nordMachi-retina.png";
                   polarity = "dark";
                   base16Scheme = ./scheme/nord.yaml;
 

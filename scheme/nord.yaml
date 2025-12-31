@@ -8,7 +8,7 @@ palette:
   base02: "#434c5e" # dim midblue
   base03: "#4c566a" # muted slate-blue
   base04: "#eceff4" # softer blue-gray
-  base05: "#e9d66b" # primary text tone
+  base05: "#ebcb8b" # primary text tone
   base06: "#eceff4" # light text / secondary highlight
   base07: "#e5e9f0" # foreground accent
   base08: "#bf616a" # red
