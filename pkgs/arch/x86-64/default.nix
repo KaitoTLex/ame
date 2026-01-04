@@ -14,5 +14,8 @@ with pkgs;
   tor-browser
   cider-2
   davinci-resolve
+  xf86-input-wacom
+  tuhi
+  libwacom
 ]
 #formatter."x86_64-linux" = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;
