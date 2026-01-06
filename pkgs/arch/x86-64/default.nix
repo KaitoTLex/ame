@@ -17,5 +17,7 @@ with pkgs;
   xf86-input-wacom
   tuhi
   libwacom
+  opentabletdriver
+  lunar-client
 ]
 #formatter."x86_64-linux" = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;

@@ -200,7 +200,9 @@
                 };
               };
               services.supergfxd.enable = true;
-
+              hardware.opentabletdriver.enable = true;
+              hardware.uinput.enable = true;
+              boot.kernelModules = [ "uinput" ];
               hardware.nvidia = {
                 modesetting.enable = true;
                 powerManagement.enable = true;
