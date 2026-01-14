@@ -30,7 +30,9 @@ with pkgs;
   gnumake
   cmake
   kicad
-  vscodium-fhs
+  zed-editor-fhs
+  zed-discord-presence
+  # vscodium-fhs
   zulu
   julia
 
