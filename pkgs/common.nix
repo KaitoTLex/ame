@@ -19,7 +19,9 @@ with pkgs;
 
   #opsec
   pass
-  protonvpn-gui
+  # protonvpn-gui
+  wireguard-ui
+
   #contact
   cinny
   ungoogled-chromium
@@ -32,9 +34,10 @@ with pkgs;
   kicad
   zed-editor-fhs
   zed-discord-presence
+  jdt-language-server
   # vscodium-fhs
   zulu
-  julia
+  # julia
 
   #hamradio
   #rtl-sdr

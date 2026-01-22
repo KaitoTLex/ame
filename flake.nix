@@ -22,7 +22,7 @@
     };
     nixvim = {
       url = "github:kaitotlex/vix1/next";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-xilinx = {
       # Recommended if you also override the default nixpkgs flake, common among
