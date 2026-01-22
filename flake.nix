@@ -105,12 +105,12 @@
           wayland.windowManager.hyprland.settings = {
             monitor = [
               # TODO: fix displays for mutiple hosts
-              "eDP-1,3024x1964@120.00,0x0,2" # kanade
-              # "HDMI-A-1,1920x1080@165,0x0,1"#kuroko docked primary
-              # "DP-2,1920x1080@60,1920x-600,1,transform,3"#kuroko docked potriat
-              # "eDP-1,disabled"#kuroko docked
+              # "eDP-1,3024x1964@120.00,0x0,2" # kanade
+              "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
+              "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
+              "eDP-1,disabled" # kuroko docked
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              # "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.5" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
@@ -200,7 +200,9 @@
                 };
               };
               services.supergfxd.enable = true;
-
+              hardware.opentabletdriver.enable = true;
+              hardware.uinput.enable = true;
+              boot.kernelModules = [ "uinput" ];
               hardware.nvidia = {
                 modesetting.enable = true;
                 powerManagement.enable = true;
