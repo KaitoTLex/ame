@@ -110,7 +110,7 @@
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
               "eDP-1,disabled" # kuroko docked
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              # "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.5" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
