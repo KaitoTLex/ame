@@ -394,7 +394,6 @@
                 trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
               };
 
-              nix.settings = aagl.nixConfig; # Set up Cachix
               programs.anime-game-launcher.enable = true;
               # programs.anime-games-launcher.enable = true;
 
@@ -629,6 +628,7 @@
                 enable = true;
                 peripheralFirmwareDirectory = ./hosts/kanade/firmware;
               };
+              virtualisation.waydroid.enable = true;
 
               #printing
               services = {

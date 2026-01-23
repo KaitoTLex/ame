@@ -19,8 +19,11 @@ with pkgs;
 
   #opsec
   pass
+  tailscale
+  openvpn3
   # protonvpn-gui
   wireguard-ui
+  wireguard-tools
 
   #contact
   cinny
@@ -38,6 +41,7 @@ with pkgs;
   # vscodium-fhs
   zulu
   # julia
+  waydroid
 
   #hamradio
   #rtl-sdr
