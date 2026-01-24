@@ -19,7 +19,12 @@ with pkgs;
 
   #opsec
   pass
-  protonvpn-gui
+  tailscale
+  openvpn3
+  # protonvpn-gui
+  wireguard-ui
+  wireguard-tools
+
   #contact
   cinny
   ungoogled-chromium
@@ -30,9 +35,13 @@ with pkgs;
   gnumake
   cmake
   kicad
-  vscodium-fhs
+  zed-editor-fhs
+  zed-discord-presence
+  jdt-language-server
+  # vscodium-fhs
   zulu
-  julia
+  # julia
+  waydroid
 
   #hamradio
   #rtl-sdr

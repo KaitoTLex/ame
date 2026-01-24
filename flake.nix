@@ -22,7 +22,7 @@
     };
     nixvim = {
       url = "github:kaitotlex/vix1/next";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-xilinx = {
       # Recommended if you also override the default nixpkgs flake, common among
@@ -104,13 +104,12 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              # TODO: fix displays for mutiple hosts
-              # "eDP-1,3024x1964@120.00,0x0,2" # kanade
+              "eDP-1 ,3024x1964@120.00,0x0,1.5" # kanade
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
-              "eDP-1,disabled" # kuroko docked
+              # "eDP-1,disabled" # kuroko docked TODO: get make/desc of kuroko
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              # "eDP-1,1920x1080x60.02,0x0,1" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.75" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
@@ -360,6 +359,10 @@
             { pkgs, lib, ... }:
             let
               # Import the KaitoianOSmod package definitions
+              # aagl = import (
+              # builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz"
+
+              # );
               kaitoPkgs = import ./pkgs/default.nix {
                 inherit pkgs;
                 system = pkgs.stdenv.targetPlatform.system;
@@ -385,7 +388,19 @@
                 ./hosts/mafuyu/hardware-configuration.nix
                 inputs.lanzaboote.nixosModules.lanzaboote
                 ./hardware
+                # aagl.module
               ];
+              # nix.settings = {
+              #   substituters = [ "https://ezkea.cachix.org" ];
+              #   trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
+              # };
+
+              # nix.settings = aagl.nixConfig; # Set up Cachix
+              # programs.anime-game-launcher.enable = true;
+              # # programs.anime-games-launcher.enable = true;
+              #
+              # programs.honkers-railway-launcher.enable = true;
+              # programs.wavey-launcher.enable = true;
 
               # Set up a bootloader:
               boot = {
@@ -493,9 +508,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/suiseiComets.jpg";
+                  wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
                   polarity = "dark";
-                  base16Scheme = ./scheme/suisei.yaml;
+                  base16Scheme = ./scheme/inabakumori.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
@@ -615,6 +630,7 @@
                 enable = true;
                 peripheralFirmwareDirectory = ./hosts/kanade/firmware;
               };
+              virtualisation.waydroid.enable = true;
 
               #printing
               services = {
