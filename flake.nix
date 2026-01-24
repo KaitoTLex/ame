@@ -301,9 +301,9 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/mafuyuNightchord.png";
+                  wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
                   polarity = "dark";
-                  base16Scheme = ./scheme/mafuyu.yaml;
+                  base16Scheme = ./scheme/plana.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
