@@ -20,12 +20,12 @@
   ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
-  boot.kernelPatches = [
-    {
-      name = "120hz";
-      patch = ./120hz.patch;
-    }
-  ];
+  # boot.kernelPatches = [
+  #   {
+  #     name = "120hz";
+  #     patch = ./120hz.patch;
+  #   }
+  # ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
