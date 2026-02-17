@@ -104,7 +104,7 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              "eDP-1,3024x1964@120.00,0x0,1.33" # kanade
+              "eDP-1,3024x1964@120.00,0x0,2.0" # kanade
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
               # "eDP-1,disabled" # kuroko docked TODO: get make/desc of kuroko
@@ -597,12 +597,33 @@
               ];
               nix.settings = {
                 substituters = [ "https://hyprland.cachix.org" ];
+                # extra-substituters = [ "https://nixos-apple-silicon.cachix.org" ];
+                # extra-trusted-public-keys = [
+                #   "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
+                # ];
                 trusted-substituters = [ "https://hyprland.cachix.org" ];
                 trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
               };
+              boot.kernelModules = [
+                "ip_tables"
+                "iptable_nat"
+                "iptable_filter"
+                "iptable_mangle"
+              ];
+              networking.nftables.enable = false;
+              networking.firewall.trustedInterfaces = [ "waydroid0" ];
               services.logind.settings.Login = {
                 HandlePowerKey = "ignore";
               };
+              nixpkgs.overlays = [
+                (final: prev: {
+                  waydroid = prev.waydroid.overrideAttrs (old: {
+                    postPatch = (old.postPatch or "") + ''
+                      sed -i 's/iptables_legacy=.*/iptables_legacy=/' data/scripts/waydroid-net.sh
+                    '';
+                  });
+                })
+              ];
               # muvm.enable = true;
               # muvm.packages = [
               # pkgs.steam-unwrapped
@@ -678,7 +699,8 @@
               #  enable = true;
               #};
               services.tailscale.enable = true;
-              time.timeZone = "America/Los_Angeles";
+              time.timeZone = "Asia/Taipei";
+              # time.timeZone = "America/Los_Angeles";
 
               # Make sure to set the state version of your NixOS install! Find
               # it in your existing /etc/nixos/configuration.nix.

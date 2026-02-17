@@ -33,6 +33,18 @@
       signByDefault = true;
       key = "42F52D76F1B15B8D997E2AEE8AB934746F475D0B";
     };
+    # config.credential.helper = "$";
+    # config.credential = {
+    #   helper = "manager";
+    #   "https://github.com".username = "kaitotlex";
+    #   credentialStore = "cache";
+    # };
+  };
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper = {
+      enable = true;
+    };
   };
 
   programs.neovim.defaultEditor = true;

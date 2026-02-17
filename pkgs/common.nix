@@ -42,9 +42,11 @@ with pkgs;
   zulu
   # julia
   waydroid
+  qemu
 
   #hamradio
   #rtl-sdr
   #gqrx
   #soapysdr-with-plugins
+  openutau
 ]
