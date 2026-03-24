@@ -40,10 +40,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # muvm = {
+    # fex = {
     #   url = "github:kaitotlex/fex-muvm";
+    # inputs.nixpkgs.follows = "nixpkgs";
     # };
-
+    #
     # Alternatively, pin your own nixpkgs and set functorOS to follow it, as shown below.
 
     # nixpkgs.follows = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -590,7 +591,6 @@
               # `flake.nix`, replacing the existing placeholder file.
               nixpkgs.config.allowUnfree = true;
               imports = [
-                # inputs.muvm.nixosModules.muvm
                 ./hosts/kanade/hardware-configuration.nix
                 inputs.apple-silicon.nixosModules.apple-silicon-support
                 ./hardware
@@ -610,20 +610,11 @@
                 "iptable_filter"
                 "iptable_mangle"
               ];
-              networking.nftables.enable = false;
+              networking.nftables.enable = true;
               networking.firewall.trustedInterfaces = [ "waydroid0" ];
               services.logind.settings.Login = {
                 HandlePowerKey = "ignore";
               };
-              nixpkgs.overlays = [
-                (final: prev: {
-                  waydroid = prev.waydroid.overrideAttrs (old: {
-                    postPatch = (old.postPatch or "") + ''
-                      sed -i 's/iptables_legacy=.*/iptables_legacy=/' data/scripts/waydroid-net.sh
-                    '';
-                  });
-                })
-              ];
               # muvm.enable = true;
               # muvm.packages = [
               # pkgs.steam-unwrapped
@@ -646,6 +637,7 @@
                   options hid_apple iso_layout=0
                 '';
               };
+              # programs.openvpn3.enable = true;
               services.udev.extraRules = ''
                 KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
               '';
@@ -670,11 +662,76 @@
               nixpkgs.overlays = lib.mkAfter [
                 inputs.apple-silicon.overlays.apple-silicon-overlay
                 inputs.tmux.overlay
+                (final: prev: {
+                  waydroid = prev.waydroid.overrideAttrs (old: {
+                    postPatch = (old.postPatch or "") + ''
+                      sed -i 's/iptables_legacy=.*/iptables_legacy=/' data/scripts/waydroid-net.sh
+                    '';
+                  });
+                })
+                # (final: prev: {
+                #   photonvision = prev.photonvision.overrideAttrs (oldAttrs: rec {
+                #     version = "2026.2.2";
+                #     src =
+                #       {
+                #         "x86_64-linux" = prev.fetchurl {
+                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxx64.jar";
+                #           hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+                #         };
+                #         "aarch64-linux" = prev.fetchurl {
+                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxarm64.jar";
+                #           hash = "sha256-sXCR7XuTOvLbqPgPuv4bfjbem/p45yWuGE3woMnrTJ0=";
+                #         };
+                #       }
+                #       .${prev.stdenv.hostPlatform.system}
+                #         or (throw "Unsupported system: ${prev.stdenv.hostPlatform.system}");
+                #
+                #     installPhase = ''
+                #       runHook preInstall
+                #
+                #       install -D $src $out/lib/photonvision.jar
+                #
+                #       makeWrapper ${final.temurin-jre-bin-17}/bin/java $out/bin/photonvision \
+                #         --prefix LD_LIBRARY_PATH : ${
+                #           final.lib.makeLibraryPath [
+                #             final.stdenv.cc.cc
+                #             final.suitesparse
+                #             # photon-libcamera-gl-driver-jni: camera capture + GPU frame processing
+                #             final.libcamera
+                #             # OpenGL/EGL/GBM — Asahi Mesa provides hardware-accelerated backends
+                #             # for the GL driver JNI (debayering, undistortion on Apple GPU)
+                #             final.mesa
+                #             final.libdrm
+                #             final.wayland
+                #             # OpenCL ICD loader — Mesa Rusticl exposes the Apple GPU as an
+                #             # OpenCL 3.0 device under Asahi, enabling GPU compute from Java
+                #             final.ocl-icd
+                #           ]
+                #         } \
+                #         --prefix PATH : ${
+                #           final.lib.makeBinPath [
+                #             final.temurin-jre-bin-17
+                #             final.bash.out
+                #           ]
+                #         } \
+                #         --set-default EGL_PLATFORM gbm \
+                #         --add-flags "-jar $out/lib/photonvision.jar" \
+                #         --add-flags "-XX:+UseZGC" \
+                #         --add-flags "-XX:+UnlockExperimentalVMOptions" \
+                #         --add-flags "-Xmx8g"
+                #
+                #       runHook postInstall
+                #     '';
+                #   });
+                # })
               ];
 
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
+                # inputs.fex.packages.aarch64-linux.muvm
+                # inputs.fex.packages.aarch64-linux.muvm-steam
+                # inputs.fex.packages.aarch64-linux.muvm-vivado
               ]
               ++ kaitoPkgs;
               services.keyd = {
@@ -699,8 +756,8 @@
               #  enable = true;
               #};
               services.tailscale.enable = true;
-              time.timeZone = "Asia/Taipei";
-              # time.timeZone = "America/Los_Angeles";
+              # time.timeZone = "Asia/Taipei";
+              time.timeZone = "America/Los_Angeles";
 
               # Make sure to set the state version of your NixOS install! Find
               # it in your existing /etc/nixos/configuration.nix.

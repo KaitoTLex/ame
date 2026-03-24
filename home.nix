@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 {
   home.username = "kaitotlex";
   home.homeDirectory = "/home/kaitotlex";
@@ -17,6 +17,15 @@
   # home.file.".xxx".text = ''
   #     xxx
   # '';
+
+  # Hyprland 0.54+ has scrolling layout built-in; the external hyprscrolling plugin is gone
+  wayland.windowManager.hyprland.plugins = lib.mkForce [];
+  # Migrate functorOS's plugin.hyprscrolling config to the new top-level scrolling.* keys
+  wayland.windowManager.hyprland.settings.scrolling = {
+    explicit_column_widths = "0.333, 0.5, 0.667, 1.0";
+    fullscreen_on_one_column = true;
+    focus_fit_method = 1;
+  };
 
   xdg.portal = {
     enable = true;
