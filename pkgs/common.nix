@@ -21,6 +21,7 @@ with pkgs;
   pass
   tailscale
   tailscale-systray
+  aerc
   # openvpn3
   # protonvpn-gui
   # wireguard-ui
