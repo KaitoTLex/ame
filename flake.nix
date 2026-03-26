@@ -3,7 +3,7 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:youwen5/functorOS";
+    functorOS.url = "github:kaitotlex/functorOS";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
@@ -105,7 +105,7 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              "eDP-1,3024x1964@120.00,0x0,2.0" # kanade
+              "eDP-1,3024x1964@120.00,0x0,1.5.0" # kanade
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
               # "eDP-1,disabled" # kuroko docked TODO: get make/desc of kuroko
@@ -543,6 +543,12 @@
                     enable = true;
                   };
                 };
+                desktop.hyprland.enable = false;
+                desktop.sway.enable = true;
+              };
+              home-manager.users.kaitotlex = {
+                functorOS.desktop.hyprland.enable = false;
+                functorOS.desktop.sway.enable = true;
               };
             };
         };
@@ -839,6 +845,12 @@
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
                   graphics.nvidia.enable = false;
                 };
+                desktop.hyprland.enable = false;
+                desktop.sway.enable = true;
+              };
+              home-manager.users.kaitotlex = {
+                functorOS.desktop.hyprland.enable = false;
+                functorOS.desktop.sway.enable = true;
               };
             };
         };
