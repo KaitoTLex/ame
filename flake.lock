@@ -517,11 +517,11 @@
         "zen-browser": "zen-browser"
       },
       "locked": {
-        "lastModified": 1774504810,
-        "narHash": "sha256-uSR7hCSPRQwiWO+RHARSDe8LUymtJLEYaGgj98lZWGw=",
+        "lastModified": 1774512237,
+        "narHash": "sha256-50ioSVf6OmWyoTZCj3MRtu5r/1EBVrj7PkgWG/Gl7IY=",
         "owner": "kaitotlex",
         "repo": "functorOS",
-        "rev": "e3bec323e048147153a61cf1ae6f9e68a8a43401",
+        "rev": "53a8c363473e714ec62681c102c07f0426ffbe47",
         "type": "github"
       },
       "original": {
@@ -870,11 +870,11 @@
         "plugins-pomo-nvim": "plugins-pomo-nvim"
       },
       "locked": {
-        "lastModified": 1774504468,
-        "narHash": "sha256-Q23AcwOyBBNnoGYOj9Cu+MhQlJbZ420T70NflIBGGjA=",
+        "lastModified": 1774507732,
+        "narHash": "sha256-LuFLYRQrk9p8hruNbm34VqivnKiZcj6ZQzKxRtQmlLM=",
         "owner": "kaitotlex",
         "repo": "vix1",
-        "rev": "ef5a853b62fa49956d74a2446f75e30d81e1f674",
+        "rev": "8506070ff7932fa628dad0c0bca649b5f010dc6f",
         "type": "github"
       },
       "original": {
