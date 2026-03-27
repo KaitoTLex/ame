@@ -110,7 +110,7 @@
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
               # "eDP-1,disabled" # kuroko docked TODO: get make/desc of kuroko
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.75" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,1.0" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
@@ -509,16 +509,20 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
-                  polarity = "dark";
-                  base16Scheme = ./scheme/inabakumori.yaml;
+                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonSakura.jpg";
+                  polarity = "light";
+                  base16Scheme = ./scheme/watson.yaml;
+
+                  # wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
+                  # polarity = "dark";
+                  # base16Scheme = ./scheme/inabakumori.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
                   # reaper, and yabridge + 64 bit wine for installing
                   # Windows-exclusive VSTs! Also sets realtime kernel
                   # configuration and other optimizations.
-                  audio.prod.enable = true;
+                  audio.prod.enable = false;
 
                   networking = {
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
