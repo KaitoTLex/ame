@@ -8,6 +8,7 @@ with pkgs;
   asahi-btsync
   spotify-player
   spotifyd
+  photonvision
   #asahi-audio
   #idevicerestore
 ]

@@ -3,7 +3,7 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:youwen5/functorOS";
+    functorOS.url = "github:kaitotlex/functorOS";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
@@ -40,10 +40,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # muvm = {
+    # fex = {
     #   url = "github:kaitotlex/fex-muvm";
+    # inputs.nixpkgs.follows = "nixpkgs";
     # };
-
+    #
     # Alternatively, pin your own nixpkgs and set functorOS to follow it, as shown below.
 
     # nixpkgs.follows = "github:nixos/nixpkgs?ref=nixos-unstable";
@@ -104,13 +105,13 @@
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-              "eDP-1 ,3024x1964@120.00,0x0,1.5" # kanade
 
+              "eDP-1,3024x1964@120.00,0x0,1.5.0" # kanade
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
               "desc: Sharp Corporation LQ134N1JW52,disabled" # kuroko docked TODO: get make/desc of kuroko
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.75" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,1.0" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
             ];
           };
@@ -509,16 +510,20 @@
                 # The colorscheme for the system is automatically generated from this
                 # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
-                  polarity = "dark";
-                  base16Scheme = ./scheme/inabakumori.yaml;
+                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonSakura.jpg";
+                  polarity = "light";
+                  base16Scheme = ./scheme/watson.yaml;
+
+                  # wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
+                  # polarity = "dark";
+                  # base16Scheme = ./scheme/inabakumori.yaml;
                 };
                 system = {
                   # Toggle true to enable audio production software, like
                   # reaper, and yabridge + 64 bit wine for installing
                   # Windows-exclusive VSTs! Also sets realtime kernel
                   # configuration and other optimizations.
-                  audio.prod.enable = true;
+                  audio.prod.enable = false;
 
                   networking = {
                     # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
@@ -543,6 +548,12 @@
                     enable = true;
                   };
                 };
+                desktop.hyprland.enable = false;
+                desktop.sway.enable = true;
+              };
+              home-manager.users.kaitotlex = {
+                functorOS.desktop.hyprland.enable = false;
+                functorOS.desktop.sway.enable = true;
               };
             };
         };
@@ -591,15 +602,29 @@
               # `flake.nix`, replacing the existing placeholder file.
               nixpkgs.config.allowUnfree = true;
               imports = [
-                # inputs.muvm.nixosModules.muvm
                 ./hosts/kanade/hardware-configuration.nix
                 inputs.apple-silicon.nixosModules.apple-silicon-support
                 ./hardware
               ];
               nix.settings = {
                 substituters = [ "https://hyprland.cachix.org" ];
+                # extra-substituters = [ "https://nixos-apple-silicon.cachix.org" ];
+                # extra-trusted-public-keys = [
+                #   "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
+                # ];
                 trusted-substituters = [ "https://hyprland.cachix.org" ];
                 trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+              };
+              boot.kernelModules = [
+                "ip_tables"
+                "iptable_nat"
+                "iptable_filter"
+                "iptable_mangle"
+              ];
+              networking.nftables.enable = true;
+              networking.firewall.trustedInterfaces = [ "waydroid0" ];
+              services.logind.settings.Login = {
+                HandlePowerKey = "ignore";
               };
               # muvm.enable = true;
               # muvm.packages = [
@@ -618,11 +643,12 @@
               boot = {
                 loader.systemd-boot.enable = true;
                 loader.efi.canTouchEfiVariables = false;
-                kernelParams = [ "apple_dcp.show_notch=1" ];
+                kernelParams = [ "appledrm.show_notch=1" ];
                 extraModprobeConfig = ''
                   options hid_apple iso_layout=0
                 '';
               };
+              # programs.openvpn3.enable = true;
               services.udev.extraRules = ''
                 KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
               '';
@@ -647,11 +673,76 @@
               nixpkgs.overlays = lib.mkAfter [
                 inputs.apple-silicon.overlays.apple-silicon-overlay
                 inputs.tmux.overlay
+                (final: prev: {
+                  waydroid = prev.waydroid.overrideAttrs (old: {
+                    postPatch = (old.postPatch or "") + ''
+                      sed -i 's/iptables_legacy=.*/iptables_legacy=/' data/scripts/waydroid-net.sh
+                    '';
+                  });
+                })
+                # (final: prev: {
+                #   photonvision = prev.photonvision.overrideAttrs (oldAttrs: rec {
+                #     version = "2026.2.2";
+                #     src =
+                #       {
+                #         "x86_64-linux" = prev.fetchurl {
+                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxx64.jar";
+                #           hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+                #         };
+                #         "aarch64-linux" = prev.fetchurl {
+                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxarm64.jar";
+                #           hash = "sha256-sXCR7XuTOvLbqPgPuv4bfjbem/p45yWuGE3woMnrTJ0=";
+                #         };
+                #       }
+                #       .${prev.stdenv.hostPlatform.system}
+                #         or (throw "Unsupported system: ${prev.stdenv.hostPlatform.system}");
+                #
+                #     installPhase = ''
+                #       runHook preInstall
+                #
+                #       install -D $src $out/lib/photonvision.jar
+                #
+                #       makeWrapper ${final.temurin-jre-bin-17}/bin/java $out/bin/photonvision \
+                #         --prefix LD_LIBRARY_PATH : ${
+                #           final.lib.makeLibraryPath [
+                #             final.stdenv.cc.cc
+                #             final.suitesparse
+                #             # photon-libcamera-gl-driver-jni: camera capture + GPU frame processing
+                #             final.libcamera
+                #             # OpenGL/EGL/GBM — Asahi Mesa provides hardware-accelerated backends
+                #             # for the GL driver JNI (debayering, undistortion on Apple GPU)
+                #             final.mesa
+                #             final.libdrm
+                #             final.wayland
+                #             # OpenCL ICD loader — Mesa Rusticl exposes the Apple GPU as an
+                #             # OpenCL 3.0 device under Asahi, enabling GPU compute from Java
+                #             final.ocl-icd
+                #           ]
+                #         } \
+                #         --prefix PATH : ${
+                #           final.lib.makeBinPath [
+                #             final.temurin-jre-bin-17
+                #             final.bash.out
+                #           ]
+                #         } \
+                #         --set-default EGL_PLATFORM gbm \
+                #         --add-flags "-jar $out/lib/photonvision.jar" \
+                #         --add-flags "-XX:+UseZGC" \
+                #         --add-flags "-XX:+UnlockExperimentalVMOptions" \
+                #         --add-flags "-Xmx8g"
+                #
+                #       runHook postInstall
+                #     '';
+                #   });
+                # })
               ];
 
               # Set up a bootloader:
               environment.systemPackages = [
                 inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
+                # inputs.fex.packages.aarch64-linux.muvm
+                # inputs.fex.packages.aarch64-linux.muvm-steam
+                # inputs.fex.packages.aarch64-linux.muvm-vivado
               ]
               ++ kaitoPkgs;
               services.keyd = {
@@ -676,6 +767,7 @@
               #  enable = true;
               #};
               services.tailscale.enable = true;
+              # time.timeZone = "Asia/Taipei";
               time.timeZone = "America/Los_Angeles";
 
               # Make sure to set the state version of your NixOS install! Find
@@ -758,6 +850,12 @@
                   # WARNING: requires functorOS.config.allowUnfree to be set to true.
                   graphics.nvidia.enable = false;
                 };
+                desktop.hyprland.enable = false;
+                desktop.sway.enable = true;
+              };
+              home-manager.users.kaitotlex = {
+                functorOS.desktop.hyprland.enable = false;
+                functorOS.desktop.sway.enable = true;
               };
             };
         };

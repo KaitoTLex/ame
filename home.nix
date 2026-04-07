@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, lib, inputs, ... }:
 {
   home.username = "kaitotlex";
   home.homeDirectory = "/home/kaitotlex";
@@ -18,6 +18,15 @@
   #     xxx
   # '';
 
+  # Hyprland 0.54+ has scrolling layout built-in; the external hyprscrolling plugin is gone
+  wayland.windowManager.hyprland.plugins = lib.mkForce [];
+  # Migrate functorOS's plugin.hyprscrolling config to the new top-level scrolling.* keys
+  wayland.windowManager.hyprland.settings.scrolling = {
+    explicit_column_widths = "0.333, 0.5, 0.667, 1.0";
+    fullscreen_on_one_column = true;
+    focus_fit_method = 1;
+  };
+
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
@@ -32,6 +41,18 @@
     signing = {
       signByDefault = true;
       key = "42F52D76F1B15B8D997E2AEE8AB934746F475D0B";
+    };
+    # config.credential.helper = "$";
+    # config.credential = {
+    #   helper = "manager";
+    #   "https://github.com".username = "kaitotlex";
+    #   credentialStore = "cache";
+    # };
+  };
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper = {
+      enable = true;
     };
   };
 

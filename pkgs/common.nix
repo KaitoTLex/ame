@@ -20,10 +20,12 @@ with pkgs;
   #opsec
   pass
   tailscale
-  openvpn3
+  tailscale-systray
+  aerc
+  # openvpn3
   # protonvpn-gui
-  wireguard-ui
-  wireguard-tools
+  # wireguard-ui
+  # wireguard-tools
 
   #contact
   cinny
@@ -34,17 +36,19 @@ with pkgs;
   verilator
   gnumake
   cmake
-  kicad
+  # kicad
   zed-editor-fhs
   zed-discord-presence
   jdt-language-server
   # vscodium-fhs
   zulu
   # julia
-  waydroid
+  # waydroid
+  qemu
 
   #hamradio
   #rtl-sdr
   #gqrx
   #soapysdr-with-plugins
+  openutau
 ]
