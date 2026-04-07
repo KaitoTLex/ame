@@ -105,9 +105,10 @@
           wayland.windowManager.hyprland.settings = {
             monitor = [
               "eDP-1 ,3024x1964@120.00,0x0,1.5" # kanade
+
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
               "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
-              # "eDP-1,disabled" # kuroko docked TODO: get make/desc of kuroko
+              "desc: Sharp Corporation LQ134N1JW52,disabled" # kuroko docked TODO: get make/desc of kuroko
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
               "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,0.75" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
