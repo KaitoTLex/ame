@@ -3,7 +3,7 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:kaitotlex/functorOS";
+    functorOS.url = "github:youwen5/functorOS";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
@@ -21,7 +21,7 @@
       flake = false;
     };
     nixvim = {
-      url = "github:kaitotlex/vix1/next";
+      url = "github:kaitotlex/vix1";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-xilinx = {
@@ -40,19 +40,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # fex = {
-    #   url = "github:kaitotlex/fex-muvm";
-    # inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    #
-    # Alternatively, pin your own nixpkgs and set functorOS to follow it, as shown below.
-
-    # nixpkgs.follows = "github:nixos/nixpkgs?ref=nixos-unstable";
-    # functorOS.url = "github:youwen5/functorOS";
-    # functorOS.inputs.nixpkgs.follows = "nixpkgs";
-
-    # Either way, you should ensure that functorOS shares nixpkgs with your
-    # system to avoid any weird conflicts.
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -73,137 +64,68 @@
           ;
       };
       kaitotlex = functorOSLib.user.instantiate {
-        # Linux username for your user
         username = "kaitotlex";
-
-        # Absolute path to the home directory
         homeDirectory = "/home/kaitotlex";
-
-        # Full name. This is really just the string provided in the
-        # `description` field of your Linux user, which is generally the user's
-        # full name.
         fullName = "KaitoTLex";
-
-        # Email address of user
         email = "renl@kaitotlex.systems";
-
-        # If you set this to true, Git will automatically be configured with the fullName and email set above.
         configureGitUser = true;
-        # This is treated just like a standard `home.nix` home-manager
-        # configuration file.
         configuration = {
-          # You can set arbitrary options here. For example, if your
-          # home-manager configuration is in another file, then import it like
-          # so:
           imports = [
             ./home.nix
           ];
-          # wayland.windowManager.hyprland.settings.env = [
-          #   "AQ_DRM_DEVICES,/dev/dri/card2:/dev/dri/card1"
-          # ];
-          #
           wayland.windowManager.hyprland.xwayland.enable = true;
           wayland.windowManager.hyprland.settings = {
             monitor = [
-
-              "eDP-1,3024x1964@120.00,0x0,1.5.0" # kanade
               "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
-              "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked potriat
-              "desc: Sharp Corporation LQ134N1JW52,disabled" # kuroko docked TODO: get make/desc of kuroko
+              "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked portrait
+              "desc: Sharp Corporation LQ134N1JW52,disabled" # kuroko built-in display (disabled when docked)
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0,1.0" # mafuyu display conf
+              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0, 1" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
+              # "eDP-1,3024x1964@120.00,0x0,1.5" # kanade
             ];
           };
 
-          # Or any other option, like
-          # programs.neovim.enable = true;
-          # programs.neovim.settings = { # --snip-- };
-
-          # Let's set the home-manager state version.
           functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           functorOS.desktop.waybar.variant = "compact";
           functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-          # This value determines the NixOS release from which the default
-          # settings for stateful data, like file locations and database versions
-          # on your system were taken. It‘s perfectly fine and recommended to leave
-          # this value at the release version of the first install of home-manager.
           home.stateVersion = "25.11";
         };
       };
     in
     {
-      # Execute sudo nixos-rebuild switch --flake .#functorOS
       nixosConfigurations = {
         kuroko = functorOSLib.system.instantiate {
           hostname = "kuroko";
-
-          # List of users generated with functorOSLib.user.instantiate.
           users = [ kaitotlex ];
-          # users.users.kaitotlex = {
-          #   isNormalUser = true;
-          #   description = "KaitoTLex";
-          #   extraGroups = [
-          #     "networkmanager"
-          #     "wheel"
-          #     "disk"
-          #     "root"
-          #     "audio"
-          #   ];
-          # };
 
-          # Additional system configuration.
           configuration =
             { pkgs, lib, ... }:
-            let
-              # Import the KaitoianOSmod package definitions
-              kaitoPkgs = import ./pkgs/default.nix {
-                inherit pkgs;
-                system = pkgs.stdenv.targetPlatform.system;
-              };
-            in
             {
-
-              # This is treated just like a standard configuration.nix file.
-
-              # You can set any arbitrary NixOS options here. For example, don't
-              # forget to import hardware-configuration.nix:
-
-              # The included hardware-configuration.nix in this template is a placeholder.
-              # The system WILL NOT build until you import your own!
-
-              # You need to import your `hardware-configuration.nix`. If you don't have it,
-              # run `nixos-generate-config` and it will be automatically populated at
-              # /etc/nixos/hardware-configuration.nix.
-
-              # Simply copy that file over into the same directory as your
-              # `flake.nix`, replacing the existing placeholder file.
               imports = [
+                (import ./commonConfig.nix inputs)
                 ./hosts/kuroko/hardware-configuration.nix
                 inputs.lanzaboote.nixosModules.lanzaboote
-                ./hardware
               ];
 
-              # Set up a bootloader:
               boot = {
                 loader = {
                   efi.canTouchEfiVariables = true;
                   timeout = 15;
-                  # lanzaboote replaces systemd-boot
                   systemd-boot.enable = lib.mkForce false;
                 };
-
-                # (optionally) Select a kernel.
                 kernelPackages = pkgs.linuxPackages_zen;
                 lanzaboote = {
                   enable = true;
                   pkiBundle = "/var/lib/sbctl";
                 };
               };
+
               services.supergfxd.enable = true;
               hardware.opentabletdriver.enable = true;
               hardware.uinput.enable = true;
               boot.kernelModules = [ "uinput" ];
+
               hardware.nvidia = {
                 modesetting.enable = true;
                 powerManagement.enable = true;
@@ -213,19 +135,12 @@
                 prime = {
                   nvidiaBusId = "PCI:1:0:0";
                   amdgpuBusId = "PCI:8:0:0";
-                  # offload = {
-                  #   enable = true;
-                  #   enableOffloadCmd = true;
-                  # };
                   sync.enable = false;
                 };
               };
-              nixpkgs.config.allowUnfree = true;
-              environment.systemPackages = [
-                inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-                pkgs.supergfxctl
-              ]
-              ++ kaitoPkgs;
+
+              environment.systemPackages = [ pkgs.supergfxctl ];
+
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -245,175 +160,50 @@
               services.tlp = {
                 enable = true;
                 settings = {
-                  #Optional helps save long term battery health
-                  START_CHARGE_THRESH_BAT0 = 20; # 40 and bellow it starts to charge
-                  STOP_CHARGE_THRESH_BAT0 = 98; # 80 and above it stops charging
-
+                  START_CHARGE_THRESH_BAT0 = 20;
+                  STOP_CHARGE_THRESH_BAT0 = 98;
                 };
               };
 
-              time.timeZone = "America/Los_Angeles";
-
-              # Make sure to set the state version of your NixOS install! Find
-              # it in your existing /etc/nixos/configuration.nix.
-
-              # This value determines the NixOS release from which the default
-              # settings for stateful data, like file locations and database versions
-              # on your system were taken. It‘s perfectly fine and recommended to leave
-              # this value at the release version of the first install of this system.
-              # Before changing this value read the documentation for this option
-              # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.11"; # Did you read the comment?
-
-              # Other options such as
-              # hardware.graphics.enable = true
-              # work fine here too.
-
-              # -----------------------------------------------------------------------
-
-              # The functorOS option below is a special option generated by
-              # functorOS, and used to configure it.
-
-              # Don't panic! Documentation for functorOS.* system options is
-              # available at <https://os.functor.systems>
               functorOS = {
-                # Set this to the absolute path of the location of this configuration flake
-                # to enable some UX enhanacements
-                flakeLocation = "/home/kaitotlex/.config/ame";
-
-                # Allow functorOS's unfree packages
-                # This option doesn't set allowUnfree for the whole system,
-                # rather, it simply allows a specifically curated list of
-                # unfree packages in functorOS
-                config.allowUnfree = true;
-
-                # Set your default editor to any program.
-                defaultEditor = pkgs.neovim;
-
-                # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "laptop";
-
-                desktop.localization.chinese = {
-                  input.enable = true;
-                  script = "traditional";
-                };
-
-                # Set a wallpaper to whatever you want! You can use a local path as well.
-                # The colorscheme for the system is automatically generated from this
-                # wallpaper!
                 theming = {
                   wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
                   polarity = "dark";
                   base16Scheme = ./scheme/plana.yaml;
                 };
                 system = {
-                  # Toggle true to enable audio production software, like
-                  # reaper, and yabridge + 64 bit wine for installing
-                  # Windows-exclusive VSTs! Also sets realtime kernel
-                  # configuration and other optimizations.
-                  audio.prod.enable = false;
-
-                  networking = {
-                    # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
-                    firewallPresets.vite = false;
-                    # Use cloudflare's 1.1.1.1 DNS servers.
-                    cloudflareNameservers.enable = true;
-                  };
-                  # Set some sane defaults for nvidia graphics, like proprietary drivers.
-                  # WARNING: requires functorOS.config.allowUnfree to be set to true.
+                  networking.firewallPresets.vite = false;
                   graphics.nvidia.enable = true;
                 };
                 extras.gaming = {
-                  # Enable gaming utilities, like Lutris, Steam, Prism Launcher, etc.
                   enable = true;
-                  # Installs Roblox using Sober, as a flatpak. Note that this will enable
-                  # the impure flatpak service that automatically updates flatpaks every
-                  # week upon nixos-rebuild switch
                   roblox.enable = true;
-
-                  utilities.gamemode = {
-                    # Enable the gamemoderun binary to maximize gaming performance
-                    enable = true;
-                  };
+                  utilities.gamemode.enable = true;
                 };
               };
             };
         };
+
         mafuyu = functorOSLib.system.instantiate {
           hostname = "mafuyu";
-
-          # List of users generated with functorOSLib.user.instantiate.
           users = [ kaitotlex ];
-          # users.users.kaitotlex = {
-          #   isNormalUser = true;
-          #   description = "KaitoTLex";
-          #   extraGroups = [
-          #     "networkmanager"
-          #     "wheel"
-          #     "disk"
-          #     "root"
-          #     "audio"
-          #   ];
-          # };
 
-          # Additional system configuration.
           configuration =
             { pkgs, lib, ... }:
-            let
-              # Import the KaitoianOSmod package definitions
-              # aagl = import (
-              # builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz"
-
-              # );
-              kaitoPkgs = import ./pkgs/default.nix {
-                inherit pkgs;
-                system = pkgs.stdenv.targetPlatform.system;
-              };
-            in
             {
-
-              # This is treated just like a standard configuration.nix file.
-
-              # You can set any arbitrary NixOS options here. For example, don't
-              # forget to import hardware-configuration.nix:
-
-              # The included hardware-configuration.nix in this template is a placeholder.
-              # The system WILL NOT build until you import your own!
-
-              # You need to import your `hardware-configuration.nix`. If you don't have it,
-              # run `nixos-generate-config` and it will be automatically populated at
-              # /etc/nixos/hardware-configuration.nix.
-
-              # Simply copy that file over into the same directory as your
-              # `flake.nix`, replacing the existing placeholder file.
               imports = [
+                (import ./commonConfig.nix inputs)
                 ./hosts/mafuyu/hardware-configuration.nix
                 inputs.lanzaboote.nixosModules.lanzaboote
-                ./hardware
-                # aagl.module
+                inputs.aagl.nixosModules.default
               ];
-              # nix.settings = {
-              #   substituters = [ "https://ezkea.cachix.org" ];
-              #   trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
-              # };
 
-              # nix.settings = aagl.nixConfig; # Set up Cachix
-              # programs.anime-game-launcher.enable = true;
-              # # programs.anime-games-launcher.enable = true;
-              #
-              # programs.honkers-railway-launcher.enable = true;
-              # programs.wavey-launcher.enable = true;
-
-              # Set up a bootloader:
               boot = {
                 loader = {
                   efi.canTouchEfiVariables = true;
                   timeout = 15;
-                  # lanzaboote replaces systemd-boot
                   systemd-boot.enable = lib.mkForce false;
                 };
-
-                # (optionally) Select a kernel.
                 kernelPackages = pkgs.linuxPackages_zen;
                 lanzaboote = {
                   enable = true;
@@ -425,17 +215,25 @@
                 inputs.nix-xilinx.overlay
               ];
 
-              nixpkgs.config.allowUnfree = true;
               environment.systemPackages = [
-                inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
                 pkgs.libfprint
                 pkgs.fprintd
-              ]
-              ++ kaitoPkgs;
+                (pkgs.ankiAddons.recolor.withConfig {
+                  config = {
+                    colors = {
+                      ACCENT_CARD = [ ];
+                    };
+                    version = {
+                      major = 3;
+                      minor = 1;
+                    };
+                  };
+                })
+              ];
+
               services.fprintd.enable = true;
-              # services.fprintd.tod.enable = true;
-              # services.fprintd.tod.driver = pkgs.fprintd-tod;
               hardware.trackpoint.sensitivity = 57;
+
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -455,166 +253,54 @@
               services.tlp = {
                 enable = true;
                 settings = {
-                  #Optional helps save long term battery health
-                  STOP_CHARGE_THRESH_BAT0 = 90; # 80 and above it stops charging
+                  STOP_CHARGE_THRESH_BAT0 = 90;
                 };
               };
 
-              time.timeZone = "America/Los_Angeles";
+              nix.settings = {
+                substituters = [ "https://ezkea.cachix.org" ];
+                trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
+              };
+              programs.honkers-railway-launcher.enable = true;
 
-              # Make sure to set the state version of your NixOS install! Find
-              # it in your existing /etc/nixos/configuration.nix.
-
-              # This value determines the NixOS release from which the default
-              # settings for stateful data, like file locations and database versions
-              # on your system were taken. It‘s perfectly fine and recommended to leave
-              # this value at the release version of the first install of this system.
-              # Before changing this value read the documentation for this option
-              # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.11"; # Did you read the comment?
-
-              # Other options such as
-              # hardware.graphics.enable = true
-              # work fine here too.
-
-              # -----------------------------------------------------------------------
-
-              # The functorOS option below is a special option generated by
-              # functorOS, and used to configure it.
-
-              # Don't panic! Documentation for functorOS.* system options is
-              # available at <https://os.functor.systems>
               functorOS = {
-                # Set this to the absolute path of the location of this configuration flake
-                # to enable some UX enhanacements
-                flakeLocation = "/home/kaitotlex/.config/ame";
-
-                # Allow functorOS's unfree packages
-                # This option doesn't set allowUnfree for the whole system,
-                # rather, it simply allows a specifically curated list of
-                # unfree packages in functorOS
-                config.allowUnfree = true;
-
-                # Set your default editor to any program.
-                defaultEditor = pkgs.neovim;
-
-                # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "laptop";
-
-                desktop.localization.chinese = {
-                  input.enable = true;
-                  script = "traditional";
-                };
-
-                # Set a wallpaper to whatever you want! You can use a local path as well.
-                # The colorscheme for the system is automatically generated from this
-                # wallpaper!
                 theming = {
-                  wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonSakura.jpg";
+                  wallpaper = "${inputs.wallpapers}/vtubers/ame/ameStudent.jpg";
                   polarity = "light";
                   base16Scheme = ./scheme/watson.yaml;
-
-                  # wallpaper = "${inputs.wallpapers}/anime/osage.jpg";
-                  # polarity = "dark";
-                  # base16Scheme = ./scheme/inabakumori.yaml;
                 };
                 system = {
-                  # Toggle true to enable audio production software, like
-                  # reaper, and yabridge + 64 bit wine for installing
-                  # Windows-exclusive VSTs! Also sets realtime kernel
-                  # configuration and other optimizations.
-                  audio.prod.enable = false;
-
-                  networking = {
-                    # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
-                    firewallPresets.vite = false;
-                    # Use cloudflare's 1.1.1.1 DNS servers.
-                    cloudflareNameservers.enable = true;
-                  };
-                  # Set some sane defaults for nvidia graphics, like proprietary drivers.
-                  # WARNING: requires functorOS.config.allowUnfree to be set to true.
+                  networking.firewallPresets.vite = false;
                   graphics.nvidia.enable = false;
                 };
                 extras.gaming = {
-                  # Enable gaming utilities, like Lutris, Steam, Prism Launcher, etc.
                   enable = true;
-                  # Installs Roblox using Sober, as a flatpak. Note that this will enable
-                  # the impure flatpak service that automatically updates flatpaks every
-                  # week upon nixos-rebuild switch
                   roblox.enable = false;
-
-                  utilities.gamemode = {
-                    # Enable the gamemoderun binary to maximize gaming performance
-                    enable = true;
-                  };
+                  utilities.gamemode.enable = true;
                 };
-                desktop.hyprland.enable = false;
-                desktop.sway.enable = true;
-              };
-              home-manager.users.kaitotlex = {
-                functorOS.desktop.hyprland.enable = false;
-                functorOS.desktop.sway.enable = true;
               };
             };
         };
 
         kanade = functorOSLib.system.instantiate {
           hostname = "kanade";
-
-          # List of users generated with functorOSLib.user.instantiate.
           users = [ kaitotlex ];
-          # users.users.kaitotlex = {
-          #   isNormalUser = true;
-          #   description = "KaitoTLex";
-          #   extraGroups = [
-          #     "networkmanager"
-          #     "wheel"
-          #     "disk"
-          #     "root"
-          #     "audio"
-          #   ];
-          # };
 
-          # Additional system configuration.
           configuration =
             { pkgs, lib, ... }:
-            let
-              # Import the KaitoianOSmod package definitions
-              kaitoPkgs = import ./pkgs/default.nix {
-                inherit pkgs;
-                system = pkgs.stdenv.targetPlatform.system;
-              };
-            in
             {
-              # This is treated just like a standard configuration.nix file.
-
-              # You can set any arbitrary NixOS options here. For example, don't
-              # forget to import hardware-configuration.nix:
-
-              # The included hardware-configuration.nix in this template is a placeholder.
-              # The system WILL NOT build until you import your own!
-
-              # You need to import your `hardware-configuration.nix`. If you don't have it,
-              # run `nixos-generate-config` and it will be automatically populated at
-              # /etc/nixos/hardware-configuration.nix.
-
-              # Simply copy that file over into the same directory as your
-              # `flake.nix`, replacing the existing placeholder file.
-              nixpkgs.config.allowUnfree = true;
               imports = [
+                (import ./commonConfig.nix inputs)
                 ./hosts/kanade/hardware-configuration.nix
                 inputs.apple-silicon.nixosModules.apple-silicon-support
-                ./hardware
               ];
+
               nix.settings = {
                 substituters = [ "https://hyprland.cachix.org" ];
-                # extra-substituters = [ "https://nixos-apple-silicon.cachix.org" ];
-                # extra-trusted-public-keys = [
-                #   "nixos-apple-silicon.cachix.org-1:8psDu5SA5dAD7qA0zMy5UT292TxeEPzIz8VVEr2Js20="
-                # ];
                 trusted-substituters = [ "https://hyprland.cachix.org" ];
                 trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
               };
+
               boot.kernelModules = [
                 "ip_tables"
                 "iptable_nat"
@@ -626,20 +312,7 @@
               services.logind.settings.Login = {
                 HandlePowerKey = "ignore";
               };
-              # muvm.enable = true;
-              # muvm.packages = [
-              # pkgs.steam-unwrapped
-              # ];
-              # temporary mesa downgrade
-              # hardware.graphics.package =
-              #   let
-              #     oldMesa =
-              #       (import (fetchTarball {
-              #         url = "https://github.com/NixOS/nixpkgs/archive/c5ae371f1a6a7fd27823bc500d9390b38c05fa55.tar.gz";
-              #         sha256 = "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=";
-              #       }) { localSystem = pkgs.stdenv.hostPlatform; }).mesa;
-              #   in
-              # if pkgs.mesa.version >= "25.3.0" then oldMesa else pkgs.mesa;
+
               boot = {
                 loader.systemd-boot.enable = true;
                 loader.efi.canTouchEfiVariables = false;
@@ -648,7 +321,7 @@
                   options hid_apple iso_layout=0
                 '';
               };
-              # programs.openvpn3.enable = true;
+
               services.udev.extraRules = ''
                 KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
               '';
@@ -659,11 +332,9 @@
               };
               virtualisation.waydroid.enable = true;
 
-              #printing
               services = {
                 printing.enable = true;
                 avahi = {
-
                   enable = true;
                   nssmdns4 = true;
                   openFirewall = true;
@@ -680,71 +351,8 @@
                     '';
                   });
                 })
-                # (final: prev: {
-                #   photonvision = prev.photonvision.overrideAttrs (oldAttrs: rec {
-                #     version = "2026.2.2";
-                #     src =
-                #       {
-                #         "x86_64-linux" = prev.fetchurl {
-                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxx64.jar";
-                #           hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
-                #         };
-                #         "aarch64-linux" = prev.fetchurl {
-                #           url = "https://github.com/PhotonVision/photonvision/releases/download/v${version}/photonvision-v${version}-linuxarm64.jar";
-                #           hash = "sha256-sXCR7XuTOvLbqPgPuv4bfjbem/p45yWuGE3woMnrTJ0=";
-                #         };
-                #       }
-                #       .${prev.stdenv.hostPlatform.system}
-                #         or (throw "Unsupported system: ${prev.stdenv.hostPlatform.system}");
-                #
-                #     installPhase = ''
-                #       runHook preInstall
-                #
-                #       install -D $src $out/lib/photonvision.jar
-                #
-                #       makeWrapper ${final.temurin-jre-bin-17}/bin/java $out/bin/photonvision \
-                #         --prefix LD_LIBRARY_PATH : ${
-                #           final.lib.makeLibraryPath [
-                #             final.stdenv.cc.cc
-                #             final.suitesparse
-                #             # photon-libcamera-gl-driver-jni: camera capture + GPU frame processing
-                #             final.libcamera
-                #             # OpenGL/EGL/GBM — Asahi Mesa provides hardware-accelerated backends
-                #             # for the GL driver JNI (debayering, undistortion on Apple GPU)
-                #             final.mesa
-                #             final.libdrm
-                #             final.wayland
-                #             # OpenCL ICD loader — Mesa Rusticl exposes the Apple GPU as an
-                #             # OpenCL 3.0 device under Asahi, enabling GPU compute from Java
-                #             final.ocl-icd
-                #           ]
-                #         } \
-                #         --prefix PATH : ${
-                #           final.lib.makeBinPath [
-                #             final.temurin-jre-bin-17
-                #             final.bash.out
-                #           ]
-                #         } \
-                #         --set-default EGL_PLATFORM gbm \
-                #         --add-flags "-jar $out/lib/photonvision.jar" \
-                #         --add-flags "-XX:+UseZGC" \
-                #         --add-flags "-XX:+UnlockExperimentalVMOptions" \
-                #         --add-flags "-Xmx8g"
-                #
-                #       runHook postInstall
-                #     '';
-                #   });
-                # })
               ];
 
-              # Set up a bootloader:
-              environment.systemPackages = [
-                inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default
-                # inputs.fex.packages.aarch64-linux.muvm
-                # inputs.fex.packages.aarch64-linux.muvm-steam
-                # inputs.fex.packages.aarch64-linux.muvm-vivado
-              ]
-              ++ kaitoPkgs;
               services.keyd = {
                 enable = true;
                 keyboards.default = {
@@ -763,99 +371,23 @@
                   };
                 };
               };
-              #services.tlp = {
-              #  enable = true;
-              #};
+
               services.tailscale.enable = true;
-              # time.timeZone = "Asia/Taipei";
-              time.timeZone = "America/Los_Angeles";
 
-              # Make sure to set the state version of your NixOS install! Find
-              # it in your existing /etc/nixos/configuration.nix.
-
-              # This value determines the NixOS release from which the default
-              # settings for stateful data, like file locations and database versions
-              # on your system were taken. It‘s perfectly fine and recommended to leave
-              # this value at the release version of the first install of this system.
-              # Before changing this value read the documentation for this option
-              # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-              system.stateVersion = "25.11"; # Did you read the comment?
-
-              # Other options such as
-              # hardware.graphics.enable = true
-              # work fine here too.
-
-              # -----------------------------------------------------------------------
-
-              # The functorOS option below is a special option generated by
-              # functorOS, and used to configure it.
-
-              # Don't panic! Documentation for functorOS.* system options is
-              # available at <https://os.functor.systems>
               functorOS = {
-                # Set this to the absolute path of the location of this configuration flake
-                # to enable some UX enhanacements
-                flakeLocation = "/home/kaitotlex/.config/ame";
-
-                # Allow functorOS's unfree packages
-                # This option doesn't set allowUnfree for the whole system,
-                # rather, it simply allows a specifically curated list of
-                # unfree packages in functorOS
-                config.allowUnfree = true;
-
-                # Set your default editor to any program.
-                defaultEditor = pkgs.neovim;
-
-                # Set to either "laptop" or "desktop" for some adjustments
-                formFactor = "laptop";
-
-                desktop.localization.chinese = {
-                  input.enable = true;
-                  script = "traditional";
-                };
-
-                # Set a wallpaper to whatever you want! You can use a local path as well.
-                # The colorscheme for the system is automatically generated from this
-                # wallpaper!
                 theming = {
                   wallpaper = "${inputs.wallpapers}/vtubers/sui/nordMachi-retina.png";
                   polarity = "dark";
                   base16Scheme = ./scheme/nord.yaml;
-
-                  # light mode
-                  # wallpaper = "${inputs.wallpapers}/vtubers/ame/watsonBored.jpg";
-                  # polarity = "light";
-                  # base16Scheme = "${inputs.KaitoianOS}/scheme/watson.yaml";
                 };
-
                 system = {
-                  # Toggle true to enable audio production software, like
-                  # reaper, and yabridge + 64 bit wine for installing
-                  # Windows-exclusive VSTs! Also sets realtime kernel
-                  # configuration and other optimizations.
-                  audio.prod.enable = false;
-                  # asahi = {
-                  #   enable = true;
-                  #   firmware = ./hosts/kanade/firmware;
-                  # };
-
                   networking = {
-                    # Toggle on to allow default vite ports of 5173 and 4173 through the firewall for local testing.
-                    # Use cloudflare's 1.1.1.1 DNS servers.
                     firewallPresets.vite = true;
-                    cloudflareNameservers.enable = true;
                     backend = "iwd";
                   };
-                  # Set some sane defaults for nvidia graphics, like proprietary drivers.
-                  # WARNING: requires functorOS.config.allowUnfree to be set to true.
                   graphics.nvidia.enable = false;
                 };
-                desktop.hyprland.enable = false;
-                desktop.sway.enable = true;
-              };
-              home-manager.users.kaitotlex = {
-                functorOS.desktop.hyprland.enable = false;
-                functorOS.desktop.sway.enable = true;
+                extras.gaming.enable = false;
               };
             };
         };

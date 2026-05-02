@@ -24,7 +24,7 @@
   wayland.windowManager.hyprland.settings.scrolling = {
     explicit_column_widths = "0.333, 0.5, 0.667, 1.0";
     fullscreen_on_one_column = true;
-    focus_fit_method = 1;
+    focus_fit_method = lib.mkForce 1;
   };
 
   xdg.portal = {
