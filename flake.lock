@@ -906,11 +906,11 @@
         "plugins-pomo-nvim": "plugins-pomo-nvim"
       },
       "locked": {
-        "lastModified": 1777705585,
-        "narHash": "sha256-K2dHo1TWDRbRMuFDJJ5m9tUZpwXljhWW2yPxDZFGpfc=",
+        "lastModified": 1777707719,
+        "narHash": "sha256-Ihde5XE42Pmbg+pcedkMYs+GaC9rqY6dOgcHb28+pbw=",
         "owner": "kaitotlex",
         "repo": "vix1",
-        "rev": "c40a164f165b859b49f45b5a56c03315c02a405e",
+        "rev": "22004d7ca0c79226a3c94cdd95defccf294e9163",
         "type": "github"
       },
       "original": {
