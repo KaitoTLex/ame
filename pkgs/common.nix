@@ -23,7 +23,7 @@ with pkgs;
   tailscale-systray
   aerc
   # openvpn3
-  # protonvpn-gui
+  proton-vpn
   # wireguard-ui
   # wireguard-tools
 
@@ -46,6 +46,14 @@ with pkgs;
   # waydroid
   qemu
 
+  #futaba
+  anki
+  ki
+  # ankiAddons.review-heatmap
+  # ankiAddons.fsrs4anki-helper
+  # ankiAddons.ajt-card-management
+  # ankiAddons.recolor
+  #
   #hamradio
   #rtl-sdr
   #gqrx
