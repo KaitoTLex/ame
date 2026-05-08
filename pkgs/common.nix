@@ -37,8 +37,8 @@ with pkgs;
   gnumake
   cmake
   # kicad
-  zed-editor-fhs
-  zed-discord-presence
+  # zed-editor-fhs
+  # zed-discord-presence
   jdt-language-server
   # vscodium-fhs
   zulu

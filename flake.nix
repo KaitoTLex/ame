@@ -3,7 +3,7 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "github:youwen5/functorOS";
+    functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
@@ -82,7 +82,7 @@
               # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
               "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0, 1" # mafuyu display conf
               # "HDMI-A-1, preferred, auto,1" # extrnal connections
-              # "eDP-1,3024x1964@120.00,0x0,1.5" # kanade
+              "eDP-1,3024x1964@120.00,0x0,1.333333333333" # kanade
             ];
           };
 
@@ -262,7 +262,9 @@
                 trusted-public-keys = [ "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI=" ];
               };
               programs.honkers-railway-launcher.enable = true;
-
+              services.logind.settings.Login = {
+                HandlePowerKey = "ignore";
+              };
               functorOS = {
                 theming = {
                   wallpaper = "${inputs.wallpapers}/vtubers/ame/ameStudent.jpg";
@@ -352,6 +354,9 @@
                   });
                 })
               ];
+              services.libinput.touchpad = {
+                disableWhileTyping = lib.mkForce true;
+              };
 
               services.keyd = {
                 enable = true;
