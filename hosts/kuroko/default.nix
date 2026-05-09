@@ -21,6 +21,16 @@ let
           hyprctl keyword monitor "desc: $LAPTOP_DESC,disabled"
         else
           hyprctl keyword monitor "desc: $LAPTOP_DESC,preferred,auto,1"
+          # wait for the display to come online, then warp the cursor to its centre
+          # so it doesn't stay stranded at coordinates from the now-gone external monitors
+          sleep 0.5
+          MON=$(hyprctl monitors -j | jq --arg d "$LAPTOP_DESC" \
+            '.[] | select(.description | contains($d))')
+          if [ -n "$MON" ]; then
+            CX=$(echo "$MON" | jq '.x + (.width  / 2) | floor')
+            CY=$(echo "$MON" | jq '.y + (.height / 2) | floor')
+            hyprctl dispatch movecursor "$CX" "$CY"
+          fi
         fi
       }
 
