@@ -1,52 +1,5 @@
 inputs:
 { pkgs, lib, ... }:
-let
-  laptopDesc = "Sharp Corporation LQ134N1JW52";
-
-  monitorSwitch = pkgs.writeShellApplication {
-    name = "kuroko-monitor-switch";
-    runtimeInputs = with pkgs; [
-      jq
-      socat
-    ];
-    text = ''
-      LAPTOP_DESC="${laptopDesc}"
-
-      toggle_display() {
-        sleep 0.5
-        # count active monitors that are not the built-in laptop display
-        EXTERNAL=$(hyprctl monitors -j | jq --arg d "$LAPTOP_DESC" \
-          '[.[] | select(.description | contains($d) | not)] | length')
-        if [ "$EXTERNAL" -gt 0 ]; then
-          hyprctl keyword monitor "desc: $LAPTOP_DESC,disabled"
-        else
-          hyprctl keyword monitor "desc: $LAPTOP_DESC,preferred,auto,1"
-          # wait for the display to come online, then warp the cursor to its centre
-          # so it doesn't stay stranded at coordinates from the now-gone external monitors
-          sleep 0.5
-          MON=$(hyprctl monitors -j | jq --arg d "$LAPTOP_DESC" \
-            '.[] | select(.description | contains($d))')
-          if [ -n "$MON" ]; then
-            CX=$(echo "$MON" | jq '.x + (.width  / 2) | floor')
-            CY=$(echo "$MON" | jq '.y + (.height / 2) | floor')
-            hyprctl dispatch movecursor "$CX" "$CY"
-          fi
-        fi
-      }
-
-      toggle_display
-
-      socat -U - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock" \
-        | while IFS= read -r line; do
-            case "$line" in
-              monitoradded*|monitorremoved*)
-                toggle_display
-                ;;
-            esac
-          done
-    '';
-  };
-in
 {
   imports = [ inputs.lanzaboote.nixosModules.lanzaboote ];
 
@@ -94,16 +47,9 @@ in
           leftcontrol = "leftalt";
           y = "z";
           z = "y";
+          esc = "`";
         };
       };
-    };
-  };
-
-  services.tlp = {
-    enable = true;
-    settings = {
-      START_CHARGE_THRESH_BAT0 = 20;
-      STOP_CHARGE_THRESH_BAT0 = 98;
     };
   };
 
@@ -113,7 +59,7 @@ in
 
   functorOS = {
     theming = {
-      wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
+      wallpaper = "${inputs.wallpapers}/anime/plarona.jpg";
       polarity = "dark";
       base16Scheme = ../../scheme/plana.yaml;
     };
@@ -122,15 +68,83 @@ in
       graphics.nvidia.enable = true;
     };
     extras.gaming = {
-      enable = true;
-      roblox.enable = true;
-      utilities.gamemode.enable = true;
+      enable = false;
     };
   };
 
   home-manager.users.kaitotlex = {
-    wayland.windowManager.hyprland.settings.exec-once = [
-      "${monitorSwitch}/bin/kuroko-monitor-switch"
-    ];
+    programs.niri.settings = {
+      input.touchpad.tap = lib.mkForce true;
+      outputs = {
+        "Microstep MSI G274 CC2H032401304" = {
+          mode = {
+            width = 1920;
+            height = 1080;
+            refresh = 165.001;
+          };
+          position = {
+            x = 0;
+            y = 0;
+          };
+          focus-at-startup = true;
+        };
+        "Acer Technologies QG221Q TGGTT0018512" = {
+          mode = {
+            width = 1920;
+            height = 1080;
+            refresh = 60.0;
+          };
+          transform.rotation = 270;
+          position = {
+            x = 1920;
+            y = 0;
+          };
+        };
+      };
+    };
+
+    services.kanshi = lib.mkForce {
+      enable = true;
+      systemdTarget = "niri.service";
+      settings = [
+        {
+          profile = {
+            name = "docked";
+            outputs = [
+              {
+                criteria = "Sharp Corporation LQ134N1JW52 Unknown";
+                status = "disable";
+              }
+              {
+                criteria = "Acer Technologies QG221Q TGGTT0018512";
+                status = "enable";
+                mode = "1920x1080@60";
+                transform = "90";
+                position = "1920,0";
+              }
+              {
+                criteria = "Microstep MSI G274 CC2H032401304";
+                status = "enable";
+                mode = "1920x1080@165.001";
+                position = "0,0";
+              }
+            ];
+          };
+        }
+        {
+          profile = {
+            name = "undocked";
+            outputs = [
+              {
+                criteria = "Sharp Corporation LQ134N1JW52 Unknown";
+                status = "enable";
+                mode = "1920x1200@120";
+                scale = 1.0;
+              }
+            ];
+          };
+        }
+      ];
+    };
   };
 }

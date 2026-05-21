@@ -1,0 +1,108 @@
+inputs:
+{ pkgs, lib, ... }:
+{
+  imports = [ inputs.apple-silicon.nixosModules.apple-silicon-support ];
+
+  nix.settings = {
+    substituters = [ "https://hyprland.cachix.org" ];
+    trusted-substituters = [ "https://hyprland.cachix.org" ];
+    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+  };
+
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = false;
+    kernelParams = [ "appledrm.show_notch=1" ];
+    kernelModules = [
+      "ip_tables"
+      "iptable_nat"
+      "iptable_filter"
+      "iptable_mangle"
+    ];
+    extraModprobeConfig = ''
+      options hid_apple iso_layout=0
+    '';
+  };
+
+  networking.nftables.enable = true;
+  networking.firewall.trustedInterfaces = [ "waydroid0" ];
+
+  services.udev.extraRules = ''
+    KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
+  '';
+
+  hardware.asahi = {
+    enable = true;
+    peripheralFirmwareDirectory = ./firmware;
+  };
+
+  virtualisation.waydroid.enable = true;
+
+  services = {
+    printing.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+    };
+    tailscale.enable = true;
+    logind.settings.Login = {
+      HandlePowerKey = "ignore";
+    };
+    libinput.touchpad = {
+      disableWhileTyping = lib.mkForce true;
+    };
+  };
+
+  nixpkgs.overlays = lib.mkAfter [
+    inputs.apple-silicon.overlays.apple-silicon-overlay
+    inputs.tmux.overlay
+    (final: prev: {
+      waydroid = prev.waydroid.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          sed -i 's/iptables_legacy=.*/iptables_legacy=/' data/scripts/waydroid-net.sh
+        '';
+      });
+    })
+  ];
+
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      ids = [ "*" ];
+      settings = {
+        main = {
+          capslock = "esc";
+          leftmeta = "leftcontrol";
+          leftalt = "leftmeta";
+          leftcontrol = "leftalt";
+          rightmeta = "leftalt";
+          rightalt = "layer(rightalt)";
+          y = "z";
+          z = "y";
+        };
+      };
+    };
+  };
+
+  home-manager.users.kaitotlex.programs.niri.settings.outputs."eDP-1" = {
+    mode = { width = 3024; height = 1964; refresh = 120.0; };
+    scale = 1.333333;
+  };
+
+  functorOS = {
+    theming = {
+      wallpaper = "${inputs.wallpapers}/vtubers/sui/nordMachi-retina.png";
+      polarity = "dark";
+      base16Scheme = ../../scheme/nord.yaml;
+    };
+    system = {
+      networking = {
+        firewallPresets.vite = true;
+        backend = "iwd";
+      };
+      graphics.nvidia.enable = false;
+    };
+    extras.gaming.enable = false;
+  };
+}

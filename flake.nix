@@ -1,9 +1,9 @@
 {
   description = "KaitoTLex's modification to the already functional functorOS";
-
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
+    functorOS.url = "github:youwen5/functorOS";
+    # functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
@@ -27,7 +27,7 @@
     nix-xilinx = {
       # Recommended if you also override the default nixpkgs flake, common among
       # nixos-unstable users:
-      #inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MIT-OpenCompute/xilinx-flake";
     };
     snowfall-lib = {
@@ -73,22 +73,10 @@
           imports = [
             ./home.nix
           ];
-          wayland.windowManager.hyprland.xwayland.enable = true;
-          wayland.windowManager.hyprland.settings = {
-            monitor = [
-              "desc: Microstep MSI G274 CC2H032401304 ,1920x1080@165,0x0,1" # kuroko docked primary
-              "desc: Acer Technologies QG221Q TGGTT0018512,1920x1080@60,1920x-600,1,transform,3" # kuroko docked portrait
-              "desc: Sharp Corporation LQ134N1JW52,1920x1200@120,auto,1" # kuroko built-in; script handles docked/laptop toggle
-              # "eDP-1,1920x1200x120,0x0,1"#kuroko/shiroko display conf
-              "desc: Lenovo Group Limited 0x40A9,1920x1080x60.02,0x0, 1" # mafuyu display conf
-              # "HDMI-A-1, preferred, auto,1" # extrnal connections
-              "eDP-1,3024x1964@120.00,0x0,1.333333333333" # kanade
-            ];
-          };
-
-          functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
-          functorOS.desktop.waybar.variant = "compact";
-          functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
+          functorOS.desktop.niri.enable = true;
+          # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
+          # functorOS.desktop.waybar.variant = "compact";
+          # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
           home.stateVersion = "25.11";
         };
       };

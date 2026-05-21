@@ -24,24 +24,6 @@
   #     xxx
   # '';
 
-  # Hyprland 0.54+ has scrolling layout built-in; the external hyprscrolling plugin is gone
-  wayland.windowManager.hyprland.plugins = lib.mkForce [ ];
-  # Migrate functorOS's plugin.hyprscrolling config to the new top-level scrolling.* keys
-  wayland.windowManager.hyprland.settings.scrolling = {
-    explicit_column_widths = "0.333, 0.5, 0.667, 1.0";
-    fullscreen_on_one_column = true;
-    focus_fit_method = lib.mkForce 1;
-  };
-  wayland.windowManager.hyprland.settings.input = {
-    sensitivity = lib.mkForce 0.0;
-    touchpad = lib.mkForce {
-      natural_scroll = true;
-      scroll_factor = 0.3;
-      disable_while_typing = true;
-      tap-to-click = false;
-    };
-  };
-
   xdg.portal = {
     enable = true;
     extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
@@ -163,6 +145,7 @@
       brokie = "sudo nixos-rebuild switch .#kanade";
       ls = "eza -l --icons=auto";
       thefuck = "pay-respects";
+      sudo = "run0";
     };
     # interactiveShellInit = ''
     #   fish_vi_key_bindings
