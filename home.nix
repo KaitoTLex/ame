@@ -37,6 +37,7 @@
       natural_scroll = true;
       scroll_factor = 0.3;
       disable_while_typing = true;
+      clickfinger_behavior = 1;
       tap-to-click = false;
     };
   };

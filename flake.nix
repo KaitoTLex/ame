@@ -3,7 +3,8 @@
 
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
+    # functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
+    functorOS.url = "github:youwen5/functorOS";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
