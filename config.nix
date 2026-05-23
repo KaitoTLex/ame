@@ -1,5 +1,3 @@
-# Shared NixOS configuration for all machines (kuroko, mafuyu, kanade).
-# Import as: (import ./commonConfig.nix inputs)
 inputs:
 { pkgs, lib, ... }:
 let
