@@ -1,7 +1,9 @@
 inputs:
 { pkgs, lib, ... }:
 {
-  imports = [ inputs.apple-silicon.nixosModules.apple-silicon-support ];
+  imports = [
+    inputs.functoros-apple-silicon.nixosModules.default
+  ];
 
   nix.settings = {
     substituters = [ "https://hyprland.cachix.org" ];
@@ -86,11 +88,25 @@ inputs:
   };
 
   home-manager.users.kaitotlex.programs.niri.settings.outputs."eDP-1" = {
-    mode = { width = 3024; height = 1964; refresh = 120.0; };
+    mode = {
+      width = 3024;
+      height = 1964;
+      refresh = 120.0;
+    };
     scale = 1.333333;
   };
 
   functorOS = {
+    apple-silicon = {
+      enable = true;
+      peripheralFirmwareDirectory = "./firmware";
+
+      battery.limit = {
+        start = 85;
+        end = 90;
+      };
+    };
+
     theming = {
       wallpaper = "${inputs.wallpapers}/vtubers/sui/nordMachi-retina.png";
       polarity = "dark";

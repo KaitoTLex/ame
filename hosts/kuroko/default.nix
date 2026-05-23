@@ -56,6 +56,11 @@ inputs:
   services.logind.settings.Login = {
     HandlePowerKey = "ignore";
   };
+  programs.xwayland.enable = true;
+
+  nixpkgs.overlays = lib.mkAfter [
+    inputs.nix-xilinx.overlay
+  ];
 
   functorOS = {
     theming = {
@@ -73,6 +78,29 @@ inputs:
   };
 
   home-manager.users.kaitotlex = {
+    systemd.user.services.xwayland-satellite = {
+      Unit = {
+        Description = "Xwayland outside your Wayland";
+        BindsTo = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+        Requisite = [ "graphical-session.target" ];
+      };
+      Service = {
+        Type = "notify";
+        NotifyAccess = "all";
+        ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
+        StandardOutput = "journal";
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+
+    systemd.user.sessionVariables.DISPLAY = ":0";
+    programs.dank-material-shell.settings = lib.mkForce {
+      batteryChargeLimit = 98;
+    };
     programs.niri.settings = {
       input.touchpad.tap = lib.mkForce true;
       outputs = {
@@ -101,50 +129,6 @@ inputs:
           };
         };
       };
-    };
-
-    services.kanshi = lib.mkForce {
-      enable = true;
-      systemdTarget = "niri.service";
-      settings = [
-        {
-          profile = {
-            name = "docked";
-            outputs = [
-              {
-                criteria = "Sharp Corporation LQ134N1JW52 Unknown";
-                status = "disable";
-              }
-              {
-                criteria = "Acer Technologies QG221Q TGGTT0018512";
-                status = "enable";
-                mode = "1920x1080@60";
-                transform = "90";
-                position = "1920,0";
-              }
-              {
-                criteria = "Microstep MSI G274 CC2H032401304";
-                status = "enable";
-                mode = "1920x1080@165.001";
-                position = "0,0";
-              }
-            ];
-          };
-        }
-        {
-          profile = {
-            name = "undocked";
-            outputs = [
-              {
-                criteria = "Sharp Corporation LQ134N1JW52 Unknown";
-                status = "enable";
-                mode = "1920x1200@120";
-                scale = 1.0;
-              }
-            ];
-          };
-        }
-      ];
     };
   };
 }
