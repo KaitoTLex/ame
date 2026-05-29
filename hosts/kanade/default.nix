@@ -33,11 +33,6 @@ inputs:
     KERNEL=="macsmc-battery", SUBSYSTEM=="power_supply", ATTR{charge_control_end_threshold}="90", ATTR{charge_control_start_threshold}="85"
   '';
 
-  hardware.asahi = {
-    enable = true;
-    peripheralFirmwareDirectory = ./firmware;
-  };
-
   virtualisation.waydroid.enable = true;
 
   services = {
@@ -57,7 +52,7 @@ inputs:
   };
 
   nixpkgs.overlays = lib.mkAfter [
-    inputs.apple-silicon.overlays.apple-silicon-overlay
+    # inputs.apple-silicon.overlays.apple-silicon-overlay
     inputs.tmux.overlay
     (final: prev: {
       waydroid = prev.waydroid.overrideAttrs (old: {
@@ -99,7 +94,7 @@ inputs:
   functorOS = {
     apple-silicon = {
       enable = true;
-      peripheralFirmwareDirectory = "./firmware";
+      peripheralFirmwareDirectory = ./firmware;
 
       battery.limit = {
         start = 85;

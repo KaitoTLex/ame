@@ -11,9 +11,10 @@
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    apple-silicon = {
+    functoros-apple-silicon = {
       #url = "github:flokli/nixos-apple-silicon/mainline-mesa";
-      url = "github:nix-community/nixos-apple-silicon";
+      url = "github:youwen5/functoros-apple-silicon";
+      # url = "github:nix-community/nixos-apple-silicon";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     wallpapers = {
