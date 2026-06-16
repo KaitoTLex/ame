@@ -3,6 +3,7 @@ inputs:
 {
   imports = [
     inputs.functoros-apple-silicon.nixosModules.default
+    inputs.npu.nixosModules.default
   ];
 
   nix.settings = {
@@ -89,6 +90,15 @@ inputs:
       refresh = 120.0;
     };
     scale = 1.333333;
+  };
+
+  services.npu = {
+    enable = true;
+    role = "client";
+    root = "/home/kaitotlex/npu";
+    syncthing.devices = {
+      # kuroko = "<syncthing-device-id>";
+    };
   };
 
   functorOS = {

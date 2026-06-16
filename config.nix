@@ -11,7 +11,7 @@ in
   imports = [ ./hardware ];
 
   time.timeZone = "America/Los_Angeles";
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = [ vix ] ++ kaitoPkgs;

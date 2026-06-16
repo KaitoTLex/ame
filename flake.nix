@@ -45,6 +45,11 @@
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    npu = {
+      url = "path:/home/kaitotlex/npu";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -78,7 +83,7 @@
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           # functorOS.desktop.waybar.variant = "compact";
           # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-          home.stateVersion = "25.11";
+          home.stateVersion = "26.11";
         };
       };
     in
