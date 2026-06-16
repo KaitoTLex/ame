@@ -83,7 +83,7 @@
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           # functorOS.desktop.waybar.variant = "compact";
           # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-          home.stateVersion = "26.11";
+          home.stateVersion = "26.05";
         };
       };
     in
