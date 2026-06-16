@@ -33,8 +33,10 @@
 
   programs.git = {
     enable = true;
-    userName = "KaitoTLex";
-    userEmail = "renl@kaitotlex.systems";
+    settings.user = {
+      name = "KaitoTLex";
+      email = "renl@kaitotlex.systems";
+    };
     signing = {
       signByDefault = true;
       key = "42F52D76F1B15B8D997E2AEE8AB934746F475D0B";
