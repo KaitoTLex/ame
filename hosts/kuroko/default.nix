@@ -66,7 +66,7 @@ inputs:
     theming = {
       wallpaper = "${inputs.wallpapers}/anime/plarona.jpg";
       polarity = "dark";
-      base16Scheme = ../../scheme/plana.yaml;
+      base16Scheme = ../../scheme/mafuyu.yaml;
     };
     system = {
       networking.firewallPresets.vite = false;

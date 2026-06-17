@@ -74,7 +74,7 @@
           imports = [
             ./home.nix
           ];
-          functorOS.desktop.niri.enable = true;
+          functorOS.desktop.niri.enable = false;
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           # functorOS.desktop.waybar.variant = "compact";
           # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
