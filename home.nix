@@ -33,8 +33,10 @@
 
   programs.git = {
     enable = true;
-    userName = "KaitoTLex";
-    userEmail = "renl@kaitotlex.systems";
+    settings.user = {
+      name = "KaitoTLex";
+      email = "renl@kaitotlex.systems";
+    };
     signing = {
       signByDefault = true;
       key = "42F52D76F1B15B8D997E2AEE8AB934746F475D0B";
@@ -97,7 +99,7 @@
   programs.kitty = {
     enable = true;
     settings = {
-      font_size = lib.mkForce (if osConfig.networking.hostName == "kuroko" then 10 else 15);
+      font_size = lib.mkForce (if osConfig.networking.hostName == "kuroko" then 10 else 13);
       # window_padding_width = "8 8";
       # confirm_os_window_close = -1;
       # enable_audio_bell = "no";
@@ -221,7 +223,7 @@
   # configuration is compatible with. This helps avoid breakage
   # when a new home Manager release introduces backwards
   # incompatible changes.
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
   #
   # You can update home Manager without changing this value. See
   # the home Manager release notes for a list of state version

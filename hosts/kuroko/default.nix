@@ -1,7 +1,10 @@
 inputs:
 { pkgs, lib, ... }:
 {
-  imports = [ inputs.lanzaboote.nixosModules.lanzaboote ];
+  imports = [
+    inputs.lanzaboote.nixosModules.lanzaboote
+    inputs.npu.nixosModules.default
+  ];
 
   boot = {
     loader = {
@@ -74,6 +77,15 @@ inputs:
     };
     extras.gaming = {
       enable = false;
+    };
+  };
+
+  services.npu = {
+    enable = true;
+    role = "client";
+    root = "/home/kaitotlex/npu";
+    syncthing.devices = {
+      kanade = "I7GSJMD-7CONAPR-AIB3KHC-3IWKEF3-XLJJL55-YKS4PEX-U35ULHN-IWPPXAH";
     };
   };
 
