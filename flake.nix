@@ -7,6 +7,11 @@
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -79,7 +84,7 @@
           imports = [
             ./home.nix
           ];
-          functorOS.desktop.niri.enable = false;
+          functorOS.desktop.niri.enable = true;
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           # functorOS.desktop.waybar.variant = "compact";
           # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";

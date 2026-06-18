@@ -8,7 +8,7 @@ let
   };
 in
 {
-  imports = [ ./hardware ];
+  imports = [ ./modules/hardware ];
 
   time.timeZone = "America/Los_Angeles";
   system.stateVersion = "26.11";

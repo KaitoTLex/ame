@@ -4,6 +4,7 @@ inputs:
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.npu.nixosModules.default
+    inputs.agenix.nixosModules.default
   ];
 
   boot = {
@@ -77,6 +78,37 @@ inputs:
     };
     extras.gaming = {
       enable = false;
+    };
+  };
+  networking.networkmanager.ensureProfiles.profiles = {
+    eduroam = {
+      connection = {
+        id = "eduroam";
+        type = "wifi";
+        interface-name = "wlp6s0";
+      };
+      wifi = {
+        mode = "infrastructure";
+        ssid = "eduroam";
+      };
+      wifi-security = {
+        key-mgmt = "wpa-eap"; # # adapt according to your universities setup
+      };
+      "802-1x" = {
+        # # not all or even some additional values may be needed here according to your institution
+        eap = "tls"; # # adapt according to your universities setup
+        identity = "ren.lin@sjsu.edu";
+        client-cert = "/etc/ssl/certs/eduroam/cert.pem";
+        private-key = "/etc/wpa_supplicant/private.key";
+        private-key-password = "../../modules/secrets/eduroam.age";
+        ca-cert = "/etc/ssl/certs/certs.pem";
+      };
+      ipv4 = {
+        method = "auto";
+      };
+      ipv6 = {
+        method = "auto";
+      };
     };
   };
 

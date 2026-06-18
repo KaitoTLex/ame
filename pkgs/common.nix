@@ -59,4 +59,5 @@ with pkgs;
   #gqrx
   #soapysdr-with-plugins
   openutau
+  ticker
 ]
