@@ -8,13 +8,15 @@ let
   };
 in
 {
-  imports = [ ./hardware ];
+  imports = [ ./modules/hardware ];
 
   time.timeZone = "America/Los_Angeles";
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = [ vix ] ++ kaitoPkgs;
+
+  users.users.kaitotlex.extraGroups = [ "dialout" ];
 
   functorOS = {
     flakeLocation = "/home/kaitotlex/.config/ame";

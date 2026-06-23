@@ -1,9 +1,10 @@
 inputs:
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.npu.nixosModules.default
+    inputs.agenix.nixosModules.default
   ];
 
   boot = {
@@ -69,7 +70,7 @@ inputs:
     theming = {
       wallpaper = "${inputs.wallpapers}/anime/plarona.jpg";
       polarity = "dark";
-      base16Scheme = ../../scheme/plana.yaml;
+      base16Scheme = ../../scheme/mafuyu.yaml;
     };
     system = {
       networking.firewallPresets.vite = false;
@@ -77,6 +78,33 @@ inputs:
     };
     extras.gaming = {
       enable = false;
+    };
+  };
+  age.secrets.eduroam.file = ../../modules/secrets/eduroam.age;
+
+  networking.networkmanager.ensureProfiles = {
+    environmentFiles = [ config.age.secrets.eduroam.path ];
+    profiles.eduroam = {
+      connection = {
+        id = "eduroam";
+        type = "wifi";
+        interface-name = "wlp6s0";
+      };
+      wifi = {
+        mode = "infrastructure";
+        ssid = "eduroam";
+      };
+      wifi-security = {
+        key-mgmt = "wpa-eap";
+      };
+      "802-1x" = {
+        eap = "peap";
+        identity = "ren.lin@sjsu.edu";
+        phase2-auth = "mschapv2";
+        password = "$EDUROAM_PASSWORD";
+      };
+      ipv4.method = "auto";
+      ipv6.method = "auto";
     };
   };
 

@@ -7,6 +7,11 @@
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
 
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
