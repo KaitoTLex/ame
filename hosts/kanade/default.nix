@@ -97,7 +97,7 @@ inputs:
     role = "client";
     root = "/home/kaitotlex/npu";
     syncthing.devices = {
-      # kuroko = "<syncthing-device-id>";
+      kuroko = "BWKANMR-7ALZHJN-GLKS22S-SJE37NX-KM76LFO-FAIYD5K-G3XRU5N-WZ3REQH";
     };
   };
 
