@@ -45,6 +45,7 @@ with pkgs;
   # julia
   # waydroid
   qemu
+  ratty
 
   #futaba
   anki
