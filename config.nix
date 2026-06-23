@@ -16,6 +16,8 @@ in
 
   environment.systemPackages = [ vix ] ++ kaitoPkgs;
 
+  users.users.kaitotlex.extraGroups = [ "dialout" ];
+
   functorOS = {
     flakeLocation = "/home/kaitotlex/.config/ame";
     config.allowUnfree = true;

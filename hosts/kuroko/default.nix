@@ -1,5 +1,5 @@
 inputs:
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
@@ -80,8 +80,11 @@ inputs:
       enable = false;
     };
   };
-  networking.networkmanager.ensureProfiles.profiles = {
-    eduroam = {
+  age.secrets.eduroam.file = ../../modules/secrets/eduroam.age;
+
+  networking.networkmanager.ensureProfiles = {
+    environmentFiles = [ config.age.secrets.eduroam.path ];
+    profiles.eduroam = {
       connection = {
         id = "eduroam";
         type = "wifi";
@@ -92,23 +95,16 @@ inputs:
         ssid = "eduroam";
       };
       wifi-security = {
-        key-mgmt = "wpa-eap"; # # adapt according to your universities setup
+        key-mgmt = "wpa-eap";
       };
       "802-1x" = {
-        # # not all or even some additional values may be needed here according to your institution
-        eap = "tls"; # # adapt according to your universities setup
+        eap = "peap";
         identity = "ren.lin@sjsu.edu";
-        client-cert = "/etc/ssl/certs/eduroam/cert.pem";
-        private-key = "/etc/wpa_supplicant/private.key";
-        private-key-password = "../../modules/secrets/eduroam.age";
-        ca-cert = "/etc/ssl/certs/certs.pem";
+        phase2-auth = "mschapv2";
+        password = "$EDUROAM_PASSWORD";
       };
-      ipv4 = {
-        method = "auto";
-      };
-      ipv6 = {
-        method = "auto";
-      };
+      ipv4.method = "auto";
+      ipv6.method = "auto";
     };
   };
 
