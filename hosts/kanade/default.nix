@@ -3,7 +3,7 @@ inputs:
 {
   imports = [
     inputs.functoros-apple-silicon.nixosModules.default
-    inputs.npu.nixosModules.default
+    #    inputs.npu.nixosModules.default
   ];
 
   nix.settings = {
@@ -92,14 +92,14 @@ inputs:
     scale = 1.333333;
   };
 
-  services.npu = {
-    enable = true;
-    role = "client";
-    root = "/home/kaitotlex/npu";
-    syncthing.devices = {
-      kuroko = "BWKANMR-7ALZHJN-GLKS22S-SJE37NX-KM76LFO-FAIYD5K-G3XRU5N-WZ3REQH";
-    };
-  };
+  # services.npu = {
+  #   enable = true;
+  #   role = "client";
+  #   root = "/home/kaitotlex/npu";
+  #   syncthing.devices = {
+  #     kuroko = "BWKANMR-7ALZHJN-GLKS22S-SJE37NX-KM76LFO-FAIYD5K-G3XRU5N-WZ3REQH";
+  #   };
+  # };
 
   functorOS = {
     apple-silicon = {

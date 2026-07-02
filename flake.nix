@@ -2,15 +2,11 @@
   description = "KaitoTLex's modification to the already functional functorOS";
   inputs = {
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    # functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS-prime.git";
-    functorOS.url = "github:youwen5/functorOS";
+    # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
+    # the canonical repo is the forgejo instance, which has agenix committed.
+    functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
-
-    agenix = {
-      url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
@@ -51,10 +47,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    npu = {
-      url = "path:/home/kaitotlex/npu";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+   # npu = {
+   #   url = "path:/home/kaitotlex/npu";
+   #   inputs.nixpkgs.follows = "nixpkgs";
+   # };
   };
 
   outputs =
@@ -108,6 +104,19 @@
             };
         };
 
+        shirakami = functorOSLib.system.instantiate {
+          hostname = "shirakami-fubuki";
+          users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                ./hosts/shirakami-fubuki/hardware-configuration.nix
+                (import ./hosts/shirakami-fubuki/default.nix inputs)
+              ];
+            };
+        };
         mafuyu = functorOSLib.system.instantiate {
           hostname = "mafuyu";
           users = [ kaitotlex ];

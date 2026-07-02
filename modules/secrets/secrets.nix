@@ -4,6 +4,7 @@ let
 in
 {
   "eduroam.age".publicKeys = [
+    shirakami-fubuki
     kuroko
     kuroko-root
   ];

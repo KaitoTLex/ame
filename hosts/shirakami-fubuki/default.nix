@@ -1,9 +1,14 @@
 inputs:
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 {
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
-#    inputs.npu.nixosModules.default
+    #    inputs.npu.nixosModules.default
   ];
 
   boot = {
@@ -107,14 +112,14 @@ inputs:
     };
   };
 
-#  services.npu = {
-#    enable = true;
-#    role = "client";
-#    root = "/home/kaitotlex/npu";
-#    syncthing.devices = {
-#      kanade = "I7GSJMD-7CONAPR-AIB3KHC-3IWKEF3-XLJJL55-YKS4PEX-U35ULHN-IWPPXAH";
-#    };
-#  };
+  #  services.npu = {
+  #    enable = true;
+  #    role = "client";
+  #    root = "/home/kaitotlex/npu";
+  #    syncthing.devices = {
+  #      kanade = "I7GSJMD-7CONAPR-AIB3KHC-3IWKEF3-XLJJL55-YKS4PEX-U35ULHN-IWPPXAH";
+  #    };
+  #  };
 
   home-manager.users.kaitotlex = {
     systemd.user.services.xwayland-satellite = {
@@ -140,7 +145,7 @@ inputs:
     #programs.dank-material-shell.settings = lib.mkForce {
     #  batteryChargeLimit = 98;
     #};
-    programs.niri.settings = {
+    #programs.niri.settings = {
     #  input.touchpad.tap = lib.mkForce true;
     #  outputs = {
     #    "Microstep MSI G274 CC2H032401304" = {
@@ -150,24 +155,22 @@ inputs:
     #        refresh = 165.001;
     #      };
     #      position = {
-   #         x = 0;
-   #         y = 0;
-   #       };
-   #       focus-at-startup = true;
-   #     };
-   #     "Acer Technologies QG221Q TGGTT0018512" = {
-   #       mode = {
-   #         width = 1920;
-   #         height = 1080;
-   #         refresh = 60.0;
-   #       };
-   #       transform.rotation = 270;
-   #       position = {
-   #         x = 1920;
+    #         x = 0;
+    #         y = 0;
+    #       };
+    #       focus-at-startup = true;
+    #     };
+    #     "Acer Technologies QG221Q TGGTT0018512" = {
+    #       mode = {
+    #         width = 1920;
+    #         height = 1080;
+    #         refresh = 60.0;
+    #       };
+    #       transform.rotation = 270;
+    #       position = {
+    #         x = 1920;
     #        y = 0;
-          #};
-        };
-      };
-    };
+    #};
+    #};
   };
 }
