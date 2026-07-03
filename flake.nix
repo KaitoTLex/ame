@@ -7,7 +7,10 @@
     functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
-
+    corecycler = {
+      url = "github:Daaboulex/linux-corecycler";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,7 +19,7 @@
       #url = "github:flokli/nixos-apple-silicon/mainline-mesa";
       url = "github:youwen5/functoros-apple-silicon";
       # url = "github:nix-community/nixos-apple-silicon";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # inputs.nixpkgs.follows = "nixpkgs";
     };
     wallpapers = {
       url = "github:kaitotlex/wallpaper";
@@ -47,10 +50,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-   # npu = {
-   #   url = "path:/home/kaitotlex/npu";
-   #   inputs.nixpkgs.follows = "nixpkgs";
-   # };
+    # npu = {
+    #   url = "path:/home/kaitotlex/npu";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
   };
 
   outputs =

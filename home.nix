@@ -9,6 +9,8 @@
   home.username = "kaitotlex";
   home.homeDirectory = "/home/kaitotlex";
 
+  home.sessionVariables.NIXPKGS_ALLOW_UNFREE = "1";
+
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 

@@ -8,6 +8,7 @@ inputs:
 {
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
+    inputs.corecycler.nixosModules.default
     #    inputs.npu.nixosModules.default
   ];
 
@@ -19,30 +20,78 @@ inputs:
     };
     kernelPackages = pkgs.linuxPackages_zen;
     kernelModules = [ "uinput" ];
+    kernelParams = [ "amd_pstate=active" ];
     lanzaboote = {
       enable = true;
       pkiBundle = "/var/lib/sbctl";
     };
   };
 
-  services.supergfxd.enable = true;
+  # services.supergfxd.enable = true;
   hardware.opentabletdriver.enable = true;
   hardware.uinput.enable = true;
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    #powerManagement.finegrained = false;
-    nvidiaSettings = true;
-    #open = true;
-    #prime = {
-    #  nvidiaBusId = "PCI:1:0:0";
-    #  amdgpuBusId = "PCI:8:0:0";
-    #  sync.enable = false;
-    #};
+  services.corecycler = {
+    enable = true;
+    deviceAccessUser = "kaitotlex"; # required -- grants MSR/SMU access without sudo
   };
 
-  environment.systemPackages = [ pkgs.supergfxctl ];
+  services.lact.enable = true;
+  hardware.amdgpu.overdrive.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    ryzenadj
+    linuxPackages_zen.cpupower
+    stress-ng
+  ];
+
+  nixpkgs.config.allowUnfree = true;
+
+  # functorOS.system.graphics.nvidia.enable (set below) already configures
+  # modesetting/powerManagement/nvidiaSettings/open/the driver package and
+  # hardware.graphics.enable, so only PRIME bus wiring needs to happen here.
+  #
+  # functorOS declares nvidia.optimus-prime.enable/powerMode but does not
+  # wire them to anything yet (checked modules/linux/graphics/default.nix,
+  # rev 61d2323), so PRIME is still configured via hardware.nvidia.prime
+  # directly. `sync`/`reverseSync` only work under Xorg and are a silent
+  # no-op under niri (pure Wayland, no X server driving the session) -
+  # `offload` is the mode that actually works with Wayland compositors.
+  hardware.nvidia.prime = {
+    nvidiaBusId = "PCI:1:0:0";
+    amdgpuBusId = "PCI:16:0:0";
+    offload = {
+      enable = true;
+      enableOffloadCmd = true;
+    };
+  };
+
+  # niri + NVIDIA is known to leak VRAM into a free buffer pool
+  # (https://github.com/niri-wm/niri/wiki/Nvidia); cap the reuse ratio.
+  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json".text =
+    builtins.toJSON {
+      rules = [
+        {
+          pattern = {
+            feature = "procname";
+            matches = "niri";
+          };
+          profile = "Limit Free Buffer Pool On Wayland Compositors";
+        }
+      ];
+      profiles = [
+        {
+          name = "Limit Free Buffer Pool On Wayland Compositors";
+          settings = [
+            {
+              key = "GLVidHeapReuseRatio";
+              value = 0;
+            }
+          ];
+        }
+      ];
+    };
+
+  # environment.systemPackages = [ pkgs.supergfxctl ];
 
   services.keyd = {
     enable = true;
@@ -69,7 +118,7 @@ inputs:
   nixpkgs.overlays = lib.mkAfter [
     inputs.nix-xilinx.overlay
   ];
-
+  programs.steam.enable = true;
   functorOS = {
     theming = {
       wallpaper = "${inputs.wallpapers}/anime/plarona.jpg";
@@ -81,7 +130,7 @@ inputs:
       graphics.nvidia.enable = true;
     };
     extras.gaming = {
-      enable = true;
+      enable = false;
     };
   };
   age.secrets.eduroam.file = ../../modules/secrets/eduroam.age;

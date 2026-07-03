@@ -61,4 +61,5 @@ with pkgs;
   #soapysdr-with-plugins
   openutau
   ticker
+  jdk25
 ]
