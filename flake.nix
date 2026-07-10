@@ -51,12 +51,12 @@
     };
 
     steam-asahi = {
-      url = "git+https://github.com/KaitoTLex/nixos-asahi-patch";
+      url = "github:KaitoTLex/nixos-asahi-patch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     polycule-nix = {
-      url = "git+https://github.com/KaitoTLex/Polycule-Nix";
+      url = "github:KaitoTLex/Polycule-Nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
