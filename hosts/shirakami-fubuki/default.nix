@@ -34,6 +34,12 @@ inputs:
     enable = true;
     deviceAccessUser = "kaitotlex"; # required -- grants MSR/SMU access without sudo
     unfreeBackends = true; # include mprime (best for CO tuning)
+    # Ryzen 7 7800X3D (Zen 4, single CCD, 8 cores/16 threads, V-Cache) on an
+    # ASUS/MSI/ASRock board -- Nuvoton Super I/O, not ITE.
+    zenpower = true; # zenpower5: SVI2 voltage + RAPL power, richer than k10temp
+    nct6775 = true; # Nuvoton Super I/O -- Vcore/fan/temp (most ASUS/MSI/ASRock boards)
+    nct6683 = true; # newer Nuvoton chip variant on some MSI boards; no-op if not present
+    spd5118 = true; # AM5 is DDR5-only -- DIMM temps via the SPD hub
   };
 
   services.lact.enable = true;
