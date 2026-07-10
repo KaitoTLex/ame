@@ -120,6 +120,12 @@
               ];
             };
         };
+
+        # `nh os <boot|switch> .` resolves the target by the machine's actual
+        # hostname (networking.hostName = "shirakami-fubuki") unless -H is
+        # passed, but the flake attribute above is kept as "shirakami" - alias
+        # it so both names build the same configuration.
+        shirakami-fubuki = self.nixosConfigurations.shirakami;
         mafuyu = functorOSLib.system.instantiate {
           hostname = "mafuyu";
           users = [ kaitotlex ];

@@ -22,5 +22,10 @@ with pkgs;
   claude-code
   claude-monitor
   libxcb-cursor
+  msr
+  fanctl
+  coolercontrol.coolercontrol-gui
+  coolercontrol.coolercontrold
+  coolercontrol.coolercontrol-ui-data
 ]
 #formatter."x86_64-linux" = nixpkgs.legacyPackages.x86_64-linux.nixfmt-rfc-style;

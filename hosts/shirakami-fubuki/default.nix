@@ -33,6 +33,7 @@ inputs:
   services.corecycler = {
     enable = true;
     deviceAccessUser = "kaitotlex"; # required -- grants MSR/SMU access without sudo
+    unfreeBackends = true; # include mprime (best for CO tuning)
   };
 
   services.lact.enable = true;
@@ -130,7 +131,7 @@ inputs:
       graphics.nvidia.enable = true;
     };
     extras.gaming = {
-      enable = false;
+      enable = true;
     };
   };
   age.secrets.eduroam.file = ../../modules/secrets/eduroam.age;
