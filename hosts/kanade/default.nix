@@ -3,7 +3,7 @@ inputs:
 {
   imports = [
     inputs.functoros-apple-silicon.nixosModules.default
-    #    inputs.npu.nixosModules.default
+    inputs.steam-asahi.nixosModules.default
   ];
 
   nix.settings = {
@@ -55,6 +55,7 @@ inputs:
   nixpkgs.overlays = lib.mkAfter [
     # inputs.apple-silicon.overlays.apple-silicon-overlay
     inputs.tmux.overlay
+    inputs.polycule-nix.overlays.default
     (final: prev: {
       waydroid = prev.waydroid.overrideAttrs (old: {
         postPatch = (old.postPatch or "") + ''
@@ -92,14 +93,11 @@ inputs:
     scale = 1.333333;
   };
 
-  # services.npu = {
-  #   enable = true;
-  #   role = "client";
-  #   root = "/home/kaitotlex/npu";
-  #   syncthing.devices = {
-  #     kuroko = "BWKANMR-7ALZHJN-GLKS22S-SJE37NX-KM76LFO-FAIYD5K-G3XRU5N-WZ3REQH";
-  #   };
-  # };
+  environment.systemPackages = [ pkgs.polycule ];
+
+  nixpkgs.config.allowUnfree = true;
+
+  programs.steam-asahi.enable = true;
 
   functorOS = {
     apple-silicon = {

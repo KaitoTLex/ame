@@ -50,10 +50,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # npu = {
-    #   url = "path:/home/kaitotlex/npu";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    steam-asahi = {
+      url = "git+https://github.com/KaitoTLex/nixos-asahi-patch";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    polycule-nix = {
+      url = "git+https://github.com/KaitoTLex/Polycule-Nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -93,20 +98,6 @@
     in
     {
       nixosConfigurations = {
-        kuroko = functorOSLib.system.instantiate {
-          hostname = "kuroko";
-          users = [ kaitotlex ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                ./hosts/kuroko/hardware-configuration.nix
-                (import ./hosts/kuroko/default.nix inputs)
-              ];
-            };
-        };
-
         shirakami = functorOSLib.system.instantiate {
           hostname = "shirakami-fubuki";
           users = [ kaitotlex ];
@@ -126,19 +117,6 @@
         # passed, but the flake attribute above is kept as "shirakami" - alias
         # it so both names build the same configuration.
         shirakami-fubuki = self.nixosConfigurations.shirakami;
-        mafuyu = functorOSLib.system.instantiate {
-          hostname = "mafuyu";
-          users = [ kaitotlex ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                ./hosts/mafuyu/hardware-configuration.nix
-                (import ./hosts/mafuyu/default.nix inputs)
-              ];
-            };
-        };
 
         kanade = functorOSLib.system.instantiate {
           hostname = "kanade";

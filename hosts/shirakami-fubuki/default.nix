@@ -9,7 +9,6 @@ inputs:
   imports = [
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.corecycler.nixosModules.default
-    #    inputs.npu.nixosModules.default
   ];
 
   boot = {
@@ -167,15 +166,6 @@ inputs:
       ipv6.method = "auto";
     };
   };
-
-  #  services.npu = {
-  #    enable = true;
-  #    role = "client";
-  #    root = "/home/kaitotlex/npu";
-  #    syncthing.devices = {
-  #      kanade = "I7GSJMD-7CONAPR-AIB3KHC-3IWKEF3-XLJJL55-YKS4PEX-U35ULHN-IWPPXAH";
-  #    };
-  #  };
 
   home-manager.users.kaitotlex = {
     systemd.user.services.xwayland-satellite = {
