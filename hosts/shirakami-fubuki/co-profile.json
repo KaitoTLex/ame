@@ -1,0 +1,8 @@
+{
+  "format": "corecycler-co-profile",
+  "version": 1,
+  "cpu_model": "AMD Ryzen 7 7800X3D",
+  "source": "manual",
+  "pending_cores": [0, 1, 2, 3, 4, 5, 6, 7],
+  "offsets": {44, 48, 38, 48}
+}
