@@ -1355,15 +1355,15 @@
       "locked": {
         "lastModified": 1783692599,
         "narHash": "sha256-fBKYottTPmt3+jK0hYffb3dc9eQju6NQaof8mMps0zY=",
-        "ref": "refs/heads/main",
+        "owner": "KaitoTLex",
+        "repo": "Polycule-Nix",
         "rev": "acfc5eb7248199a465b6aa87a32a49faf784ad37",
-        "revCount": 3,
-        "type": "git",
-        "url": "https://github.com/KaitoTLex/Polycule-Nix"
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/KaitoTLex/Polycule-Nix"
+        "owner": "KaitoTLex",
+        "repo": "Polycule-Nix",
+        "type": "github"
       }
     },
     "pre-commit": {
@@ -1599,17 +1599,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1777205949,
-        "narHash": "sha256-/9TUBeRJdoCb8z1JO3RnwB8EUofnnDzmy/rvMWUteJk=",
-        "ref": "refs/heads/main",
-        "rev": "f5db4ad37909ea9460e7f82d1bf76faa90e20c4a",
-        "revCount": 45,
-        "type": "git",
-        "url": "https://github.com/KaitoTLex/nixos-asahi-patch"
+        "lastModified": 1783774367,
+        "narHash": "sha256-xBLdoqP+ReGj16PyEpkwf/vU0bMDilDm6E/KUmrIaWo=",
+        "owner": "KaitoTLex",
+        "repo": "nixos-asahi-patch",
+        "rev": "91f905fa45b1ee8b58ef64e2760e5bd53f413f70",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "https://github.com/KaitoTLex/nixos-asahi-patch"
+        "owner": "KaitoTLex",
+        "repo": "nixos-asahi-patch",
+        "type": "github"
       }
     },
     "stylix": {
