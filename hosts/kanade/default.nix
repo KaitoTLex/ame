@@ -1,9 +1,32 @@
 inputs:
 { pkgs, lib, ... }:
+let
+  spotify-asahi = pkgs.mkFexApp {
+    pname = "spotify";
+    package = pkgs.x86.spotify;
+    meta = {
+      description = "Spotify (x86_64 via muvm + FEX-Emu)";
+    };
+  };
+
+  polycule-desktop = pkgs.makeDesktopItem {
+    name = "polycule";
+    desktopName = "Polycule";
+    comment = "Yet another Matrix client";
+    exec = "${lib.getExe pkgs.polycule}";
+    icon = "${pkgs.polycule}/app/polycule/data/flutter_assets/assets/logo/logo-circle.png";
+    categories = [
+      "Network"
+      "Chat"
+      "InstantMessaging"
+    ];
+  };
+in
 {
   imports = [
     inputs.functoros-apple-silicon.nixosModules.default
     inputs.steam-asahi.nixosModules.default
+    inputs.steam-asahi.nixosModules.xilinx
   ];
 
   nix.settings = {
@@ -93,11 +116,20 @@ inputs:
     scale = 1.333333;
   };
 
-  environment.systemPackages = [ pkgs.polycule ];
+  environment.systemPackages = [
+    pkgs.polycule
+    polycule-desktop
+  ];
 
   nixpkgs.config.allowUnfree = true;
 
   programs.steam-asahi.enable = true;
+
+  programs.xilinx = {
+    enable = true;
+    tools = [ ];
+    includeShell = false;
+  };
 
   functorOS = {
     apple-silicon = {
