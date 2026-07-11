@@ -1599,6 +1599,7 @@
         ]
       },
       "locked": {
+<<<<<<< HEAD
         "lastModified": 1783774367,
         "narHash": "sha256-xBLdoqP+ReGj16PyEpkwf/vU0bMDilDm6E/KUmrIaWo=",
         "owner": "KaitoTLex",
@@ -1610,6 +1611,19 @@
         "owner": "KaitoTLex",
         "repo": "nixos-asahi-patch",
         "type": "github"
+=======
+        "lastModified": 1783752311,
+        "narHash": "sha256-umdeeaLQ70iAnCYYOXwSARLFmbSo3PkmX5VmsKCvjeQ=",
+        "ref": "refs/heads/main",
+        "rev": "2ae690f890df743a27becb409853846d059241eb",
+        "revCount": 46,
+        "type": "git",
+        "url": "file:///home/kaitotlex/Source/Nix/steam-asahi"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/kaitotlex/Source/Nix/steam-asahi"
+>>>>>>> 0af05e7 (feat: kanade fex)
       }
     },
     "stylix": {

@@ -9,6 +9,19 @@ let
     };
   };
 
+  spotify-desktop = pkgs.makeDesktopItem {
+    name = "spotify-asahi";
+    desktopName = "Spotify";
+    comment = "Spotify (Asahi)";
+    exec = "${lib.getExe spotify-asahi} %U";
+    icon = "${pkgs.x86.spotify}/share/icons/hicolor/256x256/apps/spotify-client.png";
+    categories = [
+      "Audio"
+      "Music"
+      "Player"
+    ];
+  };
+
   polycule-desktop = pkgs.makeDesktopItem {
     name = "polycule";
     desktopName = "Polycule";
@@ -119,6 +132,8 @@ in
   environment.systemPackages = [
     pkgs.polycule
     polycule-desktop
+    spotify-asahi
+    spotify-desktop
   ];
 
   nixpkgs.config.allowUnfree = true;
@@ -127,8 +142,8 @@ in
 
   programs.xilinx = {
     enable = true;
-    tools = [ ];
-    includeShell = false;
+    tools = [ "vivado" ];
+    includeShell = true;
   };
 
   functorOS = {

@@ -10,9 +10,10 @@ in
 {
   imports = [ ./modules/hardware ];
 
-  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/Los_Angeles";
+  time.timeZone = "Asia/Taipei";
   system.stateVersion = "26.11";
-  # nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = [ vix ] ++ kaitoPkgs;
 

@@ -36,7 +36,7 @@ with pkgs;
   verilator
   gnumake
   cmake
-  # kicad
+  kicad
   # zed-editor-fhs
   # zed-discord-presence
   jdt-language-server
