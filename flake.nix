@@ -51,7 +51,7 @@
     };
 
     steam-asahi = {
-      url = "git+file:///home/kaitotlex/Source/Nix/steam-asahi";
+      url = "git+ssh:git@github.com:KaitoTLex/nixos-asahi-patch.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
