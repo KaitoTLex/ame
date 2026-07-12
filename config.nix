@@ -13,7 +13,10 @@ let
   };
 in
 {
-  imports = [ ./modules/hardware ];
+  imports = [
+    ./modules/hardware
+    ./modules/functorOSmods
+  ];
 
   # time.timeZone = "America/Los_Angeles";
   time.timeZone = "Asia/Taipei";
@@ -23,11 +26,6 @@ in
   environment.systemPackages = [ vix ] ++ kaitoPkgs;
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
-
-  age.secrets.github-token.file = ./modules/secrets/ghtoken.age;
-  nix.extraOptions = ''
-    !include ${config.age.secrets.github-token.path}
-  '';
 
   functorOS = {
     flakeLocation = "/home/kaitotlex/.config/ame";

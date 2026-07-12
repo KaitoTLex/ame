@@ -101,7 +101,7 @@
   programs.kitty = {
     enable = true;
     settings = {
-      font_size = lib.mkForce 13;
+      font_size = lib.mkForce 12;
       # window_padding_width = "8 8";
       # confirm_os_window_close = -1;
       # enable_audio_bell = "no";
@@ -175,12 +175,18 @@
       #   };
       # }
       {
-        name = "fzf";
+        # nushell-style fuzzy tab-completion menu (interactive fzf-driven
+        # completion for files, git branches, kill, etc.). The previous
+        # "fzf" entry here (junegunn/fzf) never actually did anything: that
+        # repo has no fzf.plugin.zsh at its root, so home-manager's plugin
+        # loader silently skipped sourcing it. Real fzf shell integration
+        # (CTRL-R/CTRL-T/ALT-C) already comes from programs.fzf.enable below.
+        name = "fzf-tab";
         src = pkgs.fetchFromGitHub {
-          owner = "junegunn";
-          repo = "fzf";
-          rev = "e5cd7f0a3a73ef598267c1e9f29b0fe9a80925ab";
-          hash = "sha256-cYRA7TCKvfFkWUpI4q1xYR3qzenZvx3cjVSerl0gweU=";
+          owner = "Aloxaf";
+          repo = "fzf-tab";
+          rev = "24105b15714bfec37989ed5c5b6e60f572253019";
+          hash = "sha256-YhTSu0P7mFlVx1zBvbT0jNstkamcZHhPYJHKMAHgyuM=";
         };
       }
       {
