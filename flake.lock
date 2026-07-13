@@ -1601,15 +1601,15 @@
       "locked": {
         "lastModified": 1783774367,
         "narHash": "sha256-xBLdoqP+ReGj16PyEpkwf/vU0bMDilDm6E/KUmrIaWo=",
-        "owner": "KaitoTLex",
-        "repo": "nixos-asahi-patch",
+        "ref": "refs/heads/main",
         "rev": "91f905fa45b1ee8b58ef64e2760e5bd53f413f70",
-        "type": "github"
+        "revCount": 47,
+        "type": "git",
+        "url": "ssh://git@github.com/KaitoTLex/nixos-asahi-patch"
       },
       "original": {
-        "owner": "KaitoTLex",
-        "repo": "nixos-asahi-patch",
-        "type": "github"
+        "type": "git",
+        "url": "ssh://git@github.com/KaitoTLex/nixos-asahi-patch"
       }
     },
     "stylix": {
