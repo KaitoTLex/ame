@@ -19,7 +19,8 @@ in
   ];
 
   # time.timeZone = "America/Los_Angeles";
-  time.timeZone = "Asia/Taipei";
+  # time.timeZone = "Asia/Taipei";
+  time.timeZone = "Asia/Tokyo";
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
