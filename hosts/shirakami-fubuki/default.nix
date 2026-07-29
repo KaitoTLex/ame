@@ -188,24 +188,25 @@ inputs:
     };
 
     systemd.user.sessionVariables.DISPLAY = ":0";
+    programs.niri.settings.outputs."Microstep MSI G274 CC2H032401304" = {
+      mode = {
+        width = 1920;
+        height = 1080;
+        refresh = 165.001;
+      };
+      position = {
+        x = 0;
+        y = 0;
+      };
+      focus-at-startup = true;
+    };
+
     #programs.dank-material-shell.settings = lib.mkForce {
     #  batteryChargeLimit = 98;
     #};
     #programs.niri.settings = {
     #  input.touchpad.tap = lib.mkForce true;
     #  outputs = {
-    #    "Microstep MSI G274 CC2H032401304" = {
-    #      mode = {
-    #        width = 1920;
-    #        height = 1080;
-    #        refresh = 165.001;
-    #      };
-    #      position = {
-    #         x = 0;
-    #         y = 0;
-    #       };
-    #       focus-at-startup = true;
-    #     };
     #     "Acer Technologies QG221Q TGGTT0018512" = {
     #       mode = {
     #         width = 1920;
