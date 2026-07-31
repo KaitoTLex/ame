@@ -101,7 +101,7 @@
   programs.kitty = {
     enable = true;
     settings = {
-      font_size = lib.mkForce (if osConfig.networking.hostName == "shirakami-fubuki" then 8 else 12);
+      font_size = lib.mkForce (if osConfig.networking.hostName == "shirakami-fubuki" then 10 else 12);
       # window_padding_width = "8 8";
       # confirm_os_window_close = -1;
       # enable_audio_bell = "no";
