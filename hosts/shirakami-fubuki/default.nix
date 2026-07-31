@@ -40,6 +40,7 @@ inputs:
     nct6683 = true; # newer Nuvoton chip variant on some MSI boards; no-op if not present
     spd5118 = true; # AM5 is DDR5-only -- DIMM temps via the SPD hub
   };
+  services.tailscale.enable = true;
 
   services.lact.enable = true;
   hardware.amdgpu.overdrive.enable = true;
@@ -127,9 +128,9 @@ inputs:
   programs.steam.enable = true;
   functorOS = {
     theming = {
-      wallpaper = "${inputs.wallpapers}/anime/plarona.jpg";
+      wallpaper = "${inputs.wallpapers}/math/watsonbif.png";
       polarity = "dark";
-      base16Scheme = ../../scheme/mafuyu.yaml;
+      base16Scheme = ../../scheme/watson.yaml;
     };
     system = {
       networking.firewallPresets.vite = false;
