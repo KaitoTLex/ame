@@ -129,7 +129,7 @@ inputs:
   functorOS = {
     theming = {
       wallpaper = "${inputs.wallpapers}/math/watsonbif.png";
-      polarity = "dark";
+      polarity = "light";
       base16Scheme = ../../scheme/watson.yaml;
     };
     system = {
