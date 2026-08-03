@@ -12,10 +12,10 @@ palette:
   base06: "#362a11" # +++
   base07: "#130f06" # ++++
   base08: "#c04548" # red
-  base09: "#2d7981" # orange
-  base0A: "#4270a9" # yellow
+  base09: "#78c1e2" # orange
+  base0A: "#78c1e2" # yellow
   base0B: "#677429" # green
   base0C: "#2d7981" # teal
-  base0D: "#a0d3eb" # blue
+  base0D: "#78c1e2" # blue
   base0E: "#805eb5" # purple
   base0F: "#97624f" # brown
