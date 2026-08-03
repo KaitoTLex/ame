@@ -16,6 +16,6 @@ palette:
   base0A: "#b57614" # yellow
   base0B: "#79740e" # green
   base0C: "#427b58" # aqua/cyan
-  base0D: "#074D4D" # blue
+  base0D: "#b5dced" # blue
   base0E: "#8f3f71" # purple
-  base0F: "#d65d0e" # brown
+  base0F: "#b5dced" # brown
