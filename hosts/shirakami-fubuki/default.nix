@@ -12,12 +12,16 @@ inputs:
   ];
 
   boot = {
+    # The IXO22's asynchronous USB feedback can lock far below its 48 kHz rate.
+    extraModprobeConfig = ''
+      options snd_usb_audio lowlatency=0
+    '';
     loader = {
       efi.canTouchEfiVariables = true;
       timeout = 15;
       systemd-boot.enable = lib.mkForce false;
     };
-    kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages;
     kernelModules = [ "uinput" ];
     kernelParams = [ "amd_pstate=active" ];
     lanzaboote = {
@@ -41,6 +45,18 @@ inputs:
     spd5118 = true; # AM5 is DDR5-only -- DIMM temps via the SPD hub
   };
   services.tailscale.enable = true;
+  networking.nftables.enable = true;
+  networking.firewall = {
+    enable = true;
+    trustedInterfaces = [ config.services.tailscale.interfaceName ];
+    allowedUDPPorts = [ config.services.tailscale.port ];
+  };
+  systemd.services.tailscaled.serviceConfig.Environment = [
+    "TS_DEBUG_FIREWALL_MODE=nftables"
+  ];
+  systemd.network.wait-online.enable = false;
+  boot.initrd.systemd.network.wait-online.enable = false;
+  security.rtkit.enable = true;
 
   services.lact.enable = true;
   hardware.amdgpu.overdrive.enable = true;
@@ -111,7 +127,6 @@ inputs:
           leftcontrol = "leftalt";
           y = "z";
           z = "y";
-          esc = "`";
         };
       };
     };
@@ -169,6 +184,8 @@ inputs:
   };
 
   home-manager.users.kaitotlex = {
+    functorOS.utils.audio.enable = false;
+
     systemd.user.services.xwayland-satellite = {
       Unit = {
         Description = "Xwayland outside your Wayland";
