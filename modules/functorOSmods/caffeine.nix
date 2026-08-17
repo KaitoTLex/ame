@@ -24,8 +24,9 @@
               #    it in a Loader forces the native object to be fully
               #    destroyed and recreated on every toggle instead of
               #    relying on the enabled binding to release it.
-              oldIdleInhibitor = "    IdleInhibitor {\n        window: barWindow\n        enabled: SessionService.idleInhibited\n    }";
-              newIdleInhibitor = "    Loader {\n        active: SessionService.idleInhibited\n        sourceComponent: Component {\n            IdleInhibitor {\n                window: barWindow\n                enabled: true\n            }\n        }\n    }";
+              idleInhibitActive = "SessionService.idleInhibited || IdleService.externalInhibitActive";
+              oldIdleInhibitor = "    IdleInhibitor {\n        window: barWindow\n        enabled: ${idleInhibitActive}\n    }";
+              newIdleInhibitor = "    Loader {\n        active: ${idleInhibitActive}\n        sourceComponent: Component {\n            IdleInhibitor {\n                window: barWindow\n                enabled: true\n            }\n        }\n    }";
 
               # 2. Swap the bar widget's Material Symbols icon for the
               #    requested Nerd Font glyphs: nf-md-flask_empty_off_outline
@@ -41,7 +42,7 @@
               substituteInPlace $out/share/quickshell/dms/Modules/DankBar/DankBarWindow.qml \
                 --replace-fail ${lib.escapeShellArg oldIdleInhibitor} ${lib.escapeShellArg newIdleInhibitor}
 
-              substituteInPlace $out/share/quickshell/dms/Widgets/DankNFIcon.qml \
+              substituteInPlace $out/share/quickshell/dms/DankCommon/Widgets/DankNFIcon.qml \
                 --replace-fail ${lib.escapeShellArg oldIconMapOpen} ${lib.escapeShellArg newIconMapOpen}
 
               substituteInPlace $out/share/quickshell/dms/Modules/DankBar/Widgets/IdleInhibitor.qml \

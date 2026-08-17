@@ -12,10 +12,10 @@ palette:
   base06: "#a5c7f0" # light text / secondary highlight
   base07: "#0a6ba0" # foreground accent
   base08: "#e78284" # red
-  base09: "#ef9f76" # peach
-  base0A: "#e5c890" # yellow
+  base09: "#ccdfed" # peach
+  base0A: "#ccdfed" # yellow
   base0B: "#a6d189" # green
   base0C: "#81c8be" # teal
-  base0D: "#8894d7" # blue
+  base0D: "#61a8cc" # blue
   base0E: "#ca9ee6" # mauve
   base0F: "#d8cae7" # extra

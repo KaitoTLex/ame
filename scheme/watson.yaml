@@ -1,6 +1,6 @@
 system: "base16"
 name: "watson"
-author: "kaitotlex - inspiration from Ameilia Watson and based on cappuchin light mode"
+author: "kaitotlex - inspired by Amelia Watson"
 variant: "light"
 palette:
   base00: "#e2cfa6" # ----
@@ -11,11 +11,11 @@ palette:
   base05: "#59461d" # ++
   base06: "#362a11" # +++
   base07: "#130f06" # ++++
-  base08: "#9d0006" # red
-  base09: "#af3a03" # orange
-  base0A: "#b57614" # yellow
-  base0B: "#79740e" # green
-  base0C: "#427b58" # aqua/cyan
-  base0D: "#074D4D" # blue
-  base0E: "#8f3f71" # purple
-  base0F: "#d65d0e" # brown
+  base08: "#c04548" # red
+  base09: "#78c1e2" # orange
+  base0A: "#78c1e2" # yellow
+  base0B: "#677429" # green
+  base0C: "#2d7981" # teal
+  base0D: "#78c1e2" # blue
+  base0E: "#805eb5" # purple
+  base0F: "#97624f" # brown

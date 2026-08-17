@@ -28,7 +28,6 @@ with pkgs;
   # wireguard-tools
 
   #contact
-  cinny
   ungoogled-chromium
 
   #ee

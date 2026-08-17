@@ -4,7 +4,8 @@
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
     # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
     # the canonical repo is the forgejo instance, which has agenix committed.
-    functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
+    functorOS.url = "github:youwen5/functorOS";
+    # functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
     corecycler = {
@@ -112,10 +113,6 @@
             };
         };
 
-        # `nh os <boot|switch> .` resolves the target by the machine's actual
-        # hostname (networking.hostName = "shirakami-fubuki") unless -H is
-        # passed, but the flake attribute above is kept as "shirakami" - alias
-        # it so both names build the same configuration.
         shirakami-fubuki = self.nixosConfigurations.shirakami;
 
         kanade = functorOSLib.system.instantiate {

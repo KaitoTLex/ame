@@ -8,8 +8,6 @@ in
   "eduroam.age".publicKeys = [
     shirakami-fubuki
     kanade
-    # kuroko
-    # kuroko-root
   ];
 
   "ghtoken.age".publicKeys = [
