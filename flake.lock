@@ -685,15 +685,15 @@
       "locked": {
         "lastModified": 1784569754,
         "narHash": "sha256-x+pj06MpaVGhSmk6geUJLmwt/gsTnMbizX4LpqX1INk=",
-        "owner": "youwen5",
-        "repo": "functorOS",
+        "ref": "refs/heads/main",
         "rev": "478ceeddf91013ac5a4481514655f19368849014",
-        "type": "github"
+        "revCount": 1277,
+        "type": "git",
+        "url": "https://code.functor.systems/functor.systems/functorOS.git"
       },
       "original": {
-        "owner": "youwen5",
-        "repo": "functorOS",
-        "type": "github"
+        "type": "git",
+        "url": "https://code.functor.systems/functor.systems/functorOS.git"
       }
     },
     "functoros-apple-silicon": {
