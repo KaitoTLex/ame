@@ -4,8 +4,8 @@
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
     # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
     # the canonical repo is the forgejo instance, which has agenix committed.
-    functorOS.url = "github:youwen5/functorOS";
-    # functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
+    # functorOS.url = "github:youwen5/functorOS";
+    functorOS.url = "git+https://code.functor.systems/functor.systems/functorOS.git";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
     corecycler = {
