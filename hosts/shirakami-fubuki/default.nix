@@ -158,10 +158,6 @@ inputs:
   };
   age.secrets.eduroam.file = ../../modules/secrets/eduroam.age;
 
-  # SJSU eduroam RADIUS trust anchor (emSign Root CA - G1), extracted from
-  # the CAT-generated eduroam-linux-SJSU.py installer. Declared here so the
-  # NetworkManager profile below can pin the server cert instead of trusting
-  # any AP that answers to the SSID "eduroam".
   environment.etc."eduroam/ca.pem".text = ''
     -----BEGIN CERTIFICATE-----
     MIIDlDCCAnygAwIBAgIKMfXkYgxsWO3W2DANBgkqhkiG9w0BAQsFADBnMQswCQYD
@@ -193,16 +189,12 @@ inputs:
       connection = {
         id = "eduroam";
         type = "wifi";
-        # NOTE: previously pinned to interface-name "wlp6s0", which does not
-        # exist on this host (the wifi device here is wlp13s0) - NetworkManager
-        # couldn't resolve AP security info for a profile bound to a phantom
-        # device, which is why activation failed with "Failed to determine AP
-        # security information". Matching by SSID alone is also more robust
-        # across kernel/udev interface renames than hardcoding the ifname.
+
       };
       wifi = {
         mode = "infrastructure";
         ssid = "eduroam";
+        bssid = "1C:30:03:9C:4A:61";
       };
       wifi-security = {
         key-mgmt = "wpa-eap";

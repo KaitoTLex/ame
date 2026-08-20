@@ -144,6 +144,14 @@
   };
   programs.zsh = {
     enable = true;
+    # Fish-style inline history autosuggestion: type the first few letters
+    # of a command you've run before and the rest of the most recent match
+    # is ghosted in-line (accept with -> / End). Complements the existing
+    # fzf CTRL-R reverse search below rather than replacing it - this is
+    # the fuzzy-as-you-type autocomplete, CTRL-R is the interactive search.
+    autosuggestion = {
+      enable = true;
+    };
     shellAliases = {
       nixr = "nh os switch .";
       brokie = "sudo nixos-rebuild switch .#kanade";
