@@ -4,7 +4,7 @@
   # backend. Disable the frontend so iwctl talks directly to iwd.
   networking.networkmanager.enable = lib.mkForce false;
 
-  age.secrets.eduroam.file = ../secrets/eduroam.age;
+  age.secrets.eduroam.file = ../../../modules/secrets/eduroam.age;
 
   # SJSU eduroam RADIUS trust anchor (emSign Root CA - G1), extracted from
   # the CAT-generated eduroam-linux-SJSU.py installer.
@@ -48,7 +48,8 @@
       set -eu
       umask 077
 
-      password=$(<"$CREDENTIALS_DIRECTORY/eduroam-password")
+      credential=$(<"$CREDENTIALS_DIRECTORY/eduroam-password")
+      password=''${credential#EDUROAM_PASSWORD=}
       if [[ -z $password ]]; then
         echo "The eduroam password credential is empty" >&2
         exit 1
