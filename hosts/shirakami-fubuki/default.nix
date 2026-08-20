@@ -7,7 +7,6 @@ inputs:
 }:
 {
   imports = [
-    ../../modules/eduroam.nix
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.corecycler.nixosModules.default
   ];
@@ -152,7 +151,6 @@ inputs:
     system = {
       networking = {
         firewallPresets.vite = false;
-        backend = "iwd";
       };
       graphics.nvidia.enable = true;
     };

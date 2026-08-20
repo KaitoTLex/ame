@@ -5,27 +5,6 @@ inputs:
   ...
 }:
 let
-  spotify-asahi = pkgs.mkFexApp {
-    pname = "spotify";
-    package = pkgs.x86.spotify;
-    meta = {
-      description = "Spotify (x86_64 via muvm + FEX-Emu)";
-    };
-  };
-
-  spotify-desktop = pkgs.makeDesktopItem {
-    name = "spotify-asahi";
-    desktopName = "Spotify";
-    comment = "Spotify (Asahi)";
-    exec = "${lib.getExe spotify-asahi} %U";
-    icon = "${pkgs.x86.spotify}/share/icons/hicolor/256x256/apps/spotify-client.png";
-    categories = [
-      "Audio"
-      "Music"
-      "Player"
-    ];
-  };
-
   polycule-desktop = pkgs.makeDesktopItem {
     name = "polycule";
     desktopName = "Polycule";
@@ -41,7 +20,8 @@ let
 in
 {
   imports = [
-    ../../modules/eduroam.nix
+    ./module/eduroam.nix
+    ./module/spotify.nix
     inputs.functoros-apple-silicon.nixosModules.default
     inputs.steam-asahi.nixosModules.default
     inputs.steam-asahi.nixosModules.xilinx
@@ -138,8 +118,6 @@ in
   environment.systemPackages = [
     pkgs.polycule
     polycule-desktop
-    spotify-asahi
-    spotify-desktop
   ];
 
   nixpkgs.config.allowUnfree = true;
