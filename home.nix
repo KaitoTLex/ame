@@ -144,11 +144,6 @@
   };
   programs.zsh = {
     enable = true;
-    # Fish-style inline history autosuggestion: type the first few letters
-    # of a command you've run before and the rest of the most recent match
-    # is ghosted in-line (accept with -> / End). Complements the existing
-    # fzf CTRL-R reverse search below rather than replacing it - this is
-    # the fuzzy-as-you-type autocomplete, CTRL-R is the interactive search.
     autosuggestion = {
       enable = true;
     };
@@ -183,12 +178,6 @@
       #   };
       # }
       {
-        # nushell-style fuzzy tab-completion menu (interactive fzf-driven
-        # completion for files, git branches, kill, etc.). The previous
-        # "fzf" entry here (junegunn/fzf) never actually did anything: that
-        # repo has no fzf.plugin.zsh at its root, so home-manager's plugin
-        # loader silently skipped sourcing it. Real fzf shell integration
-        # (CTRL-R/CTRL-T/ALT-C) already comes from programs.fzf.enable below.
         name = "fzf-tab";
         src = pkgs.fetchFromGitHub {
           owner = "Aloxaf";
