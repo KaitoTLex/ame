@@ -7,6 +7,7 @@ inputs:
 }:
 {
   imports = [
+    ../../modules/eduroam.nix
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.corecycler.nixosModules.default
   ];
@@ -149,7 +150,9 @@ inputs:
       base16Scheme = ../../scheme/watson.yaml;
     };
     system = {
-      networking.firewallPresets.vite = false;
+      networking = {
+        firewallPresets.vite = false;
+      };
       graphics.nvidia.enable = true;
     };
     extras.gaming = {
