@@ -1,8 +1,8 @@
 { lib, pkgs, ... }:
 let
-  spotify-fex = pkgs.mkFexApp {
+  spotify-fex = pkgs.mkAsahiX86App {
     pname = "spotify";
-    package = pkgs.x86.spotify;
+    package = pkgs.asahiX86Packages.spotify;
     meta.description = "Spotify (x86_64 via muvm and FEX-Emu)";
   };
 
@@ -24,7 +24,7 @@ let
     desktopName = "Spotify";
     comment = "Spotify on Apple Silicon via muvm and FEX-Emu";
     exec = "${lib.getExe' spotify-asahi "spotify"} %U";
-    icon = "${pkgs.x86.spotify}/share/icons/hicolor/256x256/apps/spotify-client.png";
+    icon = "${pkgs.asahiX86Packages.spotify}/share/icons/hicolor/256x256/apps/spotify-client.png";
     categories = [
       "Audio"
       "Music"
