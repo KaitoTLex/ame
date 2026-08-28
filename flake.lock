@@ -1378,7 +1378,6 @@
         "nixvim": "nixvim",
         "polycule-nix": "polycule-nix",
         "snowfall-lib": "snowfall-lib",
-        "steam-asahi": "steam-asahi",
         "tmux": "tmux",
         "wallpapers": "wallpapers"
       }
@@ -1563,26 +1562,6 @@
         "ref": "v2.29.0",
         "repo": "nix-packaging-standard",
         "type": "github"
-      }
-    },
-    "steam-asahi": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1783774367,
-        "narHash": "sha256-xBLdoqP+ReGj16PyEpkwf/vU0bMDilDm6E/KUmrIaWo=",
-        "ref": "refs/heads/main",
-        "rev": "91f905fa45b1ee8b58ef64e2760e5bd53f413f70",
-        "revCount": 47,
-        "type": "git",
-        "url": "ssh://git@github.com/KaitoTLex/nixos-asahi-patch"
-      },
-      "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/KaitoTLex/nixos-asahi-patch"
       }
     },
     "stylix": {

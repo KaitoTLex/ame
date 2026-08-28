@@ -22,9 +22,8 @@ in
   imports = [
     ./module/eduroam.nix
     ./module/spotify.nix
+    (import ../../modules/asahi-compat inputs)
     inputs.functoros-apple-silicon.nixosModules.default
-    inputs.steam-asahi.nixosModules.default
-    inputs.steam-asahi.nixosModules.xilinx
   ];
 
   nix.settings = {
@@ -122,12 +121,13 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
-  programs.steam-asahi.enable = true;
-
-  programs.xilinx = {
-    enable = true;
-    tools = [ "vivado" ];
-    includeShell = true;
+  programs.asahiCompat = {
+    steam.enable = true;
+    xilinx = {
+      enable = true;
+      tools = [ "vivado" ];
+      includeShell = true;
+    };
   };
 
   functorOS = {

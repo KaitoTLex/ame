@@ -49,11 +49,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    steam-asahi = {
-      url = "git+ssh://git@github.com/KaitoTLex/nixos-asahi-patch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     polycule-nix = {
       url = "github:KaitoTLex/Polycule-Nix";
       inputs.nixpkgs.follows = "nixpkgs";
