@@ -215,6 +215,10 @@ inputs:
       ipv6.method = "auto";
     };
   };
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-cuda;
+  };
 
   home-manager.users.kaitotlex = {
     functorOS.utils.audio.enable = false;
