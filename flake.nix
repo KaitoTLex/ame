@@ -121,6 +121,19 @@
               ];
             };
         };
+
+        blanc = functorOSLib.system.instantiate {
+          hostname = "blanc";
+          users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                (import ./hosts/blanc/default.nix inputs)
+              ];
+            };
+        };
       };
 
     };
