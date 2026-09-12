@@ -7,7 +7,6 @@
 > KaitoTLex's Optimized FunctorOS (NixOS) configuration for working electrical engineers and otakus  
 > **Featuring**: Spotify on aarch64, CoreCycler Underclocking utility, Eduroam, zsh, nixCats
 
-
 *KaitoianOS's spiritual successor*  
 
 ## Hosts(past & present)
