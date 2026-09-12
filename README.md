@@ -10,12 +10,12 @@
 *KaitoianOS's spiritual successor*  
 
 ## Hosts(past & present)
-*In Service*
+*In Service*  
 Kanade - MacBook Pro 2021 Apple Silicon M1 Pro  
 Fubuki - Mini-ITX PC AMD Ryzen 7 7800X3D  
-*Planned* 
+*Planned*  
 Blaanc - ROG Zephyrus 2024 AMD Ryzen 8945HS  
-*Retired*
+*Retired*  
 Kuroko - ROG Flow 2021 AMD Ryzen 9 5900H  
 Shiroko - MSI Summit E13 Intel I5 1155G7  
 Mafuyu - Lenovo T495s AMD Ryzen 7 3700X  
