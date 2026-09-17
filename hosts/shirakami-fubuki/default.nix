@@ -59,6 +59,13 @@ inputs:
   boot.initrd.systemd.network.wait-online.enable = false;
   security.rtkit.enable = true;
 
+  # The local Qwen model is slightly larger than VRAM. Compressed swap keeps a
+  # long-context request from turning transient memory pressure into an OOM.
+  zramSwap = {
+    enable = true;
+    memoryPercent = 50;
+  };
+
   services.lact.enable = true;
   hardware.amdgpu.overdrive.enable = true;
 
@@ -66,8 +73,9 @@ inputs:
     ryzenadj
     linuxPackages_zen.cpupower
     stress-ng
-  ];
 
+    (pkgs.llama-cpp.override { cudaSupport = true; })
+  ];
   nixpkgs.config.allowUnfree = true;
 
   # functorOS.system.graphics.nvidia.enable (set below) already configures
@@ -218,9 +226,74 @@ inputs:
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cuda;
+    loadModels = [ "qwen3.8:27b" ];
+    environmentVariables.OLLAMA_CONTEXT_LENGTH = "65536";
+  };
+
+  users.users.kaitotlex.linger = true;
+
+  age.secrets.hermes-matrix-env = {
+    file = ../../modules/secrets/hermes-matrix-env.age;
+    owner = "kaitotlex";
+    group = "users";
+    mode = "0400";
   };
 
   home-manager.users.kaitotlex = {
+    imports = [ inputs.hermes-agent.homeManagerModules.default ];
+
+    programs.hermes-agent.enable = true;
+    services.hermes-agent = {
+      enable = true;
+      gateway.enable = true;
+      package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
+      extraDependencyGroups = [
+        "anthropic"
+        "matrix"
+      ];
+      environmentFiles = [ config.age.secrets.hermes-matrix-env.path ];
+      environment = {
+        MATRIX_E2EE_MODE = "required";
+        MATRIX_HOMESERVER = "https://matrix.functor.systems";
+      };
+      settings = {
+        model = {
+          provider = "anthropic";
+          default = "claude-opus-5";
+        };
+        providers.ollama-local = {
+          name = "Local Ollama";
+          api = "http://127.0.0.1:11434/v1";
+          transport = "chat_completions";
+          default_model = "qwen3.8:27b";
+          models."qwen3.8:27b" = {
+            context_length = 65536;
+            supports_vision = true;
+          };
+        };
+        delegation = {
+          provider = "custom:ollama-local";
+          model = "qwen3.8:27b";
+          max_concurrent_children = 1;
+          fallback_providers = [ ];
+        };
+        platforms.matrix.enabled = true;
+        matrix = {
+          allowed_users = [
+            "@kaitotlex:matrix.org"
+            "@kaitotlex26:functor.systems"
+          ];
+          require_mention = true;
+          process_notices = false;
+          session_scope = "room";
+          auto_thread = false;
+          dm_mention_threads = false;
+          max_message_length = 16000;
+        };
+        group_sessions_per_user = true;
+      };
+    };
+
     functorOS.utils.audio.enable = false;
 
     systemd.user.services.xwayland-satellite = {

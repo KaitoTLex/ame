@@ -53,6 +53,11 @@
       url = "github:KaitoTLex/Polycule-Nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent/v2026.9.14";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

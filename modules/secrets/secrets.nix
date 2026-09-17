@@ -14,4 +14,12 @@ in
     shirakami-fubuki
     kanade
   ];
+
+  "hermes-env.age".publicKeys = [
+    shirakami-fubuki
+  ];
+
+  "hermes-matrix-env.age".publicKeys = [
+    shirakami-fubuki
+  ];
 }
