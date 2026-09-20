@@ -13,6 +13,7 @@
 *In Service*  
 Kanade - MacBook Pro 2021 Apple Silicon M1 Pro  
 Fubuki - Mini-ITX PC AMD Ryzen 7 7800X3D  
+Nanashi - ASUS TUF Gaming A14 2026 AMD Ryzen AI 9 465 / RTX 5060  
 *Planned*  
 Blaanc - ROG Zephyrus 2024 AMD Ryzen 8945HS  
 *Retired*  

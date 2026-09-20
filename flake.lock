@@ -1839,11 +1839,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789241324,
-        "narHash": "sha256-XQXmMgvp5naJamkh4oW/XnUjiT5Ahta4F70LCbmMWFc=",
+        "lastModified": 1789253075,
+        "narHash": "sha256-kvc8RQtYR4sdzgsaDvXSHQu+cnqT5UAJjAPnywrB4rc=",
         "owner": "KaitoTLex",
         "repo": "zen-browser-flake",
-        "rev": "c021873eddd2671ca2ae22ec7238143c3742e398",
+        "rev": "f1403ba2230bdd7542a8e5d8d5bb2e8ccc757de9",
         "type": "github"
       },
       "original": {

@@ -123,6 +123,21 @@
               ];
             };
         };
+
+        # ASUS TUF Gaming A14 (2026) FA401GM. No hardware-configuration.nix:
+        # the generated hardware bits live in hosts/nanashi/default.nix.
+        nanashi = functorOSLib.system.instantiate {
+          hostname = "nanashi";
+          users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                (import ./hosts/nanashi/default.nix inputs)
+              ];
+            };
+        };
       };
 
     };
