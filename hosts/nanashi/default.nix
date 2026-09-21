@@ -20,9 +20,11 @@ in
   ];
 
   # ---------------------------------------------------------------------------
-  # ASUS TUF Gaming A14 (2026) FA401GM
-  #   Ryzen AI 9 465 (Zen 5, Radeon 880M iGPU) + GeForce RTX 5060 Laptop
-  #   14" 2560x1600 165 Hz, LPDDR5X, 2x M.2 NVMe, USB4, WiFi 6E, 73 Wh
+  # ASUS TUF Gaming A14 (2026) FA401GM, iGPU-only unit
+  #   Ryzen AI 9 465 (Zen 5, 10c/20t, Radeon 880M iGPU). No discrete GPU in
+  #   this unit even though the ASUS spec page lists RTX 5060 SKUs, so this
+  #   host is pure AMD graphics: no hardware.nvidia, no PRIME, no supergfxd.
+  #   14" 2560x1600 165 Hz, 2x M.2 NVMe, USB4, WiFi 6E, microSD (rtsx).
   # This host deliberately has no hardware-configuration.nix; everything that
   # nixos-generate-config would emit lives here.
   # ---------------------------------------------------------------------------
@@ -43,7 +45,16 @@ in
     kernelModules = [ "kvm-amd" ];
     extraModulePackages = [ ];
     kernelPackages = pkgs.linuxPackages_7_1;
-    kernelParams = [ "amd_pstate=active" ];
+    # Bring-up (remove once nanashi boots reliably): print stage-1 unit status
+    # behind Plymouth (press Esc) so a failing unit is visible. mkAfter places
+    # this after functorOS's rd.systemd.show_status=false; systemd keeps the
+    # last value on the command line.
+    kernelParams = lib.mkAfter [
+      "amd_pstate=active"
+      "rd.systemd.show_status=true"
+    ];
+    # Bring-up: kernel warnings on the console as well (functorOS forces 0).
+    consoleLogLevel = lib.mkForce 4;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
@@ -68,6 +79,9 @@ in
   #   mount --mkdir /dev/disk/by-partlabel/ESP /mnt/boot
   #   nixos-install --flake .#nanashi
   boot.initrd.luks.devices.cryptroot.device = "/dev/disk/by-partlabel/cryptroot";
+  # Bring-up: a stage-1 failure opens a root shell instead of a locked sulogin
+  # prompt. Set back to false once the machine is stable.
+  boot.initrd.systemd.emergencyAccess = true;
   fileSystems = {
     "/" = {
       device = "/dev/mapper/cryptroot";
@@ -94,61 +108,11 @@ in
   };
   swapDevices = [ ];
 
-  # functorOS.system.graphics.nvidia.enable (set below) already configures
-  # modesetting/powerManagement/nvidiaSettings/open (Blackwell needs the open
-  # modules) and the driver package, so only PRIME wiring happens here.
-  # `offload` is the only PRIME mode that works under niri (pure Wayland).
-  #
-  # Bus IDs are decimal. On the FA401 chassis (2024/2025 boards) the dGPU is
-  # 64:00.0 and the iGPU 65:00.0 in lspci's hex, i.e. PCI:100:0:0 and
-  # PCI:101:0:0. Verify on first boot with `lspci | grep -iE 'vga|3d'` and
-  # fix these if the 2026 board differs.
-  hardware.nvidia = {
-    prime = {
-      nvidiaBusId = "PCI:100:0:0";
-      amdgpuBusId = "PCI:101:0:0";
-      offload = {
-        enable = true;
-        enableOffloadCmd = true;
-      };
-    };
-    # RTD3: let the dGPU fully power down when nothing is offloaded to it.
-    powerManagement.finegrained = lib.mkForce true;
-    dynamicBoost.enable = true;
-  };
-
-  # niri + NVIDIA is known to leak VRAM into a free buffer pool
-  # (https://github.com/niri-wm/niri/wiki/Nvidia); cap the reuse ratio.
-  environment.etc."nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json".text =
-    builtins.toJSON {
-      rules = [
-        {
-          pattern = {
-            feature = "procname";
-            matches = "niri";
-          };
-          profile = "Limit Free Buffer Pool On Wayland Compositors";
-        }
-      ];
-      profiles = [
-        {
-          name = "Limit Free Buffer Pool On Wayland Compositors";
-          settings = [
-            {
-              key = "GLVidHeapReuseRatio";
-              value = 0;
-            }
-          ];
-        }
-      ];
-    };
-
-  # ASUS platform daemons: fan curves / platform profiles / keyboard aura /
-  # charge limit (asusd) and Integrated<->Hybrid GPU switching (supergfxd).
-  # Both persist their own state under /etc, so they are left unmanaged here.
-  # Set the battery limit once with `asusctl -c 90`; asusd remembers it.
+  # ASUS platform daemon: fan curves / platform profiles / keyboard backlight /
+  # charge limit. It keeps its own state under /etc, so it is left unmanaged
+  # here. Set the battery limit once with `asusctl -c 90`; asusd remembers it.
+  # supergfxd is deliberately absent: it only switches dGPU modes.
   services.asusd.enable = true;
-  services.supergfxd.enable = true;
   services.fwupd.enable = true;
 
   services.tailscale.enable = true;
@@ -219,7 +183,6 @@ in
       networking = {
         firewallPresets.vite = true;
       };
-      graphics.nvidia.enable = true;
     };
     extras.gaming = {
       enable = true;
