@@ -39,6 +39,8 @@
       name = "KaitoTLex";
       email = "renl@kaitotlex.systems";
     };
+    # code.functor.systems is behind Anubis, which blocks git over https; ssh skips it.
+    settings.url."ssh://git@code.functor.systems/".insteadOf = "https://code.functor.systems/";
     signing = {
       signByDefault = true;
       key = "42F52D76F1B15B8D997E2AEE8AB934746F475D0B";
