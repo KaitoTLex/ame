@@ -5,7 +5,7 @@
     # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
     # the canonical repo is the forgejo instance, which has agenix committed.
     functorOS.url = "github:youwen5/functorOS";
-    # functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
+    #functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
     functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
     functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
@@ -124,8 +124,10 @@
             };
         };
 
-        # ASUS TUF Gaming A14 (2026) FA401GM. No hardware-configuration.nix:
-        # the generated hardware bits live in hosts/nanashi/default.nix.
+        # ASUS TUF Gaming A14, FA401EA (Ryzen AI MAX+ 392 "Strix Halo", iGPU only).
+        # No hardware-configuration.nix: the generated hardware bits, the disk
+        # layout and the machine-specific power/input tuning all live in
+        # hosts/nanashi/default.nix.
         nanashi = functorOSLib.system.instantiate {
           hostname = "nanashi";
           users = [ kaitotlex ];
