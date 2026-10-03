@@ -51,7 +51,23 @@ inputs:
     enable = true;
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
     allowedUDPPorts = [ config.services.tailscale.port ];
+    # Allow SSH from the wired LAN only; wifi stays closed. Tailscale is
+    # already reachable via trustedInterfaces.
+    interfaces.enp12s0.allowedTCPPorts = config.services.openssh.ports;
   };
+  services.openssh = {
+    # Don't open port 22 globally; the per-interface rule above handles it.
+    openFirewall = false;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+      AllowUsers = [ "kaitotlex" ];
+    };
+  };
+  users.users.kaitotlex.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMkS6tVvx8qfgfWaP3W2MjWl8lYvu9NK75db9Fyn3oSR kaitotlex@nanashi"
+  ];
   systemd.services.tailscaled.serviceConfig.Environment = [
     "TS_DEBUG_FIREWALL_MODE=nftables"
   ];
@@ -283,7 +299,7 @@ inputs:
             "@kaitotlex:matrix.org"
             "@kaitotlex26:functor.systems"
           ];
-          require_mention = true;
+          require_mention = false;
           process_notices = false;
           session_scope = "room";
           auto_thread = false;
