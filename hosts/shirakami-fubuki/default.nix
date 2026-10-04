@@ -8,6 +8,7 @@ inputs:
 {
   imports = [
     ../../modules/eduroam.nix
+    ./drives.nix
     inputs.lanzaboote.nixosModules.lanzaboote
     inputs.corecycler.nixosModules.default
   ];
@@ -62,12 +63,19 @@ inputs:
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
-      AllowUsers = [ "kaitotlex" ];
+      AllowUsers = [
+        "kaitotlex"
+        "futabatlex"
+      ];
     };
   };
   users.users.kaitotlex.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMkS6tVvx8qfgfWaP3W2MjWl8lYvu9NK75db9Fyn3oSR kaitotlex@nanashi"
   ];
+  users.users.futabatlex = {
+    shell = lib.mkForce pkgs.zsh;
+    openssh.authorizedKeys.keys = config.users.users.kaitotlex.openssh.authorizedKeys.keys;
+  };
   systemd.services.tailscaled.serviceConfig.Environment = [
     "TS_DEBUG_FIREWALL_MODE=nftables"
   ];
@@ -90,7 +98,7 @@ inputs:
     linuxPackages_zen.cpupower
     stress-ng
 
-    (pkgs.llama-cpp.override { cudaSupport = true; })
+    config.services.llama-cpp.package
   ];
   nixpkgs.config.allowUnfree = true;
 
@@ -239,11 +247,47 @@ inputs:
       ipv6.method = "auto";
     };
   };
-  services.ollama = {
+  # llama-server pulls the GGUF (and its mmproj, for vision) from Hugging Face
+  # into /var/cache/llama-cpp on first start.
+  services.llama-cpp = {
     enable = true;
-    package = pkgs.ollama-cuda;
-    loadModels = [ "qwen3.8:27b" ];
-    environmentVariables.OLLAMA_CONTEXT_LENGTH = "65536";
+    package = pkgs.llama-cpp.override { cudaSupport = true; };
+    settings = {
+      hf-repo = "huihui-ai/Huihui-Qwen3.8-27B-abliterated-GGUF:UD-IQ4_XS";
+      alias = "qwen3.8-27b-abliterated";
+      ctx-size = 65536;
+      flash-attn = "on";
+      jinja = true;
+      # Internal; clients use the socket-activated proxy below.
+      port = 8081;
+    };
+  };
+
+  # Run llama-server on demand rather than always holding the GPU: the first
+  # connection to 127.0.0.1:8080 starts the proxy, which pulls up llama-cpp;
+  # after 10 idle minutes the proxy exits and llama-cpp stops with it.
+  systemd.services.llama-cpp = {
+    wantedBy = lib.mkForce [ ];
+    unitConfig.StopWhenUnneeded = true;
+    serviceConfig = {
+      # Only count as started once the model is loaded, so the proxy never
+      # forwards to a port nobody is listening on. The first start downloads
+      # the GGUF, hence no start timeout.
+      ExecStartPost = "${lib.getExe pkgs.curl} --silent --fail --retry 1000000 --retry-delay 2 --retry-all-errors --output /dev/null http://127.0.0.1:${toString config.services.llama-cpp.settings.port}/health";
+      TimeoutStartSec = "infinity";
+    };
+  };
+  systemd.sockets.llama-cpp-proxy = {
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ "127.0.0.1:8080" ];
+  };
+  systemd.services.llama-cpp-proxy = {
+    requires = [ "llama-cpp.service" ];
+    after = [ "llama-cpp.service" ];
+    serviceConfig = {
+      ExecStart = "${config.systemd.package}/lib/systemd/systemd-socket-proxyd --exit-idle-time=10min 127.0.0.1:${toString config.services.llama-cpp.settings.port}";
+      DynamicUser = true;
+    };
   };
 
   users.users.kaitotlex.linger = true;
@@ -255,113 +299,147 @@ inputs:
     mode = "0400";
   };
 
-  home-manager.users.kaitotlex = {
-    imports = [ inputs.hermes-agent.homeManagerModules.default ];
-
-    programs.hermes-agent.enable = true;
-    services.hermes-agent = {
-      enable = true;
-      gateway.enable = true;
-      package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
-      extraDependencyGroups = [
-        "anthropic"
-        "matrix"
-      ];
-      environmentFiles = [ config.age.secrets.hermes-matrix-env.path ];
-      environment = {
-        MATRIX_E2EE_MODE = "required";
-        MATRIX_HOMESERVER = "https://matrix.functor.systems";
+  home-manager.users.kaitotlex =
+    { lib, ... }:
+    let
+      localModel = config.services.llama-cpp.settings.alias;
+      llamaCppProvider = {
+        name = "Local llama.cpp";
+        api = "http://${lib.head config.systemd.sockets.llama-cpp-proxy.listenStreams}/v1";
+        transport = "chat_completions";
+        default_model = localModel;
+        models.${localModel} = {
+          context_length = config.services.llama-cpp.settings.ctx-size;
+          supports_vision = true;
+        };
       };
-      settings = {
+      # The `marine` profile itself is created with `hermes profile create`
+      # (like `suisei`); only its model wiring is managed here, deep-merged into
+      # the profile's config.yaml the same way the module merges the default one.
+      marineSettings = {
         model = {
-          provider = "anthropic";
-          default = "claude-opus-5";
+          provider = "custom:llama-cpp-local";
+          default = localModel;
         };
-        providers.ollama-local = {
-          name = "Local Ollama";
-          api = "http://127.0.0.1:11434/v1";
-          transport = "chat_completions";
-          default_model = "qwen3.8:27b";
-          models."qwen3.8:27b" = {
-            context_length = 65536;
-            supports_vision = true;
+        providers.llama-cpp-local = llamaCppProvider;
+        # Long-running builder: nix builds and compiles outlive the 180s default.
+        agent.max_turns = null;
+        terminal = {
+          cwd = "/home/kaitotlex";
+          timeout = 3600;
+        };
+      };
+      configMerge = import "${inputs.hermes-agent}/nix/configMergeScript.nix" { inherit pkgs; };
+    in
+    {
+      home.packages = [
+        (pkgs.writeShellScriptBin "senchou" ''exec hermes -p marine "$@"'')
+      ];
+
+      home.activation.hermesMarineProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        marine="$HOME/.hermes/profiles/marine"
+        if [ -d "$marine" ]; then
+          run ${configMerge} ${pkgs.writeText "hermes-marine.json" (builtins.toJSON marineSettings)} "$marine/config.yaml"
+        fi
+      '';
+
+      imports = [ inputs.hermes-agent.homeManagerModules.default ];
+
+      programs.hermes-agent.enable = true;
+      services.hermes-agent = {
+        enable = true;
+        gateway.enable = true;
+        package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
+        extraDependencyGroups = [
+          "anthropic"
+          "matrix"
+        ];
+        environmentFiles = [ config.age.secrets.hermes-matrix-env.path ];
+        environment = {
+          MATRIX_E2EE_MODE = "required";
+          MATRIX_HOMESERVER = "https://matrix.functor.systems";
+        };
+        settings = {
+          model = {
+            provider = "anthropic";
+            default = "claude-opus-5";
           };
+          providers.llama-cpp-local = llamaCppProvider;
+          delegation = {
+            provider = "custom:llama-cpp-local";
+            model = localModel;
+            max_concurrent_children = 1;
+            fallback_providers = [ ];
+          };
+          platforms.matrix.enabled = true;
+          matrix = {
+            allowed_users = [
+              "@kaitotlex:matrix.org"
+              "@kaitotlex26:functor.systems"
+            ];
+            require_mention = false;
+            process_notices = false;
+            session_scope = "room";
+            auto_thread = false;
+            dm_mention_threads = false;
+            max_message_length = 16000;
+          };
+          group_sessions_per_user = true;
         };
-        delegation = {
-          provider = "custom:ollama-local";
-          model = "qwen3.8:27b";
-          max_concurrent_children = 1;
-          fallback_providers = [ ];
+      };
+
+      functorOS.utils.audio.enable = false;
+
+      systemd.user.services.xwayland-satellite = {
+        Unit = {
+          Description = "Xwayland outside your Wayland";
+          BindsTo = [ "graphical-session.target" ];
+          PartOf = [ "graphical-session.target" ];
+          After = [ "graphical-session.target" ];
+          Requisite = [ "graphical-session.target" ];
         };
-        platforms.matrix.enabled = true;
-        matrix = {
-          allowed_users = [
-            "@kaitotlex:matrix.org"
-            "@kaitotlex26:functor.systems"
-          ];
-          require_mention = false;
-          process_notices = false;
-          session_scope = "room";
-          auto_thread = false;
-          dm_mention_threads = false;
-          max_message_length = 16000;
+        Service = {
+          Type = "notify";
+          NotifyAccess = "all";
+          ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
+          StandardOutput = "journal";
         };
-        group_sessions_per_user = true;
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
       };
+
+      systemd.user.sessionVariables.DISPLAY = ":0";
+      programs.niri.settings.outputs."Microstep MSI G274 CC2H032401304" = {
+        mode = {
+          width = 1920;
+          height = 1080;
+          refresh = 165.001;
+        };
+        position = {
+          x = 0;
+          y = 0;
+        };
+        focus-at-startup = true;
+      };
+
+      #programs.dank-material-shell.settings = lib.mkForce {
+      #  batteryChargeLimit = 98;
+      #};
+      #programs.niri.settings = {
+      #  input.touchpad.tap = lib.mkForce true;
+      #  outputs = {
+      #     "Acer Technologies QG221Q TGGTT0018512" = {
+      #       mode = {
+      #         width = 1920;
+      #         height = 1080;
+      #         refresh = 60.0;
+      #       };
+      #       transform.rotation = 270;
+      #       position = {
+      #         x = 1920;
+      #        y = 0;
+      #};
+      #};
     };
-
-    functorOS.utils.audio.enable = false;
-
-    systemd.user.services.xwayland-satellite = {
-      Unit = {
-        Description = "Xwayland outside your Wayland";
-        BindsTo = [ "graphical-session.target" ];
-        PartOf = [ "graphical-session.target" ];
-        After = [ "graphical-session.target" ];
-        Requisite = [ "graphical-session.target" ];
-      };
-      Service = {
-        Type = "notify";
-        NotifyAccess = "all";
-        ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite";
-        StandardOutput = "journal";
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-    };
-
-    systemd.user.sessionVariables.DISPLAY = ":0";
-    programs.niri.settings.outputs."Microstep MSI G274 CC2H032401304" = {
-      mode = {
-        width = 1920;
-        height = 1080;
-        refresh = 165.001;
-      };
-      position = {
-        x = 0;
-        y = 0;
-      };
-      focus-at-startup = true;
-    };
-
-    #programs.dank-material-shell.settings = lib.mkForce {
-    #  batteryChargeLimit = 98;
-    #};
-    #programs.niri.settings = {
-    #  input.touchpad.tap = lib.mkForce true;
-    #  outputs = {
-    #     "Acer Technologies QG221Q TGGTT0018512" = {
-    #       mode = {
-    #         width = 1920;
-    #         height = 1080;
-    #         refresh = 60.0;
-    #       };
-    #       transform.rotation = 270;
-    #       position = {
-    #         x = 1920;
-    #        y = 0;
-    #};
-    #};
-  };
 }

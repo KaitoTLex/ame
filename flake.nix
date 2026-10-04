@@ -96,12 +96,30 @@
           home.stateVersion = "26.05";
         };
       };
+      # Work account on shirakami-fubuki; home lives on its own NVMe.
+      futabatlex = functorOSLib.user.instantiate {
+        username = "futabatlex";
+        homeDirectory = "/home/futabatlex";
+        fullName = "KaitoTLex";
+        email = "renl@kaitotlex.systems";
+        configureGitUser = true;
+        configuration = {
+          imports = [
+            ./futabatlex.nix
+          ];
+          functorOS.desktop.niri.enable = true;
+          home.stateVersion = "26.05";
+        };
+      };
     in
     {
       nixosConfigurations = {
         shirakami = functorOSLib.system.instantiate {
           hostname = "shirakami-fubuki";
-          users = [ kaitotlex ];
+          users = [
+            kaitotlex
+            futabatlex
+          ];
           configuration =
             { ... }:
             {
