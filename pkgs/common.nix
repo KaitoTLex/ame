@@ -48,7 +48,7 @@ with pkgs;
 
   #futaba
   anki
-  ki
+  # ki
   # ankiAddons.review-heatmap
   # ankiAddons.fsrs4anki-helper
   # ankiAddons.ajt-card-management

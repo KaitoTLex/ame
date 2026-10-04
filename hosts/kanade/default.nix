@@ -4,20 +4,6 @@ inputs:
   lib,
   ...
 }:
-let
-  polycule-desktop = pkgs.makeDesktopItem {
-    name = "polycule";
-    desktopName = "Polycule";
-    comment = "Yet another Matrix client";
-    exec = "${lib.getExe pkgs.polycule}";
-    icon = "${pkgs.polycule}/app/polycule/data/flutter_assets/assets/logo/logo-circle.png";
-    categories = [
-      "Network"
-      "Chat"
-      "InstantMessaging"
-    ];
-  };
-in
 {
   imports = [
     ./module/eduroam.nix
@@ -113,11 +99,6 @@ in
     };
     scale = 1.333333;
   };
-
-  environment.systemPackages = [
-    pkgs.polycule
-    polycule-desktop
-  ];
 
   nixpkgs.config.allowUnfree = true;
 

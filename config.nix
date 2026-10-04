@@ -18,7 +18,8 @@ in
     ./modules/functorOSmods
   ];
 
-  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/Los_Angeles";
+  time.timeZone = "America/New_York";
   # time.timeZone = "Asia/Taipei";
   # time.timeZone = "Asia/Tokyo";
   system.stateVersion = "26.11";
