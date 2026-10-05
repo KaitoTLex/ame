@@ -171,6 +171,27 @@ in
     };
   };
 
+  # Local LLM on the iGPU (Vulkan) so the CPU stays free. Weights are pulled
+  # into /var/cache/llama-cpp on first start. Memory is unified: the model
+  # lives in GTT and is unloaded after 10 min idle. Web UI: localhost:8080.
+  services.llama-cpp = {
+    enable = true;
+    package = pkgs.llama-cpp-vulkan;
+    settings = {
+      hf-repo = "huihui-ai/Huihui-Qwen3.8-27B-abliterated-GGUF";
+      hf-file = "Huihui-Qwen3.8-27B-abliterated-UD-IQ4_XS.gguf";
+      n-gpu-layers = "all";
+      ctx-size = 32768;
+      flash-attn = "on";
+      threads = 4;
+      sleep-idle-seconds = 600;
+    };
+  };
+  systemd.services.llama-cpp.serviceConfig = {
+    Nice = 10;
+    CPUWeight = 20;
+  };
+
   programs.xwayland.enable = true;
 
   # Vivado (imperative install): run AMD's installer inside `xilinx-shell`
