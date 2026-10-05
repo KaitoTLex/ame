@@ -43,7 +43,10 @@ in
     ];
     kernelPackages = pkgs.linuxPackages_7_1;
     # EPP is driven by power-profiles-daemon; don't add a cpufreq governor.
-    kernelParams = lib.mkAfter [ "amd_pstate=active" ];
+    kernelParams = lib.mkAfter [
+      "amd_pstate=active"
+      "ttm.pages_limit=5767168"
+    ];
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
