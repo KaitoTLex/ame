@@ -54,6 +54,12 @@ in
     };
   };
 
+  # Steinberg IXO22 crackles in explicit-feedback mode. The kernel already
+  # forces implicit feedback for its siblings (UR22, UR22C) but not this one.
+  boot.extraModprobeConfig = ''
+    options snd-usb-audio quirk_flags=0499:1760:generic_implicit_fb
+  '';
+
   # Set the native panel mode once, without an EFI-fb -> amdgpu flip mid-boot.
   hardware.amdgpu.initrd.enable = true;
 
@@ -145,7 +151,30 @@ in
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
-    allowedUDPPorts = [ config.services.tailscale.port ];
+    allowedUDPPorts = [
+      config.services.tailscale.port
+      2021 # Bambu printers' SSDP announcements (LAN discovery)
+    ];
+    # TEMP: DHCP/DNS for the NM "share" profile (wifi -> USB ethernet NAT).
+    interfaces.enp103s0f3u1u4 = {
+      allowedUDPPorts = [
+        53
+        67
+      ];
+      allowedTCPPorts = [ 53 ];
+    };
+  };
+  # TEMP: NM's masquerade already hides the shared clients' addresses; also
+  # reset TTL so forwarded packets don't show the extra hops.
+  networking.nftables.tables.share-ttl = {
+    family = "inet";
+    content = ''
+      chain postrouting {
+        type filter hook postrouting priority mangle; policy accept;
+        oifname "wlp98s0" ip ttl set 64
+        oifname "wlp98s0" ip6 hoplimit set 64
+      }
+    '';
   };
   systemd.services.tailscaled.serviceConfig.Environment = [
     "TS_DEBUG_FIREWALL_MODE=nftables"
@@ -203,12 +232,16 @@ in
     inputs.nix-xilinx.overlay
   ];
   environment.systemPackages = with pkgs; [
+    config.services.llama-cpp.package # llama-cli, llama-bench, ...
     xilinx-shell
     vivado
     vlm
     xsct
     fix-desktop-entries
   ];
+
+  # Upstream's Flathub build: nixpkgs' bambu-studio isn't in the binary cache.
+  services.flatpak.packages = [ "com.bambulab.BambuStudio" ];
 
   programs.steam.enable = true;
   nixpkgs.config.allowUnfree = true;
