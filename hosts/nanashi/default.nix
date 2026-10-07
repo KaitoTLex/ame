@@ -144,6 +144,13 @@ in
 
   # asusd keeps its own state; set the charge limit once with `asusctl -c 80`.
   services.asusd.enable = true;
+
+  # Keychron Q1 HE: hidraw access for Keychron Launcher, plus QMK bootloaders
+  # for flashing.
+  hardware.keyboard.qmk = {
+    enable = true;
+    keychronSupport = true;
+  };
   services.fwupd.enable = true;
 
   services.tailscale.enable = true;
@@ -242,6 +249,11 @@ in
 
   # Upstream's Flathub build: nixpkgs' bambu-studio isn't in the binary cache.
   services.flatpak.packages = [ "com.bambulab.BambuStudio" ];
+  # Exits 255 at startup on native Wayland; run it through xwayland-satellite.
+  services.flatpak.overrides."com.bambulab.BambuStudio" = {
+    Context.sockets = [ "x11" ];
+    Environment.GDK_BACKEND = "x11";
+  };
 
   programs.steam.enable = true;
   nixpkgs.config.allowUnfree = true;
