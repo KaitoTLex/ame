@@ -46,7 +46,15 @@ inputs:
     nct6683 = true; # newer Nuvoton chip variant on some MSI boards; no-op if not present
     spd5118 = true; # AM5 is DDR5-only -- DIMM temps via the SPD hub
   };
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    # This host routes through an exit node; "client" loosens reverse-path
+    # filtering so exit-node traffic isn't dropped.
+    useRoutingFeatures = "client";
+    # Keep the wired LAN reachable while an exit node is active, otherwise
+    # replies to LAN SSH get routed out through the exit node.
+    extraSetFlags = [ "--exit-node-allow-lan-access=true" ];
+  };
   networking.nftables.enable = true;
   networking.firewall = {
     enable = true;
@@ -57,6 +65,7 @@ inputs:
     interfaces.enp12s0.allowedTCPPorts = config.services.openssh.ports;
   };
   services.openssh = {
+    enable = true;
     # Don't open port 22 globally; the per-interface rule above handles it.
     openFirewall = false;
     settings = {
