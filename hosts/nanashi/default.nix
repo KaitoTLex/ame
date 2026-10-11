@@ -162,26 +162,6 @@ in
       config.services.tailscale.port
       2021 # Bambu printers' SSDP announcements (LAN discovery)
     ];
-    # TEMP: DHCP/DNS for the NM "share" profile (wifi -> USB ethernet NAT).
-    interfaces.enp103s0f3u1u4 = {
-      allowedUDPPorts = [
-        53
-        67
-      ];
-      allowedTCPPorts = [ 53 ];
-    };
-  };
-  # TEMP: NM's masquerade already hides the shared clients' addresses; also
-  # reset TTL so forwarded packets don't show the extra hops.
-  networking.nftables.tables.share-ttl = {
-    family = "inet";
-    content = ''
-      chain postrouting {
-        type filter hook postrouting priority mangle; policy accept;
-        oifname "wlp98s0" ip ttl set 64
-        oifname "wlp98s0" ip6 hoplimit set 64
-      }
-    '';
   };
   systemd.services.tailscaled.serviceConfig.Environment = [
     "TS_DEBUG_FIREWALL_MODE=nftables"
