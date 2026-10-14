@@ -60,6 +60,23 @@
       url = "github:NousResearch/hermes-agent/v2026.9.14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # darwin (chisa); reuse the copies functorOS already pins
+    nix-darwin.follows = "functorOS/nix-darwin";
+    home-manager.follows = "functorOS/home-manager";
+    stylix.follows = "functorOS/stylix";
+    nix-index-database.follows = "functorOS/nix-index-database";
+    onibotoke.follows = "functorOS/onibotoke";
+
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
   };
 
   outputs =
@@ -163,6 +180,13 @@
               ];
             };
         };
+      };
+
+      # MacBook Air (Apple Silicon), nix-darwin. functorOS has no darwin
+      # support, so this host is wired up directly.
+      darwinConfigurations.chisa = inputs.nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; };
+        modules = [ ./hosts/chisa ];
       };
 
     };

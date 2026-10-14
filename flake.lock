@@ -159,6 +159,23 @@
         "type": "github"
       }
     },
+    "brew-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789661079,
+        "narHash": "sha256-geVTQ51PGZ1mLULM5k7wO7qt/6xenOR/YG8X7Q3eCaI=",
+        "owner": "Homebrew",
+        "repo": "brew",
+        "rev": "edb70f031e4170c780799633a1226ff73e1077f4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Homebrew",
+        "ref": "7.0.4",
+        "repo": "brew",
+        "type": "github"
+      }
+    },
     "corecycler": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -867,6 +884,38 @@
         "type": "github"
       }
     },
+    "homebrew-cask": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791600117,
+        "narHash": "sha256-p6Jvk6D5ywmDbRIXRpzBBNrO9tA3lo/mtQO9F0+z0+U=",
+        "owner": "homebrew",
+        "repo": "homebrew-cask",
+        "rev": "149fda8428417e4eec4c35d48dc80897b5d8a3ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "homebrew",
+        "repo": "homebrew-cask",
+        "type": "github"
+      }
+    },
+    "homebrew-core": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791600616,
+        "narHash": "sha256-CjmH7cq81Sn9U/M1BJR0mrqDbebNSFlxiNu6Ix5RbSM=",
+        "owner": "homebrew",
+        "repo": "homebrew-core",
+        "rev": "cb6c6a542f64df8e4c7095b7edd8715f1b6ac677",
+        "type": "github"
+      },
+      "original": {
+        "owner": "homebrew",
+        "repo": "homebrew-core",
+        "type": "github"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane_3",
@@ -1004,6 +1053,24 @@
       "original": {
         "owner": "gmodena",
         "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
+    "nix-homebrew": {
+      "inputs": {
+        "brew-src": "brew-src"
+      },
+      "locked": {
+        "lastModified": 1789928041,
+        "narHash": "sha256-iV37ieTcE4ZLOYEe0VznW6dWMBe4lEL8AbK1vblyZGM=",
+        "owner": "zhaofengli",
+        "repo": "nix-homebrew",
+        "rev": "c11cccfdd36dd69b5323d70d354b2853379c2426",
+        "type": "github"
+      },
+      "original": {
+        "owner": "zhaofengli",
+        "repo": "nix-homebrew",
         "type": "github"
       }
     },
@@ -1487,15 +1554,38 @@
         "functorOS": "functorOS",
         "functoros-apple-silicon": "functoros-apple-silicon",
         "hermes-agent": "hermes-agent",
+        "home-manager": [
+          "functorOS",
+          "home-manager"
+        ],
+        "homebrew-cask": "homebrew-cask",
+        "homebrew-core": "homebrew-core",
         "lanzaboote": "lanzaboote",
+        "nix-darwin": [
+          "functorOS",
+          "nix-darwin"
+        ],
+        "nix-homebrew": "nix-homebrew",
+        "nix-index-database": [
+          "functorOS",
+          "nix-index-database"
+        ],
         "nix-xilinx": "nix-xilinx",
         "nixpkgs": [
           "functorOS",
           "nixpkgs"
         ],
         "nixvim": "nixvim",
+        "onibotoke": [
+          "functorOS",
+          "onibotoke"
+        ],
         "polycule-nix": "polycule-nix",
         "snowfall-lib": "snowfall-lib",
+        "stylix": [
+          "functorOS",
+          "stylix"
+        ],
         "tmux": "tmux",
         "wallpapers": "wallpapers"
       }
@@ -1952,11 +2042,11 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1785513756,
-        "narHash": "sha256-qi7A0oqu/N88j/fGaLKA5+sdXNBBcLGL0FkoN7XWlmo=",
+        "lastModified": 1791672334,
+        "narHash": "sha256-jD+kFM542cdF4ozjEXcf+yuCfsBYlzL1AYxp941TAyk=",
         "owner": "kaitotlex",
         "repo": "wallpaper",
-        "rev": "7dfaf1c9c727c75bda959569a197f9d0b9ef1355",
+        "rev": "7db17993fb7a84bd8abf059d8a3e78956896ce02",
         "type": "github"
       },
       "original": {
