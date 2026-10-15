@@ -80,6 +80,7 @@ inputs:
   };
   users.users.kaitotlex.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMkS6tVvx8qfgfWaP3W2MjWl8lYvu9NK75db9Fyn3oSR kaitotlex@nanashi"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHjmMf4qjTI2ltl6FVRAjbnIiOguyXfRQnTcNhde2coZ kaitotlex@chisa"
   ];
   users.users.futabatlex = {
     shell = lib.mkForce pkgs.zsh;
@@ -256,17 +257,39 @@ inputs:
       ipv6.method = "auto";
     };
   };
-  # llama-server pulls the GGUF (and its mmproj, for vision) from Hugging Face
-  # into /var/cache/llama-cpp on first start.
+  # llama-server pulls the GGUF from Hugging Face into /var/cache/llama-cpp on
+  # first start.
   services.llama-cpp = {
     enable = true;
-    package = pkgs.llama-cpp.override { cudaSupport = true; };
+    # PrismML fork, not nixpkgs' llama-cpp: PQ2_0 is a Prism-private quant
+    # format (ggml.h: GGML_TYPE_PQ2_0 = 142) that mainline rejects at load.
+    # The fork is a superset of mainline, so ordinary quants still work.
+    package = pkgs.callPackage ../../pkgs/llama-cpp-prism.nix { };
     settings = {
-      hf-repo = "huihui-ai/Huihui-Qwen3.8-27B-abliterated-GGUF:UD-IQ4_XS";
-      alias = "qwen3.8-27b-abliterated";
+      hf-repo = "BoldingBuilds/Ternary-Bonsai-2-27B-Abliterated-v2-PQ2_0-MTP-GGUF:PQ2_0-MTP";
+      alias = "ternary-bonsai-2-27b-abliterated";
+      # 7.13 GiB of weights on a 16 GiB card leaves room for a large context.
       ctx-size = 65536;
       flash-attn = "on";
       jinja = true;
+      # NOT optional. The model card measures StrongReject 0.513 at the default
+      # reasoning effort with a 4096-token budget, against 0.977 at medium: the
+      # default spends the budget inside the reasoning block and the answer
+      # never lands.
+      # The backslashes are NOT decoration: systemd unquotes ExecStart before
+      # exec, so a bare ''{"reasoning_effort":"medium"}'' reaches llama-server
+      # as {reasoning_effort:medium} and it dies with json parse_error.101 in a
+      # restart loop. Escaped here, systemd strips one level and the server
+      # gets valid JSON. Verified against the binary: bare form exit 1,
+      # escaped form exit 0.
+      chat-template-kwargs = ''{\"reasoning_effort\":\"medium\"}'';
+      # Self-speculation off the model's own MTP head (the 15 blk.64.* tensors
+      # in this GGUF). Without spec-type the loader logs
+      # "unused tensor blk.64.* -- ignoring" and those ~380 MB are dead weight.
+      # Measured here, 40-token generation: 90.4 tok/s without, 171.5 tok/s
+      # with, 133 of 144 drafted tokens accepted. Costs ~2.4 GiB of VRAM.
+      spec-type = "draft-mtp";
+      spec-draft-n-max = 3;
       # Internal; clients use the socket-activated proxy below.
       port = 8081;
     };
@@ -319,7 +342,10 @@ inputs:
         default_model = localModel;
         models.${localModel} = {
           context_length = config.services.llama-cpp.settings.ctx-size;
-          supports_vision = true;
+          # The Ternary Bonsai PQ2_0 repo ships no mmproj, so there is no vision
+          # projector to load. Claiming vision here would make Hermes send
+          # images the backend cannot decode.
+          supports_vision = false;
         };
       };
       # The `marine` profile itself is created with `hermes profile create`
