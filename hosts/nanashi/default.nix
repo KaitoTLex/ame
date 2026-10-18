@@ -15,6 +15,7 @@ in
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
     ../../modules/eduroam.nix
+    ../../modules/deploy-target.nix
   ];
 
   # ASUS TUF Gaming A14 (FA401EA): Ryzen AI MAX+ 392 / Radeon 8060S, iGPU only
@@ -36,12 +37,12 @@ in
     ];
     initrd.kernelModules = [ ];
     kernelModules = [ "kvm-amd" ];
-    # Out-of-tree fixes for internal audio and post-hibernate GPU lock-ups.
+    # Out-of-tree fix for internal audio. The post-hibernate ttm fix
+    # (drm/amd#5387) is upstream as of 7.2, so it's no longer patched here.
     extraModulePackages = [
       (config.boot.kernelPackages.callPackage ./snd-acp-config.nix { })
-      (config.boot.kernelPackages.callPackage ./ttm-swapout-fix.nix { })
     ];
-    kernelPackages = pkgs.linuxPackages_7_1;
+    kernelPackages = pkgs.linuxPackages_7_2;
     # EPP is driven by power-profiles-daemon; don't add a cpufreq governor.
     kernelParams = lib.mkAfter [ "amd_pstate=active" ];
     loader = {

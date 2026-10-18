@@ -29,6 +29,11 @@ in
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
 
+  # command-not-found reads programs.sqlite from the `nixos` channel, which a
+  # flake system never has, so every typo printed "Missing package database".
+  # nix-index (prebuilt DB, see modules/comma-shim.nix) handles it instead.
+  programs.command-not-found.enable = lib.mkForce false;
+
   functorOS = {
     flakeLocation = "/home/kaitotlex/.config/ame";
     config.allowUnfree = true;

@@ -44,6 +44,7 @@
     tmux = {
       url = "github:jakehamilton/tmux";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.snowfall.follows = "snowfall-lib";
     };
 
     aagl = {
@@ -53,6 +54,11 @@
 
     polycule-nix = {
       url = "github:KaitoTLex/Polycule-Nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -88,6 +94,7 @@
         configuration = {
           imports = [
             ./home.nix
+            (import ./modules/comma-shim.nix inputs)
           ];
           functorOS.desktop.niri.enable = true;
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
@@ -106,6 +113,7 @@
         configuration = {
           imports = [
             ./futabatlex.nix
+            (import ./modules/comma-shim.nix inputs)
           ];
           functorOS.desktop.niri.enable = true;
           home.stateVersion = "26.05";
