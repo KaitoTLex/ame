@@ -4,12 +4,19 @@
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
     # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
     # the canonical repo is the forgejo instance, which has agenix committed.
-    functorOS.url = "github:youwen5/functorOS";
+    # Pinned one commit before 6e493f4 ("housekeeping"), which dropped
+    # nix-index-database but still sets `programs.comma.enable`, an option
+    # home-manager doesn't have. Unpin once upstream fixes it.
+    functorOS.url = "github:youwen5/functorOS/aa7f6b4e2c81b465125254379afec684f9bdff72";
     #functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
     functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
     functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
+    # nanashi stays on linux 7.1: on 7.2 the xHCI misses isoc service intervals
+    # to the IXO22 (crackling). 7.1 is EOL and gone from nixpkgs, so it comes
+    # from the last rev nanashi ran it at (7.1.13). Drop once 7.2+ is fixed.
+    nixpkgs-linux71.url = "github:nixos/nixpkgs/801bef6abd86b91e51083066b83fb354a11fc640";
     corecycler = {
       url = "github:Daaboulex/linux-corecycler";
       # inputs.nixpkgs.follows = "nixpkgs";
@@ -31,6 +38,10 @@
     nixvim = {
       url = "github:kaitotlex/vix1";
       # inputs.nixpkgs.follows = "nixpkgs";
+      # julia_112-bin's test suite segfaults (stress.jl) on newer nixpkgs, so
+      # Hydra has no binary and vix1's julia LSP IFD can't build. Pinned to
+      # the last rev Hydra built it at. Unpin once upstream fixes it.
+      inputs.nixpkgs.url = "github:nixos/nixpkgs/3181085bfd08663b6b9e60bc7a8395c2aaa741bd";
     };
     nix-xilinx = {
       inputs.nixpkgs.follows = "nixpkgs";

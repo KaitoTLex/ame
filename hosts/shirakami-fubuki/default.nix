@@ -23,7 +23,7 @@ inputs:
       timeout = 15;
       systemd-boot.enable = lib.mkForce false;
     };
-    kernelPackages = pkgs.linuxPackages_7_1;
+    kernelPackages = pkgs.linuxPackages_7_2;
     kernelModules = [ "uinput" ];
     kernelParams = [ "amd_pstate=active" ];
     lanzaboote = {

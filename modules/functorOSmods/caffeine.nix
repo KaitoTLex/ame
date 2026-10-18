@@ -16,7 +16,7 @@
             let
               # 1. Toggling the widget off only ever flipped the QML-side
               #    SessionService.idleInhibited bool; the actual Wayland
-              #    zwp_idle_inhibitor_v1 object lives in DankBarWindow.qml's
+              #    zwp_idle_inhibitor_v1 object lives in DBarWindow.qml's
               #    `IdleInhibitor { enabled: ... }` and never got torn down
               #    reliably on enabled:false (state flips correctly --
               #    verified via `dms ipc call inhibit` round-tripping fine
@@ -30,23 +30,23 @@
 
               # 2. Swap the bar widget's Material Symbols icon for the
               #    requested Nerd Font glyphs: nf-md-flask_empty_off_outline
-              #    (off, U+F13F5) / nf-fa-flask (on, U+F0C3). DankNFIcon
+              #    (off, U+F13F5) / nf-fa-flask (on, U+F0C3). DNFIcon
               #    already bundles a Nerd Font and does name->glyph lookup,
               #    so just register the two names it's missing and point
-              #    the widget at it instead of DankIcon.
+              #    the widget at it instead of DIcon.
               oldIconMapOpen = "readonly property var iconMap: ({";
               newIconMapOpen = "readonly property var iconMap: ({\n            \"flask_on\": \"\\u{f0c3}\",\n            \"flask_off\": \"\\u{f13f5}\",";
             in
             old.postInstall
             + ''
-              substituteInPlace $out/share/quickshell/dms/Modules/DankBar/DankBarWindow.qml \
+              substituteInPlace $out/share/quickshell/dms/Modules/DBar/DBarWindow.qml \
                 --replace-fail ${lib.escapeShellArg oldIdleInhibitor} ${lib.escapeShellArg newIdleInhibitor}
 
-              substituteInPlace $out/share/quickshell/dms/DankCommon/Widgets/DankNFIcon.qml \
+              substituteInPlace $out/share/quickshell/dms/DCommon/Widgets/DNFIcon.qml \
                 --replace-fail ${lib.escapeShellArg oldIconMapOpen} ${lib.escapeShellArg newIconMapOpen}
 
-              substituteInPlace $out/share/quickshell/dms/Modules/DankBar/Widgets/IdleInhibitor.qml \
-                --replace-fail 'DankIcon {' 'DankNFIcon {' \
+              substituteInPlace $out/share/quickshell/dms/Modules/DBar/Widgets/IdleInhibitor.qml \
+                --replace-fail 'DIcon {' 'DNFIcon {' \
                 --replace-fail 'name: SessionService.idleInhibited ? "motion_sensor_active" : "motion_sensor_idle"' 'name: SessionService.idleInhibited ? "flask_on" : "flask_off"'
             '';
         })

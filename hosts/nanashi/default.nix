@@ -41,7 +41,9 @@ in
       (config.boot.kernelPackages.callPackage ./snd-acp-config.nix { })
       (config.boot.kernelPackages.callPackage ./ttm-swapout-fix.nix { })
     ];
-    kernelPackages = pkgs.linuxPackages_7_1;
+    # Pinned 7.1, see nixpkgs-linux71 in flake.nix.
+    kernelPackages =
+      inputs.nixpkgs-linux71.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxPackages_7_1;
     # EPP is driven by power-profiles-daemon; don't add a cpufreq governor.
     kernelParams = lib.mkAfter [ "amd_pstate=active" ];
     loader = {
@@ -193,7 +195,7 @@ in
     theming = {
       wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
       polarity = "dark";
-      base16Scheme = ../../scheme/plana.yaml;
+      base16Scheme = ../../scheme/shigure-ui.yaml;
     };
     system = {
       networking = {
