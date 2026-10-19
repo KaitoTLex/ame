@@ -15,6 +15,7 @@ in
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
     ../../modules/eduroam.nix
+    ../../modules/deploy-target.nix
   ];
 
   # ASUS TUF Gaming A14 (FA401EA): Ryzen AI MAX+ 392 / Radeon 8060S, iGPU only
@@ -193,7 +194,7 @@ in
 
   functorOS = {
     theming = {
-      wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
+      wallpaper = "${inputs.wallpapers}/vtubers/uiDate.jpg";
       polarity = "dark";
       base16Scheme = ../../scheme/shigure-ui.yaml;
     };

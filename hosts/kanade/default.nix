@@ -10,6 +10,7 @@ inputs:
     ./module/spotify.nix
     (import ../../modules/asahi-compat inputs)
     inputs.functoros-apple-silicon.nixosModules.default
+    ../../modules/deploy-target.nix
   ];
 
   nix.settings = {
@@ -61,7 +62,7 @@ inputs:
 
   nixpkgs.overlays = lib.mkAfter [
     # inputs.apple-silicon.overlays.apple-silicon-overlay
-    inputs.tmux.overlay
+    inputs.tmux.overlays.default
     inputs.polycule-nix.overlays.default
     (final: prev: {
       waydroid = prev.waydroid.overrideAttrs (old: {

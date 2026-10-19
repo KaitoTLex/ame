@@ -55,6 +55,7 @@
     tmux = {
       url = "github:jakehamilton/tmux";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.snowfall.follows = "snowfall-lib";
     };
 
     aagl = {
