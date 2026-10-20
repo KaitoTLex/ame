@@ -31,7 +31,7 @@ in
 
   # command-not-found reads programs.sqlite from the `nixos` channel, which a
   # flake system never has, so every typo printed "Missing package database".
-  # nix-index (prebuilt DB, see modules/comma-shim.nix) handles it instead.
+  # nix-index (prebuilt DB, from functorOS's nix-index-database) handles it instead.
   programs.command-not-found.enable = lib.mkForce false;
 
   functorOS = {

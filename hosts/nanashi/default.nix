@@ -37,12 +37,14 @@ in
     ];
     initrd.kernelModules = [ ];
     kernelModules = [ "kvm-amd" ];
-    # Out-of-tree fix for internal audio. The post-hibernate ttm fix
-    # (drm/amd#5387) is upstream as of 7.2, so it's no longer patched here.
+    # Out-of-tree fixes for internal audio and post-hibernate GPU lock-ups.
     extraModulePackages = [
       (config.boot.kernelPackages.callPackage ./snd-acp-config.nix { })
+      (config.boot.kernelPackages.callPackage ./ttm-swapout-fix.nix { })
     ];
-    kernelPackages = pkgs.linuxPackages_7_2;
+    # Pinned 7.1, see nixpkgs-linux71 in flake.nix.
+    kernelPackages =
+      inputs.nixpkgs-linux71.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxPackages_7_1;
     # EPP is driven by power-profiles-daemon; don't add a cpufreq governor.
     kernelParams = lib.mkAfter [ "amd_pstate=active" ];
     loader = {
@@ -192,9 +194,9 @@ in
 
   functorOS = {
     theming = {
-      wallpaper = "${inputs.wallpapers}/anime/plana.jpg";
+      wallpaper = "${inputs.wallpapers}/vtubers/uiDate.jpg";
       polarity = "dark";
-      base16Scheme = ../../scheme/plana.yaml;
+      base16Scheme = ../../scheme/shigure-ui.yaml;
     };
     system = {
       networking = {
