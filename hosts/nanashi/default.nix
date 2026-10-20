@@ -145,7 +145,10 @@ in
   networking.firewall = {
     enable = true;
     trustedInterfaces = [ config.services.tailscale.interfaceName ];
-    allowedUDPPorts = [ config.services.tailscale.port ];
+    allowedUDPPorts = [
+      config.services.tailscale.port
+      2021 # Bambu printers' SSDP announcements (LAN discovery)
+    ];
   };
   systemd.services.tailscaled.serviceConfig.Environment = [
     "TS_DEBUG_FIREWALL_MODE=nftables"
@@ -188,6 +191,14 @@ in
     xsct
     fix-desktop-entries
   ];
+
+  # Upstream's Flathub build: nixpkgs' bambu-studio lags upstream releases.
+  services.flatpak.packages = [ "com.bambulab.BambuStudio" ];
+  # Exits 255 at startup on native Wayland; run it through xwayland-satellite.
+  services.flatpak.overrides."com.bambulab.BambuStudio" = {
+    Context.sockets = [ "x11" ];
+    Environment.GDK_BACKEND = "x11";
+  };
 
   programs.steam.enable = true;
   nixpkgs.config.allowUnfree = true;
