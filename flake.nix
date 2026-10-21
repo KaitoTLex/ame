@@ -108,6 +108,22 @@
           home.stateVersion = "26.05";
         };
       };
+      # kaitotlex on headless hosts: the terminal half of home.nix, no desktop.
+      kaitotlexHeadless = functorOSLib.user.instantiate {
+        username = "kaitotlex";
+        homeDirectory = "/home/kaitotlex";
+        fullName = "KaitoTLex";
+        email = "renl@kaitotlex.systems";
+        configureGitUser = true;
+        configuration = {
+          imports = [
+            ./cli.nix
+          ];
+          functorOS.programs.enable = false;
+          functorOS.utils.audio.enable = false;
+          home.stateVersion = "26.05";
+        };
+      };
       # Work account on shirakami-fubuki; home lives on its own NVMe.
       futabatlex = functorOSLib.user.instantiate {
         username = "futabatlex";
@@ -172,6 +188,22 @@
               imports = [
                 (import ./config.nix inputs)
                 (import ./hosts/nanashi/default.nix inputs)
+              ];
+            };
+        };
+
+        # Threadripper 9970X FPGA build server, headless. Builds itself from
+        # ~/osaka, which adds airi on top; see hosts/osaka/default.nix.
+        osaka = functorOSLib.system.instantiate {
+          hostname = "osaka";
+          users = [ kaitotlexHeadless ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                ./hosts/osaka/hardware-configuration.nix
+                (import ./hosts/osaka/default.nix inputs)
               ];
             };
         };

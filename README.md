@@ -13,7 +13,8 @@
 *In Service*  
 Kanade - MacBook Pro 2021 Apple Silicon M1 Pro  
 Fubuki - Mini-ITX PC AMD Ryzen 7 7800X3D  
-Nanashi - ASUS TUF Gaming A14 2026 AMD Ryzen AI MAX+ 9 392
+Nanashi - ASUS TUF Gaming A14 2026 AMD Ryzen AI MAX+ 9 392  
+Osaka - Headless FPGA build server AMD Threadripper 9970X  
 *Planned*  
 Blaanc - ROG Zephyrus 2024 AMD Ryzen 8945HS  
 *Retired*  
