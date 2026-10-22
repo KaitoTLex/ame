@@ -1,0 +1,21 @@
+system: "base16"
+name: "Shigure"
+author: "Kaito (functorOS)"
+variant: "dark"
+palette:
+  base00: "1d1a1b"  # background — uniform shadow
+  base01: "272324"  # status bars, line highlight
+  base02: "393334"  # selection
+  base03: "766c6d"  # comments — the uniform's mid-grey
+  base04: "a69c9a"  # dark foreground — pinstripe
+  base05: "dbd1ca"  # foreground — curtain light
+  base06: "ece3db"
+  base07: "f8f2ea"  # brightest — chair cream
+  base08: "e3565c"  # red — sailor collar / cuffs (the signature)
+  base09: "e48a62"  # orange — blush, warm skin
+  base0A: "efb945"  # yellow — lemon drink (pushed gold so it stays apart from the hair)
+  base0B: "92c27c"  # green — her eyes
+  base0C: "7dbcae"  # cyan — eye teal
+  base0D: "e4c3a5"  # hair — pale blonde; Stylix uses this for focused window borders
+  base0E: "c98fae"  # magenta — nails / soft pink
+  base0F: "b7625b"  # brown — deep cuff red / wood shadow

@@ -4,26 +4,13 @@ inputs:
   lib,
   ...
 }:
-let
-  polycule-desktop = pkgs.makeDesktopItem {
-    name = "polycule";
-    desktopName = "Polycule";
-    comment = "Yet another Matrix client";
-    exec = "${lib.getExe pkgs.polycule}";
-    icon = "${pkgs.polycule}/app/polycule/data/flutter_assets/assets/logo/logo-circle.png";
-    categories = [
-      "Network"
-      "Chat"
-      "InstantMessaging"
-    ];
-  };
-in
 {
   imports = [
     ./module/eduroam.nix
     ./module/spotify.nix
     (import ../../modules/asahi-compat inputs)
     inputs.functoros-apple-silicon.nixosModules.default
+    ../../modules/deploy-target.nix
   ];
 
   nix.settings = {
@@ -75,7 +62,7 @@ in
 
   nixpkgs.overlays = lib.mkAfter [
     # inputs.apple-silicon.overlays.apple-silicon-overlay
-    inputs.tmux.overlay
+    inputs.tmux.overlays.default
     inputs.polycule-nix.overlays.default
     (final: prev: {
       waydroid = prev.waydroid.overrideAttrs (old: {
@@ -113,11 +100,6 @@ in
     };
     scale = 1.333333;
   };
-
-  environment.systemPackages = [
-    pkgs.polycule
-    polycule-desktop
-  ];
 
   nixpkgs.config.allowUnfree = true;
 

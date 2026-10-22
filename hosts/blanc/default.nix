@@ -24,7 +24,15 @@ inputs:
     };
     kernelPackages = pkgs.linuxPackages_7_2;
     kernelModules = [ "uinput" ];
-    kernelParams = [ "amd_pstate=active" ];
+    # Internal panel never raises HPD, see amdgpu-edp-ignore-hpd.nix.
+    extraModulePackages = [
+      (config.boot.kernelPackages.callPackage ./amdgpu-edp-ignore-hpd.nix { })
+    ];
+    kernelParams = [
+      "amd_pstate=active"
+      # PSR and Panel Replay recover through HPD IRQs, which that panel never sends.
+      "amdgpu.dcdebugmask=0x410"
+    ];
     lanzaboote = {
       enable = true;
       pkiBundle = "/var/lib/sbctl";
@@ -78,7 +86,7 @@ inputs:
   # `offload` is the mode that actually works with Wayland compositors.
   hardware.nvidia.prime = {
     nvidiaBusId = "PCI:1:0:0";
-    amdgpuBusId = "PCI:10:0:0";
+    amdgpuBusId = "PCI:101:0:0"; # 0000:65:00.0
     offload = {
       enable = true;
       enableOffloadCmd = true;

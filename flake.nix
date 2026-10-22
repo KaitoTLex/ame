@@ -4,10 +4,19 @@
     # Follow the nixpkgs in functorOS, which is verified to build properly before release.
     # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
     # the canonical repo is the forgejo instance, which has agenix committed.
-    # functorOS.url = "github:youwen5/functorOS";
-    functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
+    # Pinned one commit before 6e493f4 ("housekeeping"), which dropped
+    # nix-index-database but still sets `programs.comma.enable`, an option
+    # home-manager doesn't have. Unpin once upstream fixes it.
+    functorOS.url = "github:youwen5/functorOS/aa7f6b4e2c81b465125254379afec684f9bdff72";
+    #functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
+    functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
+    functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
     nixpkgs.follows = "functorOS/nixpkgs";
+    # nanashi stays on linux 7.1: on 7.2 the xHCI misses isoc service intervals
+    # to the IXO22 (crackling). 7.1 is EOL and gone from nixpkgs, so it comes
+    # from the last rev nanashi ran it at (7.1.13). Drop once 7.2+ is fixed.
+    nixpkgs-linux71.url = "github:nixos/nixpkgs/801bef6abd86b91e51083066b83fb354a11fc640";
     corecycler = {
       url = "github:Daaboulex/linux-corecycler";
       # inputs.nixpkgs.follows = "nixpkgs";
@@ -29,6 +38,10 @@
     nixvim = {
       url = "github:kaitotlex/vix1";
       # inputs.nixpkgs.follows = "nixpkgs";
+      # julia_112-bin's test suite segfaults (stress.jl) on newer nixpkgs, so
+      # Hydra has no binary and vix1's julia LSP IFD can't build. Pinned to
+      # the last rev Hydra built it at. Unpin once upstream fixes it.
+      inputs.nixpkgs.url = "github:nixos/nixpkgs/3181085bfd08663b6b9e60bc7a8395c2aaa741bd";
     };
     nix-xilinx = {
       inputs.nixpkgs.follows = "nixpkgs";
@@ -42,6 +55,7 @@
     tmux = {
       url = "github:jakehamilton/tmux";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.snowfall.follows = "snowfall-lib";
     };
 
     aagl = {
@@ -51,6 +65,11 @@
 
     polycule-nix = {
       url = "github:KaitoTLex/Polycule-Nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent/v2026.9.14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -89,12 +108,46 @@
           home.stateVersion = "26.05";
         };
       };
+      # kaitotlex on headless hosts: the terminal half of home.nix, no desktop.
+      kaitotlexHeadless = functorOSLib.user.instantiate {
+        username = "kaitotlex";
+        homeDirectory = "/home/kaitotlex";
+        fullName = "KaitoTLex";
+        email = "renl@kaitotlex.systems";
+        configureGitUser = true;
+        configuration = {
+          imports = [
+            ./cli.nix
+          ];
+          functorOS.programs.enable = false;
+          functorOS.utils.audio.enable = false;
+          home.stateVersion = "26.05";
+        };
+      };
+      # Work account on shirakami-fubuki; home lives on its own NVMe.
+      futabatlex = functorOSLib.user.instantiate {
+        username = "futabatlex";
+        homeDirectory = "/home/futabatlex";
+        fullName = "KaitoTLex";
+        email = "renl@kaitotlex.systems";
+        configureGitUser = true;
+        configuration = {
+          imports = [
+            ./futabatlex.nix
+          ];
+          functorOS.desktop.niri.enable = true;
+          home.stateVersion = "26.05";
+        };
+      };
     in
     {
       nixosConfigurations = {
         shirakami = functorOSLib.system.instantiate {
           hostname = "shirakami-fubuki";
-          users = [ kaitotlex ];
+          users = [
+            kaitotlex
+            futabatlex
+          ];
           configuration =
             { ... }:
             {
@@ -122,6 +175,25 @@
             };
         };
 
+        # ASUS TUF Gaming A14, FA401EA (Ryzen AI MAX+ 392 "Strix Halo", iGPU only).
+        # No hardware-configuration.nix: the generated hardware bits, the disk
+        # layout and the machine-specific power/input tuning all live in
+        # hosts/nanashi/default.nix.
+        nanashi = functorOSLib.system.instantiate {
+          hostname = "nanashi";
+          users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                (import ./hosts/nanashi/default.nix inputs)
+              ];
+            };
+        };
+
+        # ASUS ROG Zephyrus G14 2024, GA403UI (Ryzen 9 8945HS + RTX 4070 Laptop,
+        # MUX + Advanced Optimus panel switch).
         blanc = functorOSLib.system.instantiate {
           hostname = "blanc";
           users = [ kaitotlex ];
@@ -130,7 +202,24 @@
             {
               imports = [
                 (import ./config.nix inputs)
+                ./hosts/blanc/hardware-configuration.nix
                 (import ./hosts/blanc/default.nix inputs)
+              ];
+            };
+        };
+
+        # Threadripper 9970X FPGA build server, headless. Builds itself from
+        # ~/osaka, which adds airi on top; see hosts/osaka/default.nix.
+        osaka = functorOSLib.system.instantiate {
+          hostname = "osaka";
+          users = [ kaitotlexHeadless ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                ./hosts/osaka/hardware-configuration.nix
+                (import ./hosts/osaka/default.nix inputs)
               ];
             };
         };

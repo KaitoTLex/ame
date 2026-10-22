@@ -18,15 +18,22 @@ in
     ./modules/functorOSmods
   ];
 
-  time.timeZone = "America/Los_Angeles";
+  # time.timeZone = "America/Los_Angeles";
+  time.timeZone = "America/New_York";
   # time.timeZone = "Asia/Taipei";
   # time.timeZone = "Asia/Tokyo";
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = [ vix ] ++ kaitoPkgs;
+  # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
+  environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
+
+  # command-not-found reads programs.sqlite from the `nixos` channel, which a
+  # flake system never has, so every typo printed "Missing package database".
+  # nix-index (prebuilt DB, from functorOS's nix-index-database) handles it instead.
+  programs.command-not-found.enable = lib.mkForce false;
 
   functorOS = {
     flakeLocation = "/home/kaitotlex/.config/ame";

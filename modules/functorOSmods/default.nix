@@ -3,5 +3,6 @@
     ./shell.nix
     ./dms-pfp.nix
     ./caffeine.nix
+    ./identity.nix
   ];
 }
