@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="watsonExe.jpeg" alt="ame watson" width="30%">
+  <img src="../assets/watsonExe.jpeg" alt="ame watson" width="30%">
 </p>
 
 <h1 align="center">ame</h1>

@@ -99,7 +99,7 @@
         configureGitUser = true;
         configuration = {
           imports = [
-            ./home.nix
+            ./home/kaitotlex.nix
           ];
           functorOS.desktop.niri.enable = true;
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
@@ -108,7 +108,7 @@
           home.stateVersion = "26.05";
         };
       };
-      # kaitotlex on headless hosts: the terminal half of home.nix, no desktop.
+      # kaitotlex on headless hosts: the terminal half of home/kaitotlex.nix, no desktop.
       kaitotlexHeadless = functorOSLib.user.instantiate {
         username = "kaitotlex";
         homeDirectory = "/home/kaitotlex";
@@ -117,7 +117,7 @@
         configureGitUser = true;
         configuration = {
           imports = [
-            ./cli.nix
+            ./home/cli.nix
           ];
           functorOS.programs.enable = false;
           functorOS.utils.audio.enable = false;
@@ -133,7 +133,7 @@
         configureGitUser = true;
         configuration = {
           imports = [
-            ./futabatlex.nix
+            ./home/futabatlex.nix
           ];
           functorOS.desktop.niri.enable = true;
           home.stateVersion = "26.05";
@@ -152,7 +152,7 @@
             { ... }:
             {
               imports = [
-                (import ./config.nix inputs)
+                (import ./hosts/common.nix inputs)
                 ./hosts/shirakami-fubuki/hardware-configuration.nix
                 (import ./hosts/shirakami-fubuki/default.nix inputs)
               ];
@@ -168,7 +168,7 @@
             { ... }:
             {
               imports = [
-                (import ./config.nix inputs)
+                (import ./hosts/common.nix inputs)
                 ./hosts/kanade/hardware-configuration.nix
                 (import ./hosts/kanade/default.nix inputs)
               ];
@@ -186,7 +186,7 @@
             { ... }:
             {
               imports = [
-                (import ./config.nix inputs)
+                (import ./hosts/common.nix inputs)
                 (import ./hosts/nanashi/default.nix inputs)
               ];
             };
@@ -201,7 +201,7 @@
             { ... }:
             {
               imports = [
-                (import ./config.nix inputs)
+                (import ./hosts/common.nix inputs)
                 ./hosts/blanc/hardware-configuration.nix
                 (import ./hosts/blanc/default.nix inputs)
               ];
@@ -217,7 +217,7 @@
             { ... }:
             {
               imports = [
-                (import ./config.nix inputs)
+                (import ./hosts/common.nix inputs)
                 ./hosts/osaka/hardware-configuration.nix
                 (import ./hosts/osaka/default.nix inputs)
               ];

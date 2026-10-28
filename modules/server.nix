@@ -12,7 +12,7 @@
 }:
 {
   functorOS = {
-    # Only "laptop" and "desktop" exist; config.nix says laptop.
+    # Only "laptop" and "desktop" exist; hosts/common.nix says laptop.
     formFactor = lib.mkForce "desktop";
     desktop.enable = false;
     system = {

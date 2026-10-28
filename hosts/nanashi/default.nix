@@ -296,28 +296,21 @@ in
       # 165+ (it does 180) needs DisplayPort, i.e. a USB-C -> DP cable.
       # A dms/outputs.kdl block for the same connector shadows this one
       # (niri takes the first matching output block).
-      outputs."ASUSTek COMPUTER INC VG34VQL3A W2LMDW010828" =
-        let
-          # functorOS sizes columns as proportions of the output width; scale
-          # them so a column is as wide here as on a 16:9 1440p panel.
-          inherit (config.home-manager.users.kaitotlex.programs.niri.settings) layout;
-          like169 = w: { proportion = w.proportion * 2560.0 / 3440.0; };
-        in
-        {
-          # No refresh: niri picks the highest the link offers.
-          mode = {
-            width = 3440;
-            height = 1440;
-          };
-          position = {
-            x = 0;
-            y = 0;
-          };
-          layout = {
-            default-column-width = like169 layout.default-column-width;
-            preset-column-widths = map like169 layout.preset-column-widths;
-          };
+      outputs."ASUSTek COMPUTER INC VG34VQL3A W2LMDW010828" = {
+        # No refresh: niri picks the highest the link offers.
+        mode = {
+          width = 3440;
+          height = 1440;
         };
+        position = {
+          x = 0;
+          y = 0;
+        };
+        # Open windows at a third, so three tile the screen exactly (niri's
+        # proportions already account for gaps). The global presets
+        # (1/3, 1/2, 2/3) still apply for switch-preset-column-width.
+        layout.default-column-width.proportion = 1.0 / 3.0;
+      };
 
       input.touchpad = {
         tap = lib.mkForce true; # functorOS defaults to false

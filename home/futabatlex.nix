@@ -1,5 +1,5 @@
 # Home config for futabatlex, the work account on shirakami-fubuki.
-# Lighter than home.nix: no personal apps, no hermes gateway (kaitotlex runs that).
+# Lighter than kaitotlex.nix: no personal apps, no hermes gateway (kaitotlex runs that).
 {
   pkgs,
   inputs,

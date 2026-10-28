@@ -7,15 +7,15 @@ inputs:
 }:
 let
   vix = inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default;
-  kaitoPkgs = import ./pkgs/default.nix {
+  kaitoPkgs = import ../pkgs/default.nix {
     inherit pkgs;
     system = pkgs.stdenv.targetPlatform.system;
   };
 in
 {
   imports = [
-    ./modules/hardware
-    ./modules/functorOSmods
+    ../modules/hardware
+    ../modules/functorOSmods
   ];
 
   # time.timeZone = "America/Los_Angeles";

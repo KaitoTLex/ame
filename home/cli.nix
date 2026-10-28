@@ -1,5 +1,5 @@
 # kaitotlex's terminal environment: shell, editor, git and CLI tools.
-# home.nix imports this on the desktops; headless hosts (osaka) use it alone.
+# kaitotlex.nix imports this on the desktops; headless hosts (osaka) use it alone.
 {
   pkgs,
   ...

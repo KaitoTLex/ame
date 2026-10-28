@@ -19,7 +19,7 @@ inputs:
     inputs.lanzaboote.nixosModules.lanzaboote
   ];
 
-  # Installed on 26.05; config.nix's 26.11 is for newer installs.
+  # Installed on 26.05; hosts/common.nix's 26.11 is for newer installs.
   system.stateVersion = lib.mkForce "26.05";
 
   functorOS.flakeLocation = lib.mkForce "/home/kaitotlex/osaka";
@@ -28,7 +28,7 @@ inputs:
   # ssh sessions from it look the same. The image is required but never shown,
   # so it's a small file from this repo rather than the wallpapers input.
   functorOS.theming = {
-    wallpaper = ../../watsonExe.jpeg;
+    wallpaper = ../../assets/watsonExe.jpeg;
     polarity = "dark";
     base16Scheme = ../../scheme/shigure-ui.yaml;
   };
