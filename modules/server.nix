@@ -31,7 +31,10 @@
   i18n.inputMethod.enable = lib.mkForce false;
   boot.plymouth.enable = lib.mkForce false;
   boot.consoleLogLevel = lib.mkForce 4;
-  boot.initrd.verbose = lib.mkForce true;
+  # boot.initrd.verbose was removed with the scripted initrd (nixpkgs 2026-10-18).
+  # systemd initrd prints status by default; rd.systemd.show_status=false in
+  # kernelParams is what silences it, and functorOS sets that one.
+  boot.kernelParams = lib.mkAfter [ "rd.systemd.show_status=true" ];
 
   networking.firewall.enable = true;
   services.openssh = {

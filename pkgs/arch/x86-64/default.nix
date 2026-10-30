@@ -5,7 +5,7 @@
 with pkgs;
 [
   arduino-cli
-  kdePackages.wacomtablet
+  # kdePackages.wacomtablet: removed from nixpkgs 2026-10, X11-only.
   sbctl
   kicad
   polychromatic

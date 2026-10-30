@@ -16,6 +16,10 @@ in
   imports = [
     ../modules/hardware
     ../modules/functorOSmods
+    # functorOS at the pin vs current nixpkgs: see the file.
+    (import ../modules/functorOS-fixes.nix { inherit inputs; })
+    # functorOS.desktop.scroll: swap niri for scroll, keep DMS and the keymap.
+    (import ../modules/scroll.nix { inherit inputs; }).nixos
   ];
 
   # time.timeZone = "America/Los_Angeles";
@@ -24,6 +28,8 @@ in
   # time.timeZone = "Asia/Tokyo";
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
+  # Kernel-module aggregator: tolerate modules without signing certs. See the file.
+  nixpkgs.overlays = [ (import ../modules/kmod-aggregator-fix.nix) ];
 
   # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
   environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;

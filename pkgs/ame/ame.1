@@ -1,0 +1,273 @@
+.TH AME 1 "2026-10-27" "ame" "functorOS fleet tools"
+.SH NAME
+ame \- build, deploy and track NixOS generations across the functorOS fleet
+.SH SYNOPSIS
+.B ame
+.I command
+.RI [ args .\|.\|.]
+.PP
+.B ame
+.RB { build | switch | boot | test | update }
+.RI [ host .\|.\|.]
+.br
+.B ame fetch
+.RI [ generation ]
+.br
+.B ame record
+.RI [ generation ]
+.br
+.B ame digest
+.RI [ generation ]
+.br
+.B ame check
+.RB { current | gen | cache | flake | all }
+.SH DESCRIPTION
+.B ame
+drives the flake at
+.I ~/.config/ame
+for every machine in the fleet.
+It has two halves.
+.PP
+The
+.B build
+half runs on
+.BR shirakami-fubuki ,
+which is the only machine with the CPU and the emulation set up to build the
+whole fleet. It builds each host's system closure locally and then activates it
+\(em on this machine directly, on the others over SSH across the tailnet.
+A host that is offline is still built, and the result is kept as a GC root under
+.IR $XDG_CACHE_HOME/ame ,
+so the next run only has to copy it.
+.PP
+The
+.B generation
+half is for the receiving machines.
+.B shirakami-fubuki
+publishes its store over
+.BR harmonia (1)
+as a signed binary cache; the monthly builder records each completed fleet build
+as a numbered
+.IR generation .
+On
+.B nanashi
+or
+.BR kanade ,
+.B ame fetch
+pulls that generation's closure out of the cache instead of rebuilding it.
+.SS Generations
+A generation is one line of JSON in
+.IR $XDG_CACHE_HOME/ame/generations.jsonl ,
+appended only after
+.I every
+host in it built successfully. It records the generation label (by default
+.BR YYYY-MM ),
+the build timestamp, the flake's git revision, a short hash of
+.IR flake.lock ,
+the store path per host, and the path of that generation's update digest.
+.PP
+Because a generation is appended atomically at the end,
+.B ame fetch latest
+can never land on a half-built set.
+.SH COMMANDS
+.SS Build and deploy
+.TP
+.BI build " [host...]"
+Build only. Nothing is activated and no machine is touched.
+.TP
+.BI switch " [host...]"
+Build, then activate immediately. Other hosts are done first and this one last,
+so a network hiccup during its own activation cannot cut off a deploy still in
+flight.
+.TP
+.BI boot " [host...]"
+Build, then make it the default for the next boot without changing what is
+running.
+.TP
+.BI test " [host...]"
+Build, then activate without making it the boot default.
+.TP
+.BI update " [host...]"
+Run
+.B nix flake update
+first, then build.
+.PP
+With no host arguments every host is targeted. An unknown host name is an error
+rather than a no-op.
+.SS Generations
+.TP
+.BI fetch " [generation]"
+Fetch the closure recorded for
+.I this
+host in
+.I generation
+(default:
+.BR latest )
+from the binary cache, and register a GC root for it under
+.IR $XDG_CACHE_HOME/ame/fetched/ .
+.IP
+.B This does not activate anything.
+Activation needs root, and
+.B ame
+deliberately does not escalate. The command prints the exact
+.B switch-to-configuration
+invocation to run.
+.IP
+Fails if the generation has no build for this host, naming the hosts it does
+have.
+.TP
+.BI record " [generation]"
+Append the closures currently linked under
+.I $XDG_CACHE_HOME/ame
+as a new generation (default label:
+.BR YYYY-MM ).
+Refuses if any host in the fleet has no build. Normally called by the monthly
+builder; run it by hand to seed the registry.
+.TP
+.BI digest " [generation]"
+Print the update digest written for that generation \(em what moved, and what
+looks like it could break. Default:
+.BR latest .
+.SS Status
+.TP
+.B check current
+What this host is running: store path, NixOS version and label, build date, and
+the running kernel against the one in the closure (they differ after a
+.B switch
+without a reboot, which is the most common cause of "the fix did not work").
+Also names which recorded generation the running closure came from, if any, and
+says so when a newer one is available.
+.TP
+.B check gen
+List every recorded generation with its build date, flake revision, and the
+hosts it covers.
+.TP
+.B check cache
+Whether the binary cache answers. On failure, points at
+.B systemctl status harmonia
+on the builder.
+.TP
+.B check flake
+Git state of the flake checkout: branch, unpushed and unpulled commit counts,
+and how many paths are uncommitted. Fetches from
+.B origin
+first, and reports local state only if that fails.
+.TP
+.B check all
+All four, in order.
+.SH ENVIRONMENT
+.TP
+.B AME_FLAKE
+Override the flake location. Defaults to the path baked in at build time
+.RI ( config.functorOS.flakeLocation ).
+.TP
+.B XDG_CACHE_HOME
+Where build out-links, the generation registry and fetched GC roots live.
+Defaults to
+.IR ~/.cache .
+.TP
+.B NIX_SSHOPTS
+Set by
+.B ame
+itself for its SSH calls
+.RB ( BatchMode=yes ,
+.BR ConnectTimeout=10 ,
+.BR StrictHostKeyChecking=accept-new ).
+Overriding it is not recommended.
+.SH FILES
+.TP
+.I ~/.config/ame
+The flake.
+.TP
+.I $XDG_CACHE_HOME/ame/<host>
+Build out-link per host. Doubles as a GC root.
+.TP
+.I $XDG_CACHE_HOME/ame/generations.jsonl
+The generation registry, one JSON object per line, newest last.
+.TP
+.I $XDG_CACHE_HOME/ame/generations/<gen>.md
+Update digest for that generation.
+.TP
+.I $XDG_CACHE_HOME/ame/fetched/<gen>
+GC root for a fetched-but-not-activated generation.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+A build, activation, or fetch failed.
+.TP
+.B 2
+Usage error \(em unknown command or unknown host.
+.SH EXAMPLES
+.PP
+Build everything without touching any machine:
+.PP
+.RS
+.nf
+ame build
+.fi
+.RE
+.PP
+Deploy to one host:
+.PP
+.RS
+.nf
+ame switch nanashi
+.fi
+.RE
+.PP
+On a laptop, take the newest published generation and activate it:
+.PP
+.RS
+.nf
+ame fetch latest
+sudo /nix/store/...-nixos-system-.../bin/switch-to-configuration switch
+.fi
+.RE
+.PP
+Pin to a specific month instead of the newest:
+.PP
+.RS
+.nf
+ame check gen
+ame fetch 2026-11
+.fi
+.RE
+.PP
+Find out whether this machine is behind, and read what changed:
+.PP
+.RS
+.nf
+ame check current
+ame digest latest
+.fi
+.RE
+.SH NOTES
+.B ame
+never escalates privileges on its own.
+.BR switch ,
+.B boot
+and
+.B test
+use
+.BR nixos-rebuild ,
+which elevates via
+.B run0
+locally and logs in as
+.B root
+over SSH for remote hosts (see
+.IR modules/deploy-target.nix );
+.B fetch
+does not activate at all and prints the root command for you to run.
+.PP
+The signing key for the cache is held only by
+.BR shirakami-fubuki ,
+as an agenix secret. The other hosts carry the public half in
+.I nix.settings.trusted-public-keys
+and so will refuse an unsigned or wrongly-signed path \(em which is the point.
+.SH SEE ALSO
+.BR nixos-rebuild (8),
+.BR nix (1),
+.BR harmonia (1),
+.BR agenix (1)

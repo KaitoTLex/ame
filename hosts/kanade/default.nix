@@ -11,6 +11,10 @@ inputs:
     (import ../../modules/asahi-compat inputs)
     inputs.functoros-apple-silicon.nixosModules.default
     ../../modules/deploy-target.nix
+    # Trust shirakami's harmonia cache so `ame fetch` can substitute a
+    # generation instead of rebuilding it. Matters most here: kanade is
+    # aarch64 and gets cross-built under qemu on shirakami.
+    ../../modules/ame-cache-client.nix
   ];
 
   nix.settings = {

@@ -110,12 +110,14 @@
               enabled = true;
             }
           ];
-          spacing = 4;
+          # Gapless: flush with the screen edge, nothing between the bar and
+          # its popups, and no rounded corners showing wallpaper at the ends.
+          spacing = 0;
           innerPadding = 4;
           bottomGap = 0;
           transparency = 1;
           widgetTransparency = 1;
-          squareCorners = false;
+          squareCorners = true;
           noBackground = false;
           gothCornersEnabled = false;
           gothCornerRadiusOverride = false;
@@ -129,8 +131,9 @@
           autoHideDelay = 250;
           openOnOverview = false;
           visible = true;
-          popupGapsAuto = true;
-          popupGapsManual = 4;
+          # Auto never goes below 4, so it has to be manual to reach 0.
+          popupGapsAuto = false;
+          popupGapsManual = 0;
         }
       ];
     };

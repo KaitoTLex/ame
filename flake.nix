@@ -47,6 +47,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MIT-OpenCompute/xilinx-flake";
     };
+    # scroll: sway fork with a scrolling layout. A second session next to niri
+    # when functorOS.desktop.scroll.enable is set (modules/scroll.nix).
+    scroll-flake = {
+      url = "github:Diax170/scroll-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     snowfall-lib = {
       url = "github:snowfallorg/lib";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -91,6 +97,8 @@
           functorOS
           ;
       };
+      inherit (nixpkgs) lib;
+      scrollMod = import ./modules/scroll.nix { inherit inputs; };
       kaitotlex = functorOSLib.user.instantiate {
         username = "kaitotlex";
         homeDirectory = "/home/kaitotlex";
@@ -100,8 +108,10 @@
         configuration = {
           imports = [
             ./home/kaitotlex.nix
+            scrollMod.home
           ];
-          functorOS.desktop.niri.enable = true;
+          # niri everywhere; functorOS.desktop.scroll adds scroll beside it.
+          functorOS.desktop.niri.enable = lib.mkDefault true;
           # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
           # functorOS.desktop.waybar.variant = "compact";
           # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";

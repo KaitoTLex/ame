@@ -16,6 +16,9 @@ in
     "${modulesPath}/installer/scan/not-detected.nix"
     ../../modules/eduroam.nix
     ../../modules/deploy-target.nix
+    # Trust shirakami's harmonia cache so `ame fetch` can substitute a
+    # generation instead of rebuilding it.
+    ../../modules/ame-cache-client.nix
   ];
 
   # ASUS TUF Gaming A14 (FA401EA): Ryzen AI MAX+ 392 / Radeon 8060S, iGPU only
@@ -146,6 +149,9 @@ in
   # asusd keeps its own state; set the charge limit once with `asusctl -c 80`.
   services.asusd.enable = true;
   services.fwupd.enable = true;
+
+  # scroll next to niri. Same DMS, same keymap, zero gaps. modules/scroll.nix.
+  functorOS.desktop.scroll.enable = true;
 
   services.tailscale.enable = true;
   networking.nftables.enable = true;
