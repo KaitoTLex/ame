@@ -20,6 +20,12 @@
         "SITTIM_PORT=7348"
         "SITTIM_HOST=0.0.0.0"
         "SITTIM_TZ=America/New_York"
+        # Reuse the same loopback SSH tunnel and Tabby queue as La+/Marine.
+        # Do not open a separate inference server or change the loaded model.
+        "SITTIM_LECTURER_LLM_URL=http://127.0.0.1:8090/v1/chat/completions"
+        "SITTIM_LECTURER_MODEL=Qwen3.8-Flash-Next-Uncensored-exl3-5bpw"
+        # Sidecar deployment is independent; its default differs from the app.
+        "SITTIM_LECTURER_TTS_URL=http://127.0.0.1:9881"
       ];
       Restart = "on-failure";
       RestartSec = 3;
@@ -28,6 +34,6 @@
       StandardOutput = "journal";
       StandardError = "journal";
     };
-    Install.WantedBy = [ "default.target" ];
+    # Not autostarted on this host; start by hand with systemctl --user if needed.
   };
 }

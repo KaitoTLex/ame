@@ -49,6 +49,7 @@ inputs:
   };
   # scroll next to niri. Same DMS, same keymap, zero gaps. modules/scroll.nix.
   functorOS.desktop.scroll.enable = true;
+  ame.unifi-endpoint.enable = true;
 
   services.tailscale = {
     enable = true;
@@ -106,11 +107,15 @@ inputs:
 
   services.lact.enable = true;
   hardware.amdgpu.overdrive.enable = true;
+  # ROCm for the Ryzen iGPU (Radeon 610M).
+  hardware.amdgpu.opencl.enable = true;
 
   environment.systemPackages = with pkgs; [
     ryzenadj
     linuxPackages_zen.cpupower
     stress-ng
+    rocmPackages.rocm-smi
+    rocmPackages.rocminfo
 
     config.services.llama-cpp.package
 
@@ -698,6 +703,18 @@ inputs:
       configMerge = import "${inputs.hermes-agent}/nix/configMergeScript.nix" { inherit pkgs; };
     in
     {
+      # btop numbers NVML devices first, so GPU0 is the RTX and GPU1 is the iGPU.
+      programs.btop = {
+        package = pkgs.btop.override {
+          cudaSupport = true;
+          rocmSupport = true;
+        };
+        settings = {
+          show_gpu_info = "On";
+          custom_gpu_name1 = "Radeon 610M";
+        };
+      };
+
       home.packages = [
         (pkgs.writeShellScriptBin "senchou" ''exec hermes -p marine "$@"'')
       ];
@@ -721,7 +738,8 @@ inputs:
       programs.hermes-agent.enable = true;
       services.hermes-agent = {
         enable = true;
-        gateway.enable = true;
+        # Gateway moved to shigure-ui (2026-11-01). A Matrix token must not run in two places.
+        gateway.enable = false;
         package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
         extraDependencyGroups = [
           "anthropic"

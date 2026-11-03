@@ -34,6 +34,25 @@
   #programs.rio.enable = true;
   programs.vesktop.enable = true;
 
+  # No animations anywhere, compositor or shell. scroll reads the mouse setting
+  # from here too, see modules/scroll.nix.
+  programs.niri.settings = {
+    animations.enable = false;
+    input.mouse.natural-scroll = true;
+    # The focus ring only outlines the focused window; the border outlines them all.
+    layout = {
+      border = {
+        enable = lib.mkForce true;
+        width = 2;
+      };
+      focus-ring.enable = lib.mkForce false;
+    };
+  };
+  programs.dank-material-shell.settings = {
+    animationDuration = 0;
+    reduceMotion = true;
+  };
+
   # Signing needs the GPG key, which only the desktops have.
   programs.git.signing = {
     signByDefault = true;

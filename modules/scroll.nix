@@ -14,8 +14,8 @@
 # no command for are in scroll-niri.sh. Monitors and the touchpad are read from
 # programs.niri.settings, so a host only declares them once.
 #
-# Gaps: zero. `gaps inner 0`, `gaps outer 0`, `smart_gaps off`, no borders,
-# no rounded corners. DMS's bar sits in the layer shell with no spacing or
+# Gaps: zero. `gaps inner 0`, `gaps outer 0`, `smart_gaps off`, a 2px outline
+# on every window, no rounded corners. DMS's bar sits in the layer shell with no spacing or
 # popup gap, see functorOSmods/caffeine.nix.
 { inputs }:
 {
@@ -159,13 +159,17 @@
             variables = [ "--all" ];
             # scroll-flake's default waits on `scroll -mt subscribe`, but scroll
             # itself has no -m: it exits straight away and takes the session
-            # target, and DMS with it, down at login. The unset is for linger:
-            # the user manager outlives the session and niri may be next.
+            # target, and DMS with it, down at login. graphical-session.target
+            # has to go too, niri-session does the same: xdg-desktop-portal
+            # keeps it up otherwise, DMS burns its restarts with no compositor
+            # and the next login never starts it, so nothing locks on suspend.
+            # The unset is for linger: the user manager outlives the session
+            # and niri may be next.
             extraCommands = [
               "systemctl --user reset-failed"
               "systemctl --user start scroll-session.target"
               "scrollmsg -mt subscribe '[]' || true"
-              "systemctl --user stop scroll-session.target"
+              "systemctl --user stop scroll-session.target graphical-session.target"
               "systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY I3SOCK SWAYSOCK SCROLLSOCK XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP"
             ];
           };
@@ -181,9 +185,9 @@
               outer = 0;
             };
             window = {
-              border = 0;
+              border = 2;
               titlebar = false;
-              hideEdgeBorders = "both";
+              hideEdgeBorders = "none";
               borderRadius = 0;
               titlebarBorderRadius = 0;
               # niri's shadow, softness 30 / spread 5 / offset 0 5.
@@ -201,7 +205,7 @@
               };
             };
             floating = {
-              border = 0;
+              border = 2;
               titlebar = false;
             };
             # DMS draws the bar in the layer shell; no swaybar.
@@ -212,12 +216,12 @@
               size = config.stylix.fonts.sizes.desktop * 1.0;
             };
 
-            # Focus ring in the two stylix accents, same as the niri gradient.
-            # scroll has no gradient; active uses base0A, inactive invisible.
+            # Window outlines. scroll has no gradient; active uses base0A,
+            # inactive base03 so it stays visible against the base00 fill.
             colors = {
               focused = { border = c.base0A; background = c.base00; text = c.base05; indicator = c.base09; childBorder = c.base0A; };
-              focusedInactive = { border = c.base00; background = c.base00; text = c.base04; indicator = c.base00; childBorder = c.base00; };
-              unfocused = { border = c.base00; background = c.base00; text = c.base03; indicator = c.base00; childBorder = c.base00; };
+              focusedInactive = { border = c.base00; background = c.base00; text = c.base04; indicator = c.base00; childBorder = c.base03; };
+              unfocused = { border = c.base00; background = c.base00; text = c.base03; indicator = c.base00; childBorder = c.base03; };
               urgent = { border = c.base08; background = c.base00; text = c.base05; indicator = c.base08; childBorder = c.base08; };
             };
 
@@ -234,6 +238,7 @@
             // lib.optionalAttrs (touchpad.tap-button-map != null) {
               tap_button_map = if touchpad.tap-button-map == "left-right-middle" then "lrm" else "lmr";
             };
+            input."type:pointer".natural_scroll = onOff niri.input.mouse.natural-scroll;
 
             seat."*" = {
               xcursor_theme = "${config.stylix.cursor.name} ${toString config.stylix.cursor.size}";
@@ -243,26 +248,8 @@
             focus.followMouse = "yes";
             workspaceAutoBackAndForth = false;
 
-            # niri reduceMotion = true: short, no overshoot. The module's
-            # defaults are 300-500 ms with a spring on window_move; flatten them.
-            animations =
-              let
-                fast = { enable = true; duration = 150; var = { order = 3; controlPoints = [ 0.215 0.61 0.355 1 ]; }; };
-              in
-              {
-                enable = true;
-                style = "clip";
-                default = fast;
-                windowOpen = fast;
-                windowMove = fast // { off = { scale = null; order = null; controlPoints = null; }; };
-                windowSize = fast;
-                workspaceSwitch = fast // { duration = 200; };
-                windowFullscreen = fast;
-                jump = fast;
-                layerShell = fast;
-                fadeIn = fast;
-                fadeOut = fast;
-              };
+            # Same as home/kaitotlex.nix does for niri: no animations at all.
+            animations.enable = false;
 
             # ---- the functorOS keymap, translated ----
             # niri -> scroll, chord for chord. Plain definition on purpose: it

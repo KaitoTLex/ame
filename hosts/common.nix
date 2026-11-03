@@ -20,6 +20,7 @@ in
     (import ../modules/functorOS-fixes.nix { inherit inputs; })
     # functorOS.desktop.scroll: swap niri for scroll, keep DMS and the keymap.
     (import ../modules/scroll.nix { inherit inputs; }).nixos
+    ../modules/unifi-endpoint
   ];
 
   # time.timeZone = "America/Los_Angeles";
@@ -35,6 +36,11 @@ in
   environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
+
+  # PipeWire's X11 bell module segfaults when its display goes away, so every
+  # Xwayland exit took all the audio down with it. Nothing here needs the bell.
+  services.pipewire.extraConfig.pipewire."99-no-x11-bell"."context.properties"."module.x11.bell" =
+    false;
 
   # command-not-found reads programs.sqlite from the `nixos` channel, which a
   # flake system never has, so every typo printed "Missing package database".

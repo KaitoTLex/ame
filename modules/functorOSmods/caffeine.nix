@@ -36,6 +36,14 @@
               #    the widget at it instead of DIcon.
               oldIconMapOpen = "readonly property var iconMap: ({";
               newIconMapOpen = "readonly property var iconMap: ({\n            \"flask_on\": \"\\u{f0c3}\",\n            \"flask_off\": \"\\u{f13f5}\",";
+
+              # 3. Not caffeine, but same package. Quickshell's I3 backend loses
+              #    track of renamed workspaces, and scroll-niri.sh renames them
+              #    to make room above the first one, so the bar ended up with
+              #    pills like "1 1 1 1 5", all highlighted. Re-read the list on
+              #    every workspace event instead of trusting its bookkeeping.
+              oldI3Connections = "    Connections {\n        target: root.isSway || root.isScroll || root.isMiracle ? I3.workspaces : null";
+              newI3Connections = "    Connections {\n        target: root.isScroll ? I3 : null\n        function onRawEvent(event) {\n            if (event.type === \"workspace\")\n                I3.refreshWorkspaces();\n        }\n    }\n\n${oldI3Connections}";
             in
             old.postInstall
             + ''
@@ -48,6 +56,9 @@
               substituteInPlace $out/share/quickshell/dms/Modules/DBar/Widgets/IdleInhibitor.qml \
                 --replace-fail 'DIcon {' 'DNFIcon {' \
                 --replace-fail 'name: SessionService.idleInhibited ? "motion_sensor_active" : "motion_sensor_idle"' 'name: SessionService.idleInhibited ? "flask_on" : "flask_off"'
+
+              substituteInPlace $out/share/quickshell/dms/Services/CompositorService.qml \
+                --replace-fail ${lib.escapeShellArg oldI3Connections} ${lib.escapeShellArg newI3Connections}
             '';
         })
       );
@@ -62,7 +73,14 @@
           showOnLastDisplay = true;
           leftWidgets = [
             "launcherButton"
-            "workspaceSwitcher"
+            {
+              id = "workspaceSwitcher";
+              enabled = true;
+              # Small numbered pills, nothing else.
+              showWorkspaceIndex = true;
+              workspaceIndicatorCompact = true;
+              workspaceDragReorder = false;
+            }
             {
               id = "focusedWindow";
               enabled = true;
