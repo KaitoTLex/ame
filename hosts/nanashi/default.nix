@@ -195,7 +195,7 @@ in
   # Vivado (imperative install): run AMD's installer inside `xilinx-shell`
   # with Destination = xilinxInstallDir, then `fix-desktop-entries`.
   nixpkgs.overlays = lib.mkAfter [
-    inputs.nix-xilinx.overlay
+    (import ../../modules/xilinx-overlay.nix inputs)
   ];
   environment.systemPackages = with pkgs; [
     xilinx-shell

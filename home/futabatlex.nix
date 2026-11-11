@@ -1,5 +1,5 @@
 # Home config for futabatlex, the work account on shirakami-fubuki.
-# Lighter than kaitotlex.nix: no personal apps, no hermes gateway (kaitotlex runs that).
+# Lighter than kaitotlex.nix: no personal apps.
 {
   pkgs,
   inputs,
@@ -10,16 +10,7 @@ let
   xilinxVersion = "2025.2";
 in
 {
-  imports = [ inputs.hermes-agent.homeManagerModules.default ];
-
   home.sessionVariables.NIXPKGS_ALLOW_UNFREE = "1";
-
-  # hermes CLI only, with its own state in ~/.hermes. Put the API key in ~/.hermes/.env.
-  programs.hermes-agent.enable = true;
-  services.hermes-agent = {
-    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
-    extraDependencyGroups = [ "anthropic" ];
-  };
 
   home.packages = with pkgs; [
     gcc

@@ -22,14 +22,6 @@ in
     nanashi
   ];
 
-  "hermes-env.age".publicKeys = [
-    shirakami-fubuki
-  ];
-
-  "hermes-matrix-env.age".publicKeys = [
-    shirakami-fubuki
-  ];
-
   # harmonia's binary-cache signing key. Only shirakami needs the private
   # half: it is the only machine that serves the cache. nanashi and kanade
   # verify with the PUBLIC half, which is not secret and is declared inline

@@ -1,18 +1,11 @@
 {
   description = "KaitoTLex's modification to the already functional functorOS";
   inputs = {
-    # functorOS's own lock is stuck on nixpkgs from 2026-10-10 at this pin, so
-    # nixpkgs is set here. In flake.nix rather than the lock because `ame update`
-    # drops lock-only overrides and would quietly downgrade every host.
-    # Bump the rev by hand; functorOS-fixes.nix covers the gap with the pin.
-    # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
-    # the canonical repo is the forgejo instance, which has agenix committed.
-    # Pinned one commit before 6e493f4 ("housekeeping"), which dropped
-    # nix-index-database but still sets `programs.comma.enable`, an option
-    # home-manager doesn't have. Unpin once upstream fixes it.
-    functorOS.url = "github:youwen5/functorOS/aa7f6b4e2c81b465125254379afec684f9bdff72";
-    #functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
-    functorOS.inputs.nixpkgs.url = "github:nixos/nixpkgs/31ecbaca1bdefa45dffc409f0250bd8039ea0010";
+    # The canonical functorOS is the forgejo instance (agenix committed,
+    # nix-index dropped, overlay build fixes). github:youwen5/functorOS lags it
+    # and github:kaitotlex/functorOS is a stale mirror. nixpkgs follows
+    # functorOS's lock (a channel tarball), which its overlays are fixed against.
+    functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
     functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
     functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
@@ -75,11 +68,6 @@
 
     polycule-nix = {
       url = "github:KaitoTLex/Polycule-Nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.9.14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

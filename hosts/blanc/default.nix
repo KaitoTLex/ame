@@ -22,7 +22,7 @@ inputs:
       timeout = 15;
       systemd-boot.enable = lib.mkForce false;
     };
-    kernelPackages = pkgs.linuxPackages_7_2;
+    kernelPackages = pkgs.linuxPackages_7_3;
     kernelModules = [ "uinput" ];
     # Internal panel never raises HPD, see amdgpu-edp-ignore-hpd.nix.
     extraModulePackages = [
@@ -143,7 +143,7 @@ inputs:
   programs.xwayland.enable = true;
 
   nixpkgs.overlays = lib.mkAfter [
-    inputs.nix-xilinx.overlay
+    (import ../../modules/xilinx-overlay.nix inputs)
   ];
   programs.steam.enable = true;
   functorOS = {

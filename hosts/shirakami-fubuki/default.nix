@@ -24,7 +24,7 @@ inputs:
       timeout = 15;
       systemd-boot.enable = lib.mkForce false;
     };
-    kernelPackages = pkgs.linuxPackages_7_2;
+    kernelPackages = pkgs.linuxPackages_7_3;
     kernelModules = [ "uinput" ];
     kernelParams = [ "amd_pstate=active" ];
     lanzaboote = {
@@ -201,7 +201,7 @@ inputs:
   programs.xwayland.enable = true;
 
   nixpkgs.overlays = lib.mkAfter [
-    inputs.nix-xilinx.overlay
+    (import ../../modules/xilinx-overlay.nix inputs)
   ];
   programs.steam.enable = true;
   functorOS = {
@@ -514,194 +514,8 @@ inputs:
   # allocates it at runtime, so trust it by name here.
   nix.settings.trusted-users = [ "harmonia" ];
 
-  age.secrets.hermes-matrix-env = {
-    file = ../../modules/secrets/hermes-matrix-env.age;
-    owner = "kaitotlex";
-    group = "users";
-    mode = "0400";
-  };
-
   home-manager.users.kaitotlex =
     { lib, ... }:
-    let
-      localModel = config.services.llama-cpp.settings.alias;
-      llamaCppProvider = {
-        name = "Local llama.cpp";
-        api = "http://127.0.0.1:8080/v1"; # llama-gate
-        transport = "chat_completions";
-        default_model = localModel;
-        models.${localModel} = {
-          context_length = config.services.llama-cpp.settings.ctx-size;
-          # The GGUF repo ships mmproj-F32.gguf, but the service sets
-          # no-mmproj: the projector is not loaded, so there is no vision
-          # capability to claim. Saying true here would make Hermes send
-          # images the backend cannot decode.
-          supports_vision = false;
-        };
-      };
-      # Model wiring for the local-inference profiles. Both are created with
-      # `hermes profile create`; only the model block is managed here,
-      # deep-merged into each profile's config.yaml the same way the module
-      # merges the default one. This is deliberately declarative: a
-      # hand-written config.yaml gets silently rewritten by any `hermes model`
-      # run (laplus was reverted to anthropic/claude-sonnet-5-5 that way),
-      # whereas these values are restored on every rebuild.
-      #
-      # La+ and Marine run on one model and nothing else: Qwen3.8-Flash-Next-
-      # Uncensored (EXL3 5.05bpw; 125B MoE, 6B active) on kaoshung (DGX Spark,
-      # GB10, 121 GB unified), served by TabbyAPI. The main turn, every
-      # auxiliary task, compression and delegated children (which inherit the
-      # parent model) all go there, and there is no fallback. Setup, tuning and
-      # measurements: kaoshung ~/Source/kaoshung/qwen38-flash-next/README.md
-      # (mirrored at ~/Source/Playground/kaoshung/qwen38-flash-next here).
-      # Measured single-stream: ~60 tok/s generating, ~50 tok/s while
-      # thinking, ~157 tok/s when a reply repeats context (file edits), 1.4-1.9 s
-      # to first token on the next turn of a 15-18k conversation (prefix
-      # cache), ~11 s for a cold 17k prompt.
-      #
-      # Thinking is capped on the SERVER, so every request is covered without
-      # Hermes sending anything. The chat template's default reasoning effort
-      # (xhigh) thought for 7-9k tokens on hard prompts and ran out of
-      # max_tokens with no answer at all, so Tabby forces reasoning_effort=low
-      # and cuts thinking off at 1024 tokens (~20 s), after which the model
-      # answers (template_vars_force / reasoning_budget_tokens in its
-      # config.yml). Everyday prompts think for 50-800 tokens.
-      #
-      # The API has NO authentication, so kaoshung keeps it on loopback and we
-      # reach it through the kaoshung-llm-tunnel.service user unit
-      # (127.0.0.1:8090 -> kaoshung 127.0.0.1:8000). Do NOT change this to a
-      # LAN address: that would expose an unauthenticated abliterated model to
-      # every host on the network.
-      qwenModel = "Qwen3.8-Flash-Next-Uncensored-exl3-5bpw";
-      kaoshungProvider = {
-        name = "kaoshung Qwen3.8-Flash-Next-Uncensored";
-        api = "http://127.0.0.1:8090/v1"; # kaoshung-llm-tunnel.service
-        transport = "chat_completions";
-        # Nothing streams until a cold prompt has prefilled (~1.6k tok/s, so a
-        # full 128k window takes 80-90 s); keep the stale detector clear of it.
-        stale_timeout_seconds = 600;
-        request_timeout_seconds = 1800;
-        default_model = qwenModel;
-        models.${qwenModel} = {
-          # Tabby serves max_seq_len 131072 (only 12 of 48 layers keep K/V).
-          context_length = 131072;
-          # Tabby loads the vision tower; checked with an image request.
-          supports_vision = true;
-        };
-      };
-      # Side tasks share the one server, which runs up to 4 jobs at once.
-      # Quick classifiers, titles and summaries run with thinking off: a
-      # SAFE/DANGEROUS call or a title needs no chain of thought. Judgement
-      # calls keep thinking (still capped server-side).
-      kaoshungAux = timeout: {
-        provider = "custom:kaoshung";
-        model = qwenModel;
-        inherit timeout;
-      };
-      kaoshungAuxQuick =
-        timeout:
-        kaoshungAux timeout
-        // {
-          extra_body.chat_template_kwargs.enable_thinking = false;
-        };
-      localProfileSettings = {
-        model = {
-          provider = "custom:kaoshung";
-          default = qwenModel;
-        };
-        providers.kaoshung = kaoshungProvider;
-        # One model, so nothing to fall back to. null (not an omitted key)
-        # because the merge into config.yaml only overwrites: it clears the old
-        # custom:llama-cpp-local entry, whose server isn't running.
-        fallback_model = null;
-        # Long reports and multi-file reviews outlive the 180 s default.
-        agent.max_turns = null;
-        # Two separate budgets guard compression, and only raising one of them
-        # is why "reached its total ceiling after 600.0s" kept recurring:
-        #
-        #   context_timeout_seconds        idle window, no progress for N sec
-        #   context_total_ceiling_seconds  HARD cap on the whole attempt
-        #
-        # agent/conversation_compression.py:
-        #   DEFAULT_CONTEXT_TIMEOUT_SECONDS = 120.0
-        #   DEFAULT_CONTEXT_TOTAL_CEILING_SECONDS = 600.0
-        compression.context_timeout_seconds = 900;
-        compression.context_total_ceiling_seconds = 1800;
-        # threshold_tokens is an absolute trigger that gets past Hermes' 75-85%
-        # floor. It was 32000 for osaka's 64k window and ~36 tok/s prefill. On
-        # kaoshung's 128k window a summary of the middle (~1.6k tok/s prefill,
-        # thinking off) takes about a minute, so 64000 keeps twice the history
-        # and still leaves half the window as headroom.
-        # Marine specifically runs LONG batches (multi-file builds, repeated
-        # terminal work), and for her 64000 fires a summary every time the
-        # window refills -- each one a minute of dead time mid-batch. She
-        # overrides this to 96000 in marineSettings below; La+ keeps 64000,
-        # since her sessions are short briefs where a smaller window is fine
-        # and the earlier trigger costs nothing.
-        compression.threshold_tokens = 64000;
-        # Tool output is what fills the window, not the conversation. In the
-        # session that wedged on 2026-10-26, 158 tool results came to 358k
-        # chars (terminal 162k, session_search 105k, one result alone 36k)
-        # against 27k chars of assistant text. This prune swaps old results
-        # for a placeholder without any LLM call, so it's instant, and it often
-        # keeps the summary from running at all.
-        compression.proactive_prune_tokens = 20000;
-        compression.proactive_prune_min_result_chars = 2000;
-        # Default 20. In an agent loop that's mostly tool calls, and 20
-        # protected messages can be most of the window.
-        compression.protect_last_n = 12;
-        # Summaries are mechanical: thinking off. agent/model_metadata.py
-        # enforces MINIMUM_CONTEXT_LENGTH = 64_000 for this task; 131072 clears it.
-        auxiliary.compression = kaoshungAuxQuick 600;
-        auxiliary.approval = kaoshungAuxQuick 60;
-        auxiliary.title_generation = kaoshungAuxQuick 30;
-        auxiliary.memory_query_rewrite = kaoshungAuxQuick 15;
-        auxiliary.monitor = kaoshungAuxQuick 60;
-        auxiliary.profile_describer = kaoshungAuxQuick 60;
-        auxiliary.tts_audio_tags = kaoshungAuxQuick 30;
-        auxiliary.mcp = kaoshungAuxQuick 60;
-        auxiliary.skills_hub = kaoshungAuxQuick 60;
-        auxiliary.triage_specifier = kaoshungAuxQuick 120;
-        auxiliary.vision = kaoshungAuxQuick 120;
-        # On "auto", background review replays the whole conversation on the
-        # main model after a turn; pinned here it replays a compact digest.
-        auxiliary.background_review = kaoshungAux 600;
-        auxiliary.curator = kaoshungAux 600;
-        auxiliary.goal_judge = kaoshungAux 120;
-        auxiliary.kanban_decomposer = kaoshungAux 300;
-        terminal = {
-          # Default workspace, not home: unspecified work lands in a scratch
-          # tree instead of littering ~. Persona files carry the same rule in
-          # prose; this is the one the tools actually start in.
-          cwd = "/home/kaitotlex/Source/Playground";
-          timeout = 3600;
-        };
-      };
-      # Marine is the long-batch worker: multi-file builds, repeated terminal
-      # runs, whole-repo passes. She hits the window from tool output far
-      # harder than La+ does, and every summary mid-batch is dead time on a
-      # ~62 tok/s model. So she gets a later trigger and a more aggressive
-      # instant prune, while La+ keeps the conservative defaults above.
-      marineSettings = lib.recursiveUpdate localProfileSettings {
-        # 96000 of the 131072 window, vs 64000 shared. Still ~35k headroom for
-        # the reply plus the next few tool results, but a long batch now runs
-        # to the end instead of being interrupted roughly every 64k.
-        compression.threshold_tokens = 96000;
-        # Prune earlier and more of it. The placeholder swap costs no LLM call,
-        # so doing it sooner is strictly cheaper than letting the window fill
-        # and paying for a summary: 40000 tokens of old tool results go first,
-        # and any single result over 1000 chars is eligible (vs 2000), which is
-        # what actually catches the terminal and session_search dumps.
-        compression.proactive_prune_tokens = 40000;
-        compression.proactive_prune_min_result_chars = 1000;
-        # Default 20, shared value 12. Her protected tail is almost entirely
-        # tool calls, and protecting 12 of those can itself be tens of
-        # thousands of tokens that compression is then forbidden to touch.
-        compression.protect_last_n = 8;
-      };
-      laplusSettings = localProfileSettings;
-      configMerge = import "${inputs.hermes-agent}/nix/configMergeScript.nix" { inherit pkgs; };
-    in
     {
       # btop numbers NVML devices first, so GPU0 is the RTX and GPU1 is the iGPU.
       programs.btop = {
@@ -712,76 +526,6 @@ inputs:
         settings = {
           show_gpu_info = "On";
           custom_gpu_name1 = "Radeon 610M";
-        };
-      };
-
-      home.packages = [
-        (pkgs.writeShellScriptBin "senchou" ''exec hermes -p marine "$@"'')
-      ];
-
-      home.activation.hermesMarineProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        marine="$HOME/.hermes/profiles/marine"
-        if [ -d "$marine" ]; then
-          run ${configMerge} ${pkgs.writeText "hermes-marine.json" (builtins.toJSON marineSettings)} "$marine/config.yaml"
-        fi
-      '';
-
-      home.activation.hermesLaplusProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-        laplus="$HOME/.hermes/profiles/laplus"
-        if [ -d "$laplus" ]; then
-          run ${configMerge} ${pkgs.writeText "hermes-laplus.json" (builtins.toJSON laplusSettings)} "$laplus/config.yaml"
-        fi
-      '';
-
-      imports = [ inputs.hermes-agent.homeManagerModules.default ];
-
-      programs.hermes-agent.enable = true;
-      services.hermes-agent = {
-        enable = true;
-        # Gateway moved to shigure-ui (2026-11-01). A Matrix token must not run in two places.
-        gateway.enable = false;
-        package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
-        extraDependencyGroups = [
-          "anthropic"
-          "matrix"
-        ];
-        environmentFiles = [ config.age.secrets.hermes-matrix-env.path ];
-        environment = {
-          MATRIX_E2EE_MODE = "required";
-          MATRIX_HOMESERVER = "https://matrix.functor.systems";
-        };
-        settings = {
-          model = {
-            provider = "anthropic";
-            default = "claude-opus-5";
-          };
-          providers.llama-cpp-local = llamaCppProvider;
-          delegation = {
-            provider = "custom:llama-cpp-local";
-            model = localModel;
-            max_concurrent_children = 1;
-            fallback_providers = [ ];
-          };
-          platforms.matrix.enabled = true;
-          matrix = {
-            allowed_users = [
-              "@kaitotlex:matrix.org"
-              "@kaitotlex26:functor.systems"
-            ];
-            require_mention = false;
-            process_notices = false;
-            session_scope = "room";
-            auto_thread = false;
-            dm_mention_threads = false;
-            max_message_length = 16000;
-          };
-          group_sessions_per_user = true;
-          terminal = {
-            # Default workspace, not home. Same rule as the local profiles
-            # above; stated here because this settings block is separate.
-            cwd = "/home/kaitotlex/Source/Playground";
-            timeout = 3600;
-          };
         };
       };
 
