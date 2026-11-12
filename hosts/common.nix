@@ -31,7 +31,11 @@ in
   # still loads it from nix-xilinx's xilinx-shell FHS env. Warn, don't refuse.
   nixpkgs.config.problems.handlers."gtk+".broken = "warn";
   # Kernel-module aggregator: tolerate modules without signing certs. See the file.
-  nixpkgs.overlays = [ (import ../modules/kmod-aggregator-fix.nix) ];
+  # polars fix must land after functorOS's own overlay, hence mkAfter.
+  nixpkgs.overlays = lib.mkAfter [
+    (import ../modules/kmod-aggregator-fix.nix)
+    (import ../modules/polars-libgit2-fix.nix)
+  ];
 
   # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
   environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;

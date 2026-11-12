@@ -1,6 +1,12 @@
-# Secondary drives, formatted by ./setup-drives.sh (LUKS UUIDs must match).
-# Unlocked in stage 2 with keyfiles kept on the encrypted root, so only the
-# root passphrase is typed at boot.
+# Secondary drives.
+#
+# The T-FORCE SATA SSD is LUKS2 + keyfile from ./setup-drives.sh, and its LUKS
+# UUID must match the crypttab line below.
+#
+# The Crucial T710 is NOT encrypted. It carries futabatlex's live home (and the
+# pre-wipe offload of kaitotlex's), so it is mounted by filesystem UUID
+# directly instead of through /dev/mapper. setup-drives.sh's futaba leg would
+# reformat it -- do not run it against this drive.
 { ... }:
 let
   btrfsOpts = [
@@ -9,14 +15,20 @@ let
   ];
 in
 {
+  # data.key lived on the old root disk and went with it, so /data cannot
+  # auto-unlock yet. nofail keeps that from blocking boot. To restore it, using
+  # the backup passphrase setup-drives.sh added to the drive:
+  #   install -d -m700 /var/lib/luks-keys
+  #   (umask 077; head -c 4096 /dev/urandom >/var/lib/luks-keys/data.key)
+  #   cryptsetup luksAddKey /dev/disk/by-uuid/5d15d0a4-bce7-4f4f-b0e0-c605aee0539e \
+  #     /var/lib/luks-keys/data.key
   environment.etc.crypttab.text = ''
-    futaba UUID=e7f91d85-e456-47ab-8220-b0ecdc8b0873 /var/lib/luks-keys/futaba.key luks,discard
-    data   UUID=5d15d0a4-bce7-4f4f-b0e0-c605aee0539e /var/lib/luks-keys/data.key   luks,discard,nofail
+    data UUID=5d15d0a4-bce7-4f4f-b0e0-c605aee0539e /var/lib/luks-keys/data.key luks,discard,nofail
   '';
 
-  # Crucial T710 1TB: futabatlex's home.
+  # Crucial T710 1TB, plain btrfs (label "futaba"): futabatlex's home.
   fileSystems."/home/futabatlex" = {
-    device = "/dev/mapper/futaba";
+    device = "/dev/disk/by-uuid/03c5a162-0042-41fe-808d-c792535c23d3";
     fsType = "btrfs";
     options = [ "subvol=home" ] ++ btrfsOpts;
   };

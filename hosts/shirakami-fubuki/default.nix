@@ -83,6 +83,15 @@ inputs:
       ];
     };
   };
+  # Pinned, not auto-allocated. Both homes predate this install: futabatlex's
+  # lives on the Crucial T710 (uid 1001 on disk) and kaitotlex's comes back
+  # from the pre-wipe offload on the same drive (uid 1000). NixOS allocates
+  # unpinned uids in alphabetical order, which would hand futabatlex 1000 and
+  # kaitotlex 1001 and leave every file in both homes owned by the wrong
+  # account.
+  users.users.kaitotlex.uid = 1000;
+  users.users.futabatlex.uid = 1001;
+
   users.users.kaitotlex.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMkS6tVvx8qfgfWaP3W2MjWl8lYvu9NK75db9Fyn3oSR kaitotlex@nanashi"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHjmMf4qjTI2ltl6FVRAjbnIiOguyXfRQnTcNhde2coZ kaitotlex@chisa"
