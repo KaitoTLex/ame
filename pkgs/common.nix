@@ -45,6 +45,7 @@ with pkgs;
   # waydroid
   qemu
   ratty
+  orca-slicer
 
   #futaba
   # anki's source build is broken in the pinned nixpkgs: its vendored uv
