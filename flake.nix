@@ -108,6 +108,33 @@
           home.stateVersion = "26.05";
         };
       };
+      # kaitotlex on headless hosts: the terminal half of home.nix, no desktop.
+      kaitotlexHeadless = functorOSLib.user.instantiate {
+        username = "kaitotlex";
+        homeDirectory = "/home/kaitotlex";
+        fullName = "KaitoTLex";
+        email = "renl@kaitotlex.systems";
+        configureGitUser = true;
+        configuration = {
+          imports = [
+            ./cli.nix
+          ];
+          # No kitty, browser or desktop apps, but keep the terminal half of
+          # functorOS's program set: archive tools (zip, unzip, 7z, xz) and the
+          # nix helpers (nom, nurl), the same ones the desktops get.
+          functorOS.programs.enable = false;
+          functorOS.programs.bulk = {
+            enable = true;
+            archiveTools.enable = true;
+            nixCliTools.enable = true;
+            instantMessaging.enable = false;
+            desktopApps.enable = false;
+            misc.enable = false;
+          };
+          functorOS.utils.audio.enable = false;
+          home.stateVersion = "26.05";
+        };
+      };
       # Work account on shirakami-fubuki; home lives on its own NVMe.
       futabatlex = functorOSLib.user.instantiate {
         username = "futabatlex";
@@ -175,7 +202,29 @@
               ];
             };
         };
+
+        # Threadripper 9970X FPGA build server, headless. Builds itself from
+        # ~/Source/osaka, which adds nixosModules.osaka on top; see hosts/osaka/default.nix.
+        osaka = functorOSLib.system.instantiate {
+          hostname = "osaka";
+          users = [ kaitotlexHeadless ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./config.nix inputs)
+                ./hosts/osaka/hardware-configuration.nix
+                (import ./hosts/osaka/default.nix inputs)
+              ];
+            };
+        };
       };
 
+      nixosModules = {
+        # osaka's unpublished services (airi, koyori, osaka-greeter), as a
+        # function from their flakes to a module, since the checkouts only
+        # exist on osaka. ~/Source/osaka calls it; see hosts/osaka/unpublished.nix.
+        osaka = import ./hosts/osaka/unpublished.nix;
+      };
     };
 }

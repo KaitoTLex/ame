@@ -25,7 +25,8 @@ in
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = [ vix ] ++ kaitoPkgs;
+  # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
+  environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
 
