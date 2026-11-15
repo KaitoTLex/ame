@@ -1,4 +1,4 @@
-"""OpenAI-compatible front door for osaka's LLM server(s).
+"""OpenAI-compatible front door for kronii's LLM server(s).
 
 With only ARC_URL set, every request goes to llama.cpp on the Arc. With BONSAI_URL
 set as well, routing is, in order:

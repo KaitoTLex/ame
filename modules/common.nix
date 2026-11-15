@@ -1,21 +1,19 @@
+# Shared by every host. flake.nix imports this first, then hosts/<name>, which
+# may override anything here.
 inputs:
 {
   pkgs,
   lib,
-  config,
   ...
 }:
 let
-  vix = inputs.nixvim.packages.${pkgs.stdenv.targetPlatform.system}.default;
-  kaitoPkgs = import ./pkgs/default.nix {
-    inherit pkgs;
-    system = pkgs.stdenv.targetPlatform.system;
-  };
+  vix = inputs.nixvim.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in
 {
   imports = [
-    ./modules/hardware
-    ./modules/functorOSmods
+    ./hardware
+    ./functorOSmods
+    ./desktop-packages
   ];
 
   # time.timeZone = "America/Los_Angeles";
@@ -25,8 +23,7 @@ in
   system.stateVersion = "26.11";
   nixpkgs.config.allowUnfree = true;
 
-  # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
-  environment.systemPackages = [ vix ] ++ lib.optionals config.functorOS.desktop.enable kaitoPkgs;
+  environment.systemPackages = [ vix ];
 
   users.users.kaitotlex.extraGroups = [ "dialout" ];
 

@@ -1,5 +1,5 @@
 # Ad, tracker, malware and adult-site blocking for the tailnet: any device
-# whose DNS server is osaka's tailnet address gets it. For every tailnet
+# whose DNS server is kronii's tailnet address gets it. For every tailnet
 # device at once, make that address the only global nameserver in the
 # Tailscale admin console, with "Override DNS servers" on. Not on the LAN.
 #
@@ -15,7 +15,7 @@ in
 {
   services.unbound = {
     enable = true;
-    # resolved below already sends osaka's own lookups to 127.0.0.1.
+    # resolved below already sends kronii's own lookups to 127.0.0.1.
     resolveLocalQueries = false;
     # crab-hole doesn't pass DNSSEC records through, so validating would fail
     # every signed zone. Cloudflare validates upstream.
@@ -24,7 +24,7 @@ in
       server = {
         interface = [
           "127.0.0.1"
-          # osaka's tailnet addresses. ip-freebind binds them even before
+          # kronii's tailnet addresses. ip-freebind binds them even before
           # tailscaled has brought tailscale0 up.
           "100.79.234.116"
           "fd7a:115c:a1e0::842e:ea75"
@@ -89,7 +89,7 @@ in
     };
   };
 
-  # Send all of osaka's own lookups through the filter too: no DHCP-learned
+  # Send all of kronii's own lookups through the filter too: no DHCP-learned
   # or fallback resolvers.
   services.resolved.settings.Resolve = {
     DNS = [ "127.0.0.1" ];

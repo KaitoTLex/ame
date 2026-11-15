@@ -1,9 +1,10 @@
-"""fantui: per-channel fan control for osaka, on top of fanctl.
+"""fantui: per-channel fan control for kronii, on top of fanctl.
 
-Targets are saved to /var/lib/fanctl/levels.json ({"pwm1": 100, "pwm2":
-"auto", ...}) and applied by restarting fanctl, whose config is generated
-from that file. Channels missing from it run at 100%; "auto" hands the
-channel back to the BIOS curve.
+Targets are saved to /var/lib/fanctl/levels.json ({"pwm1": "curve", "pwm2":
+"auto", "pwm3": 60, ...}) and applied by restarting fanctl, whose config is
+generated from that file. "curve" (the default for unlisted channels) follows
+the temperature curve in fanctl-config.sh, a number is a fixed percentage,
+and "auto" hands the channel back to the BIOS curve.
 """
 
 import curses
@@ -102,12 +103,12 @@ def load(path):
 
 
 def sane(level):
-    # Same rules as fanctl-config: anything but "auto" or a number runs at 100%.
-    if level == "auto":
+    # Same rules as fanctl-config.sh: anything else means the curve.
+    if level in ("auto", "curve"):
         return level
     if isinstance(level, (int, float)) and not isinstance(level, bool):
         return max(MIN_PCT, min(100, int(level)))
-    return 100
+    return "curve"
 
 
 def save(path, data):
@@ -148,10 +149,16 @@ def temp_attr(t):
 
 
 def target_text(level):
-    return "BIOS" if level == "auto" else "%d%%" % level
+    if level == "auto":
+        return "BIOS"
+    if level == "curve":
+        return "CURVE"
+    return "%d%%" % level
 
 
 def bar(level, width):
+    if level == "curve":
+        return "~" * width
     if level == "auto":
         return "·" * width
     filled = round(level * width / 100)
@@ -186,7 +193,7 @@ def main(scr):
     saved = load(LEVELS)
     labels = load(LABELS)
     names = [c["name"] for c in channels(chip)]
-    levels = {n: sane(saved.get(n, 100)) for n in names}
+    levels = {n: sane(saved.get(n, "curve")) for n in names}
     applied = dict(levels)
     sel = 0
     msg = ""
@@ -201,7 +208,7 @@ def main(scr):
 
         scr.erase()
         h, w = scr.getmaxyx()
-        scr.addstr(0, 1, "osaka fans", curses.A_BOLD)
+        scr.addstr(0, 1, "kronii fans", curses.A_BOLD)
         status = "fanctl: " + state + ("   · unapplied changes" if dirty else "")
         scr.addstr(0, max(12, w - len(status) - 2), status[:w - 13],
                    curses.color_pair(2) if dirty else curses.A_DIM)
@@ -233,7 +240,7 @@ def main(scr):
             if bar_w:
                 scr.addstr(y, 48, bar(levels[n], bar_w), curses.color_pair(4))
 
-        keys = ("↑↓ select  ←→ ±%d%%  1-9 10-90%%  0 100%%  b BIOS  A all=this  F all 100%%"
+        keys = ("↑↓ select  ←→ ±%d%%  1-9 10-90%%  0 100%%  c curve  b BIOS  A all=this  F all 100%%"
                 "  n name  w apply  q quit") % STEP
         scr.addstr(h - 2, 1, keys[:w - 2], curses.A_DIM)
         if msg:
@@ -248,7 +255,7 @@ def main(scr):
         if k != ord("q"):
             confirm_quit = False
         n = names[sel]
-        cur = 100 if levels[n] == "auto" else levels[n]
+        cur = 100 if levels[n] in ("auto", "curve") else levels[n]
 
         if k in (curses.KEY_UP, ord("k")):
             sel = (sel - 1) % len(names)
@@ -268,7 +275,9 @@ def main(scr):
         elif k == ord("0"):
             levels[n] = 100
         elif k == ord("b"):
-            levels[n] = 100 if levels[n] == "auto" else "auto"
+            levels[n] = "curve" if levels[n] == "auto" else "auto"
+        elif k == ord("c"):
+            levels[n] = "curve"
         elif k == ord("A"):
             for m in names:
                 levels[m] = levels[n]

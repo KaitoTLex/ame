@@ -1,8 +1,11 @@
-# osaka's GPUs and cooling.
+# kronii's GPUs and cooling.
 #
 # The Tesla V100 (11:00.0) is a passive datacenter card: it has no fan of its
-# own and relies entirely on chassis airflow, so the case fans run flat out.
-# The Arc Pro B60 (e3:00.0) stays on xe; its fan is firmware-controlled.
+# own and relies entirely on chassis airflow. The Arc Pro B60 (e3:00.0) stays
+# on xe; its own fan is firmware-controlled. The chassis fans follow a
+# temperature curve over the hottest of CPU, B60, board and NVIDIA sensors
+# (fanctl-config.sh), unless fantui pins a channel to a fixed speed or hands
+# it back to the BIOS.
 {
   config,
   lib,
@@ -11,67 +14,30 @@
 }:
 let
   # fanctl's config is generated at start: which hwmonN the Super I/O lands
-  # on, and how many pwm channels it has, is only known at runtime. Per-channel
-  # targets come from fantui's levels file: a percentage, or "auto" to leave
-  # the channel on the BIOS curve. Channels it doesn't list run at 100%.
+  # on, and how many pwm channels it has, is only known at runtime.
   fanctlConfig = "/run/fanctl/fanctl.yml";
   fanctlLevels = "/var/lib/fanctl/levels.json";
-  jq = lib.getExe pkgs.jq;
-  # Prints a channel's target as a 0-1 fraction, or "auto". 20% is the floor
-  # (as in fantui): the V100 has no fan of its own.
-  levelOf = ''
-    level() {
-      ${jq} -r --arg p "$1" '.[$p] // 100
-        | if . == "auto" then "auto"
-          elif type == "number" then ([[., 20] | max, 100] | min) / 100
-          else 1 end' ${fanctlLevels} 2>/dev/null || echo 1
-    }
-  '';
+  # The NVIDIA driver has no hwmon node, so fanctl-nvidia-temp below publishes
+  # the hottest NVIDIA card's temperature here in hwmon's millidegree format.
+  nvidiaTemp = "/run/fanctl/nvidia/temp1_input";
   writeFanctlConfig = pkgs.writeShellScript "fanctl-config" ''
-    set -eu
-    ${levelOf}
-    # "hwmonN:pwmM" for every Super I/O pwm channel fanctl should drive
-    fans=""
-    found=0
-    for h in /sys/class/hwmon/hwmon*; do
-      case "$(cat "$h/name")" in
-        nct6*) ;;
-        *) continue ;;
-      esac
-      for p in "$h"/pwm[0-9]; do
-        [ -e "$p" ] || continue
-        found=1
-        [ "$(level "$(basename "$p")")" = auto ] && continue
-        fans="$fans $(basename "$h"):$(basename "$p")"
-      done
-    done
-    if [ "$found" = 0 ]; then
-      echo "fanctl: no nct6775 pwm channels under /sys/class/hwmon; is nct6775 loaded?" >&2
-      exit 1
+    export JQ=${lib.getExe pkgs.jq} LEVELS=${fanctlLevels} OUT=${fanctlConfig} NVIDIA_TEMP=${nvidiaTemp}
+    # Seed the NVIDIA reading so the first fanctl iteration can't fail on a
+    # missing file; the publisher overwrites it within seconds.
+    if [ ! -e ${nvidiaTemp} ]; then
+      mkdir -p ${dirOf nvidiaTemp}
+      echo 60000 > ${nvidiaTemp}
     fi
-    {
-      printf 'interval: 2000\ninputs: {}\noutputs:\n'
-      for f in $fans; do
-        h=''${f%%:*} p=''${f#*:}
-        printf '  %s_%s:\n    PwmFan:\n      path: %s\n      name: %s\n' \
-          "$h" "$p" "$(readlink -f "/sys/class/hwmon/$h")" "$p"
-      done
-      printf 'rules:\n'
-      for f in $fans; do
-        h=''${f%%:*} p=''${f#*:}
-        printf '  - outputs:\n      - %s_%s\n    rule:\n      Static: %s\n' \
-          "$h" "$p" "$(level "$p")"
-      done
-    } > ${fanctlConfig}
+    exec ${pkgs.bash}/bin/bash ${./fanctl-config.sh}
   '';
   # With every channel on "auto" there's nothing for fanctl to do: skip the
   # unit (fans stay on the BIOS curve) instead of failing it.
   anyManual = pkgs.writeShellScript "fanctl-any-manual" ''
-    ${levelOf}
     for p in /sys/class/hwmon/hwmon*/pwm[0-9]; do
       [ -e "$p" ] || continue
       case "$(cat "$(dirname "$p")/name")" in nct6*) ;; *) continue ;; esac
-      [ "$(level "$(basename "$p")")" = auto ] || exit 0
+      l=$(${lib.getExe pkgs.jq} -r --arg p "$(basename "$p")" '.[$p] // "curve"' ${fanctlLevels} 2>/dev/null || echo curve)
+      [ "$l" = auto ] || exit 0
     done
     # No channels at all is a real problem; let the config step report it.
     ls /sys/class/hwmon/hwmon*/pwm[0-9] >/dev/null 2>&1 || exit 0
@@ -105,15 +71,47 @@ in
   boot.kernelModules = [ "nct6775" ];
   boot.kernelParams = [ "acpi_enforce_resources=lax" ];
 
-  # Every Super I/O pwm channel pinned at its fantui target (100% by default).
+  # Polls nvidia-smi every 5 s and writes the hottest card's temperature where
+  # fanctl can read it. If nvidia-smi fails it writes 95 °C, which pushes the
+  # curve to full speed rather than letting a passive card cook unnoticed.
+  systemd.services.fanctl-nvidia-temp = {
+    description = "NVIDIA GPU temperature for fanctl";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "nvidia-persistenced.service" ];
+    serviceConfig = {
+      RuntimeDirectory = "fanctl/nvidia";
+      RuntimeDirectoryPreserve = "yes";
+      Restart = "always";
+      RestartSec = 5;
+      ExecStart = pkgs.writeShellScript "fanctl-nvidia-temp" ''
+        while true; do
+          t=$(${config.hardware.nvidia.package.bin}/bin/nvidia-smi \
+                --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null \
+              | sort -n | tail -1)
+          case "$t" in
+            ''' | *[!0-9]*) t=95 ;;
+          esac
+          echo "$((t * 1000))" > ${nvidiaTemp}.tmp
+          mv -f ${nvidiaTemp}.tmp ${nvidiaTemp}
+          sleep 5
+        done
+      '';
+    };
+  };
+
+  # Chassis fans on the temperature curve, or wherever fantui pinned them.
   # Stopping fanctl hands the fans back to the BIOS curve; if it crashes they
   # stay where they were until it restarts.
   systemd.services.fanctl = {
-    description = "Motherboard fans at fixed speeds (fanctl)";
+    description = "Chassis fans on a temperature curve (fanctl)";
     wantedBy = [ "multi-user.target" ];
-    after = [ "systemd-modules-load.service" ];
+    after = [
+      "systemd-modules-load.service"
+      "fanctl-nvidia-temp.service"
+    ];
     serviceConfig = {
       RuntimeDirectory = "fanctl";
+      RuntimeDirectoryPreserve = "yes";
       StateDirectory = "fanctl";
       ExecCondition = anyManual;
       ExecStartPre = writeFanctlConfig;

@@ -78,7 +78,6 @@
     inputs@{
       nixpkgs,
       self,
-      flake-utils,
       functorOS,
       ...
     }:
@@ -91,50 +90,51 @@
           functorOS
           ;
       };
-      kaitotlex = functorOSLib.user.instantiate {
+
+      # Home configurations live in home/<user>; see home/kaitotlex/default.nix.
+      kaitotlexIdentity = {
         username = "kaitotlex";
         homeDirectory = "/home/kaitotlex";
         fullName = "KaitoTLex";
         email = "renl@kaitotlex.systems";
         configureGitUser = true;
-        configuration = {
-          imports = [
-            ./home.nix
-          ];
-          functorOS.desktop.niri.enable = true;
-          # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
-          # functorOS.desktop.waybar.variant = "compact";
-          # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-          home.stateVersion = "26.05";
-        };
       };
-      # kaitotlex on headless hosts: the terminal half of home.nix, no desktop.
-      kaitotlexHeadless = functorOSLib.user.instantiate {
-        username = "kaitotlex";
-        homeDirectory = "/home/kaitotlex";
-        fullName = "KaitoTLex";
-        email = "renl@kaitotlex.systems";
-        configureGitUser = true;
-        configuration = {
-          imports = [
-            ./cli.nix
-          ];
-          # No kitty, browser or desktop apps, but keep the terminal half of
-          # functorOS's program set: archive tools (zip, unzip, 7z, xz) and the
-          # nix helpers (nom, nurl), the same ones the desktops get.
-          functorOS.programs.enable = false;
-          functorOS.programs.bulk = {
-            enable = true;
-            archiveTools.enable = true;
-            nixCliTools.enable = true;
-            instantMessaging.enable = false;
-            desktopApps.enable = false;
-            misc.enable = false;
+      kaitotlex = functorOSLib.user.instantiate (
+        kaitotlexIdentity
+        // {
+          configuration = {
+            imports = [ ./home/kaitotlex ];
+            functorOS.desktop.niri.enable = true;
+            # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
+            # functorOS.desktop.waybar.variant = "compact";
+            # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
+            home.stateVersion = "26.05";
           };
-          functorOS.utils.audio.enable = false;
-          home.stateVersion = "26.05";
-        };
-      };
+        }
+      );
+      # kaitotlex on headless hosts: the terminal half of home/kaitotlex, no desktop.
+      kaitotlexHeadless = functorOSLib.user.instantiate (
+        kaitotlexIdentity
+        // {
+          configuration = {
+            imports = [ ./home/kaitotlex/cli.nix ];
+            # No kitty, browser or desktop apps, but keep the terminal half of
+            # functorOS's program set: archive tools (zip, unzip, 7z, xz) and the
+            # nix helpers (nom, nurl), the same ones the desktops get.
+            functorOS.programs.enable = false;
+            functorOS.programs.bulk = {
+              enable = true;
+              archiveTools.enable = true;
+              nixCliTools.enable = true;
+              instantMessaging.enable = false;
+              desktopApps.enable = false;
+              misc.enable = false;
+            };
+            functorOS.utils.audio.enable = false;
+            home.stateVersion = "26.05";
+          };
+        }
+      );
       # Work account on shirakami-fubuki; home lives on its own NVMe.
       futabatlex = functorOSLib.user.instantiate {
         username = "futabatlex";
@@ -143,88 +143,78 @@
         email = "renl@kaitotlex.systems";
         configureGitUser = true;
         configuration = {
-          imports = [
-            ./futabatlex.nix
-          ];
+          imports = [ ./home/futabatlex ];
           functorOS.desktop.niri.enable = true;
           home.stateVersion = "26.05";
         };
       };
+
+      # Every host is modules/common.nix plus hosts/<hostname>/default.nix,
+      # which imports its own hardware-configuration.nix and extra modules.
+      mkHost =
+        { hostname, users }:
+        functorOSLib.system.instantiate {
+          inherit hostname users;
+          configuration = {
+            imports = [
+              (import ./modules/common.nix inputs)
+              (import ./hosts/${hostname} inputs)
+            ];
+          };
+        };
+
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
+      forAllSystems =
+        f: nixpkgs.lib.genAttrs supportedSystems (system: f nixpkgs.legacyPackages.${system});
     in
     {
       nixosConfigurations = {
-        shirakami = functorOSLib.system.instantiate {
+        # Mini-ITX desktop, Ryzen 7 7800X3D. Builds and deploys the
+        # rest of the fleet with `ame` (pkgs/ame).
+        shirakami-fubuki = mkHost {
           hostname = "shirakami-fubuki";
           users = [
             kaitotlex
             futabatlex
           ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                ./hosts/shirakami-fubuki/hardware-configuration.nix
-                (import ./hosts/shirakami-fubuki/default.nix inputs)
-              ];
-            };
         };
+        # Short name, same system.
+        shirakami = self.nixosConfigurations.shirakami-fubuki;
 
-        shirakami-fubuki = self.nixosConfigurations.shirakami;
-
-        kanade = functorOSLib.system.instantiate {
+        # MacBook Pro M1 Pro on Asahi.
+        kanade = mkHost {
           hostname = "kanade";
           users = [ kaitotlex ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                ./hosts/kanade/hardware-configuration.nix
-                (import ./hosts/kanade/default.nix inputs)
-              ];
-            };
         };
 
         # ASUS TUF Gaming A14, FA401EA (Ryzen AI MAX+ 392 "Strix Halo", iGPU only).
         # No hardware-configuration.nix: the generated hardware bits, the disk
         # layout and the machine-specific power/input tuning all live in
         # hosts/nanashi/default.nix.
-        nanashi = functorOSLib.system.instantiate {
+        nanashi = mkHost {
           hostname = "nanashi";
           users = [ kaitotlex ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                (import ./hosts/nanashi/default.nix inputs)
-              ];
-            };
         };
 
         # Threadripper 9970X FPGA build server, headless. Builds itself from
-        # ~/Source/osaka, which adds nixosModules.osaka on top; see hosts/osaka/default.nix.
-        osaka = functorOSLib.system.instantiate {
-          hostname = "osaka";
+        # ~/Source/osaka, which adds nixosModules.kronii on top; see hosts/kronii/default.nix.
+        kronii = mkHost {
+          hostname = "kronii";
           users = [ kaitotlexHeadless ];
-          configuration =
-            { ... }:
-            {
-              imports = [
-                (import ./config.nix inputs)
-                ./hosts/osaka/hardware-configuration.nix
-                (import ./hosts/osaka/default.nix inputs)
-              ];
-            };
         };
       };
 
       nixosModules = {
-        # osaka's unpublished services (airi, koyori, osaka-greeter), as a
+        # kronii's unpublished services (airi, koyori, osaka-greeter), as a
         # function from their flakes to a module, since the checkouts only
-        # exist on osaka. ~/Source/osaka calls it; see hosts/osaka/unpublished.nix.
-        osaka = import ./hosts/osaka/unpublished.nix;
+        # exist on kronii. ~/Source/osaka calls it; see hosts/kronii/unpublished.nix.
+        kronii = import ./hosts/kronii/unpublished.nix;
       };
+
+      # `nix fmt`
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-rfc-style);
     };
 }

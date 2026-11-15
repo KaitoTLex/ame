@@ -59,7 +59,7 @@
 
   services.tailscale = {
     enable = true;
-    # osaka is a tailnet exit node; "both" turns on IP forwarding.
+    # kronii is a tailnet exit node; "both" turns on IP forwarding.
     useRoutingFeatures = "both";
     extraSetFlags = [
       # crab-hole is the only resolver; MagicDNS must not take over ~.

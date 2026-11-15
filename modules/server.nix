@@ -1,5 +1,5 @@
 # Headless functorOS: no desktop, audio, bluetooth or printing, plus the
-# server defaults osaka had under ServOS (never sleep, bounded journal,
+# server defaults kronii had under ServOS (never sleep, bounded journal,
 # reboot on panic, BBR, disk health).
 #
 # functorOS's networking module is off, since it forces NetworkManager on and

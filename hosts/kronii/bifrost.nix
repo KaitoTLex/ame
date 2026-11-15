@@ -4,11 +4,11 @@
 #
 # Bifrost adds what the router doesn't do: a web UI, request logs, virtual
 # keys with budgets and rate limits, and fallbacks to cloud providers if any
-# get added. Models are addressed as osaka/<model>, e.g.
-# osaka/huihui-qwen3.8-27b-abliterated.
+# get added. Models are addressed as kronii/<model>, e.g.
+# kronii/huihui-qwen3.8-27b-abliterated.
 #
 # Like the router, it binds everywhere and the firewall only lets the tailnet
-# and loopback in: http://osaka:8088/.
+# and loopback in: http://kronii:8088/.
 #
 # config.json below only seeds the provider. Bifrost keeps its real config in
 # /var/lib/bifrost/config.db, so UI edits survive restarts; changing the
@@ -38,12 +38,12 @@ let
   config = pkgs.writeText "bifrost-config.json" (
     builtins.toJSON {
       "$schema" = "https://www.getbifrost.ai/schema";
-      providers.osaka = {
+      providers.kronii = {
         # Keyless, but Bifrost still routes through a key entry, and a key's
         # model list is deny-by-default.
         keys = [
           {
-            name = "osaka";
+            name = "kronii";
             value = "";
             models = [ "*" ];
             weight = 1.0;

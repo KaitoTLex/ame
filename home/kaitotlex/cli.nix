@@ -1,5 +1,5 @@
 # kaitotlex's terminal environment: shell, editor, git and CLI tools.
-# home.nix imports this on the desktops; headless hosts (osaka) use it alone.
+# default.nix imports this on the desktops; headless hosts (kronii) use it alone.
 {
   pkgs,
   ...
@@ -122,7 +122,8 @@
     enable = true;
     # cudaSupport only adds /run/opengl-driver/lib to the RPATH, so btop can
     # dlopen libnvidia-ml for its GPU stats. Harmless on hosts without NVIDIA.
-    package = if pkgs.stdenv.hostPlatform.isLinux then pkgs.btop.override { cudaSupport = true; } else pkgs.btop;
+    package =
+      if pkgs.stdenv.hostPlatform.isLinux then pkgs.btop.override { cudaSupport = true; } else pkgs.btop;
     settings = {
       vim_keys = true;
     };

@@ -6,7 +6,7 @@
   ...
 }:
 {
-  # Shell, editor, git and CLI tools; shared with the headless hosts.
+  # Shell, editor, git and CLI tools; shared with the headless hosts (see cli.nix).
   imports = [ ./cli.nix ];
 
   home.username = "kaitotlex";

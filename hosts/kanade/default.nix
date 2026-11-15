@@ -6,8 +6,9 @@ inputs:
 }:
 {
   imports = [
-    ./module/eduroam.nix
-    ./module/spotify.nix
+    ./hardware-configuration.nix
+    ../../modules/eduroam/iwd.nix
+    ./spotify.nix
     (import ../../modules/asahi-compat inputs)
     inputs.functoros-apple-silicon.nixosModules.default
     ../../modules/deploy-target.nix
@@ -126,7 +127,7 @@ inputs:
     theming = {
       wallpaper = "${inputs.wallpapers}/vtubers/sui/nordMachi-retina.png";
       polarity = "dark";
-      base16Scheme = ../../scheme/nord.yaml;
+      base16Scheme = ../../assets/schemes/nord.yaml;
     };
     system = {
       networking = {

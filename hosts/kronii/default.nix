@@ -1,14 +1,14 @@
-# osaka: Threadripper 9970X FPGA build server. Headless (an Arc Pro B60 with
+# kronii: Threadripper 9970X FPGA build server. Headless (an Arc Pro B60 with
 # nothing plugged in, plus a passive Tesla V100; see cooling.nix), formerly
 # ServOS. The B60 serves a local LLM; see llm.nix.
 #
 # Everything imported here builds on any ame host. airi, koyori and
-# osaka-greeter aren't published, so their checkouts only exist on osaka and
+# osaka-greeter aren't published, so their checkouts only exist on kronii and
 # can't be ame inputs (every `ame update` elsewhere would need them).
-# unpublished.nix wraps them as `ame.nixosModules.osaka`; ~/Source/osaka on osaka is
+# unpublished.nix wraps them as `ame.nixosModules.kronii`; ~/Source/osaka on kronii is
 # a small flake that passes its checkouts in and extends
-# nixosConfigurations.osaka with it. That is what osaka actually builds from,
-# and why osaka isn't in shirakami's `ame` host list.
+# nixosConfigurations.kronii with it. That is what kronii actually builds from,
+# and why kronii isn't in shirakami's `ame` host list.
 #
 #   boot.nix         kernel and Secure Boot (lanzaboote)
 #   storage.nix      btrfs mount options and scrubbing
@@ -32,6 +32,7 @@ inputs:
 }:
 {
   imports = [
+    ./hardware-configuration.nix
     ../../modules/server.nix
     inputs.lanzaboote.nixosModules.lanzaboote
     ./boot.nix
@@ -40,11 +41,13 @@ inputs:
     ./dns.nix
     ./ssh.nix
     ./cooling.nix
-    ./llm.nix
-    ./bifrost.nix
+    # The LLM stack on the Arc (llm.nix, bifrost.nix) is switched off; the files
+    # stay so it can come back by uncommenting these two lines.
+    # ./llm.nix
+    # ./bifrost.nix
   ];
 
-  # Installed on 26.05; config.nix's 26.11 is for newer installs.
+  # Installed on 26.05; modules/common.nix's 26.11 is for newer installs.
   system.stateVersion = lib.mkForce "26.05";
 
   functorOS.flakeLocation = lib.mkForce "/home/kaitotlex/Source/osaka";
@@ -53,9 +56,9 @@ inputs:
   # ssh sessions from it look the same. The image is required but never shown,
   # so it's a small file from this repo rather than the wallpapers input.
   functorOS.theming = {
-    wallpaper = ../../watsonExe.jpeg;
+    wallpaper = ../../assets/watsonExe.jpeg;
     polarity = "dark";
-    base16Scheme = ../../scheme/shigure-ui.yaml;
+    base16Scheme = ../../assets/schemes/shigure-ui.yaml;
   };
 
   # Synthesis/implementation runs want every core clocked up, and airi-bench

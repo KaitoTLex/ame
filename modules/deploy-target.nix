@@ -1,4 +1,4 @@
-# Lets shirakami-fubuki push builds here with `ame` (see pkgs/ame.nix).
+# Lets shirakami-fubuki push builds here with `ame` (see pkgs/ame).
 #
 # Activating a system needs root, and these hosts use run0 instead of sudo,
 # which can't prompt over a non-interactive ssh session. So shirakami logs in

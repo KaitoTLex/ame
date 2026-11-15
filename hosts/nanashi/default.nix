@@ -14,7 +14,7 @@ in
 {
   imports = [
     "${modulesPath}/installer/scan/not-detected.nix"
-    ../../modules/eduroam.nix
+    ../../modules/eduroam
     ../../modules/deploy-target.nix
   ];
 
@@ -207,7 +207,7 @@ in
     theming = {
       wallpaper = "${inputs.wallpapers}/vtubers/uiDate.jpg";
       polarity = "dark";
-      base16Scheme = ../../scheme/shigure-ui.yaml;
+      base16Scheme = ../../assets/schemes/shigure-ui.yaml;
     };
     system = {
       networking = {

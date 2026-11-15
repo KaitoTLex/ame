@@ -1,6 +1,6 @@
 # koyori print-farm hub, shown as "Takanashi Kiara". systemd starts it, and go2rtc
 # for the cameras, at every boot. The web UI is served on port 80 to the LAN and the
-# tailnet: http://osaka/ or http://192.168.1.112/. Printers and their PrusaLink keys
+# tailnet: http://kronii/ or http://192.168.1.112/. Printers and their PrusaLink keys
 # are added in the web UI and kept in /var/lib/koyori, never in the Nix store.
 #
 # Access is by Tailscale identity: admins below, other tailnet users and the LAN can
@@ -15,10 +15,10 @@
     hub.openFirewall = true;
     # HTTPS on the tailnet name too, with a certificate from tailscale (renewed by
     # itself): browsers only offer notifications to HTTPS pages. Open
-    # https://osaka.tail7070c8.ts.net from a device on the tailnet to turn them on.
+    # https://kronii.tail7070c8.ts.net from a device on the tailnet to turn them on.
     hub.https = {
       enable = true;
-      domain = "osaka.tail7070c8.ts.net";
+      domain = "kronii.tail7070c8.ts.net";
     };
     # WebRTC for live camera view from browsers on the LAN.
     go2rtc.openFirewall = true;
@@ -47,9 +47,9 @@
       listen_port = 80;
       # Every name and address the site is opened by; others get 403.
       allowed_hosts = [
-        "osaka"
-        "osaka.local"
-        "osaka.tail7070c8.ts.net"
+        "kronii"
+        "kronii.local"
+        "kronii.tail7070c8.ts.net"
         "192.168.1.112"
         "100.79.234.116"
         "localhost"
