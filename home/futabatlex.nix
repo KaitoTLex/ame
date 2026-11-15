@@ -2,6 +2,7 @@
 # Lighter than kaitotlex.nix: no personal apps.
 {
   pkgs,
+  lib,
   inputs,
   ...
 }:
@@ -61,6 +62,10 @@ in
     enable = true;
     gitCredentialHelper.enable = true;
   };
+
+  # functorOS still installs vesktop here. Same fix as kaitotlex.nix: keep
+  # Vencord's updater on so it can't freeze at a build Discord has outgrown.
+  programs.vesktop.vencord.settings.autoUpdate = lib.mkForce true;
 
   programs.neovim.defaultEditor = true;
   programs.lazygit.enable = true;

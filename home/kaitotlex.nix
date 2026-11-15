@@ -33,6 +33,11 @@
   };
   #programs.rio.enable = true;
   programs.vesktop.enable = true;
+  # functorOS turns Vencord's updater off, and its settings.json is a read-only
+  # store link, so Vencord froze at whatever build it first downloaded. Once
+  # Discord's client moved on, Vencord broke ("i.A is not a constructor", only
+  # NoTrack loading). Let the stock updater keep it current.
+  programs.vesktop.vencord.settings.autoUpdate = lib.mkForce true;
 
   # No animations anywhere, compositor or shell. scroll reads the mouse setting
   # from here too, see modules/scroll.nix.
