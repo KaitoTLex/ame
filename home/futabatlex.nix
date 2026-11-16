@@ -1,7 +1,8 @@
 # Home config for futabatlex, the work account on shirakami-fubuki.
-# Lighter than ../kaitotlex: no personal apps, no hermes gateway (kaitotlex runs that).
+# Lighter than kaitotlex.nix: no personal apps.
 {
   pkgs,
+  lib,
   inputs,
   ...
 }:
@@ -10,16 +11,7 @@ let
   xilinxVersion = "2025.2";
 in
 {
-  imports = [ inputs.hermes-agent.homeManagerModules.default ];
-
   home.sessionVariables.NIXPKGS_ALLOW_UNFREE = "1";
-
-  # hermes CLI only, with its own state in ~/.hermes. Put the API key in ~/.hermes/.env.
-  programs.hermes-agent.enable = true;
-  services.hermes-agent = {
-    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.minimal;
-    extraDependencyGroups = [ "anthropic" ];
-  };
 
   home.packages = with pkgs; [
     gcc
@@ -70,6 +62,10 @@ in
     enable = true;
     gitCredentialHelper.enable = true;
   };
+
+  # functorOS still installs vesktop here. Same fix as kaitotlex.nix: keep
+  # Vencord's updater on so it can't freeze at a build Discord has outgrown.
+  programs.vesktop.vencord.settings.autoUpdate = lib.mkForce true;
 
   programs.neovim.defaultEditor = true;
   programs.lazygit.enable = true;

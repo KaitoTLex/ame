@@ -1,6 +1,5 @@
-# kronii as a desktop, set up like shirakami-fubuki: the functorOS
-# rice (DMS), the same keyd remaps, the Steinberg IXO22, Steam; the compositor
-# is scroll (scroll.nix). The monitors hang off
+# kronii as a desktop, set up like shirakami-fubuki: niri with the functorOS
+# rice, the same keyd remaps, the Steinberg IXO22, Steam. The monitors hang off
 # the Arc Pro B60 (xe) for now, both on DisplayPort: the ASUS VG34VQL3A
 # ultrawide on DP-4 and the ASUS VG249 (1080p) on DP-1. When the Arc leaves and
 # they move to the RTX 3050, the connector names here and in greeter.nix change
@@ -25,6 +24,8 @@ inputs:
     system.graphics.nvidia.enable = false;
   };
   programs.steam.enable = true;
+
+  functorOS.desktop.scroll.enable = true;
 
   # Media and compute on the Arc (VAAPI/QSV through iHD, oneVPL, OpenCL). The
   # NVIDIA side is cooling.nix.
@@ -62,6 +63,12 @@ inputs:
 
   # Builds and prints run unattended; a brushed power button must not end them.
   services.logind.settings.Login.HandlePowerKey = "ignore";
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "no";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "no";
+  };
 
   programs.xwayland.enable = true;
 
@@ -96,8 +103,12 @@ inputs:
     # No EasyEffects, as on shirakami.
     functorOS.utils.audio.enable = false;
 
-    # Only a niri session needs this: scroll brings its own Xwayland. niri
-    # --session exports NIRI_SOCKET to the user manager before the target.
+    programs.dank-material-shell.settings = {
+      acMonitorTimeout = lib.mkForce 0;
+      acSuspendTimeout = lib.mkForce 0;
+      lockBeforeSuspend = lib.mkForce false;
+    };
+
     systemd.user.services.xwayland-satellite = {
       Unit = {
         Description = "Xwayland outside your Wayland";
@@ -105,7 +116,7 @@ inputs:
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
         Requisite = [ "graphical-session.target" ];
-        ConditionEnvironment = "NIRI_SOCKET";
+        ConditionEnvironment = "XDG_CURRENT_DESKTOP=niri";
       };
       Service = {
         Type = "notify";

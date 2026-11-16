@@ -6,11 +6,17 @@
 # unbound faces clients and crab-hole filters behind it. crab-hole only
 # answers plain DNS over UDP, but clients retry truncated answers over TCP
 # (and some always use it), so unbound takes both, caches, and asks crab-hole.
+{ pkgs, ... }:
 let
   crabHole = {
     address = "127.0.0.1";
     port = 5300;
   };
+  unfiltered = [
+    "safebooru.donmai.us"
+    "cdn.donmai.us"
+    "safebooru.org"
+  ];
 in
 {
   services.unbound = {
@@ -45,12 +51,25 @@ in
           name = ".";
           forward-addr = "${crabHole.address}@${toString crabHole.port}";
         }
-      ];
+      ]
+      ++ map (name: {
+        inherit name;
+        forward-addr = [
+          "1.1.1.2@853#security.cloudflare-dns.com"
+          "1.0.0.2@853#security.cloudflare-dns.com"
+        ];
+        forward-tls-upstream = true;
+      }) unfiltered;
     };
   };
 
   services.crab-hole = {
     enable = true;
+    # nixpkgs 2026-11-07 (flake.lock of 2026-11-16) breaks crab-hole's cargo check: jemalloc-sys's
+    # build script panics on a JEMALLOC_OVERRIDE path that does not exist in the check
+    # sandbox. The package itself builds; only the tests are skipped. Drop this once
+    # `nix build nixpkgs#crab-hole` passes again.
+    package = pkgs.crab-hole.overrideAttrs (_: { doCheck = false; });
     settings = {
       blocklist = {
         include_subdomains = true;

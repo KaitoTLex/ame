@@ -45,9 +45,15 @@ with pkgs;
   # waydroid
   qemu
   ratty
+  orca-slicer
 
   #futaba
-  anki
+  # anki's source build is broken in the pinned nixpkgs: its vendored uv
+  # offline cache has no tomlkit, so hatchling cannot resolve from
+  # build-system.requires and the build dies with the network disabled.
+  # anki-bin is upstream's own prebuilt binary, so it skips that build
+  # entirely. Switch back once nixpkgs ships a buildable anki.
+  anki-bin
   # ki
   # ankiAddons.review-heatmap
   # ankiAddons.fsrs4anki-helper

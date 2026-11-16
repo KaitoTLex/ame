@@ -6,7 +6,7 @@
   ...
 }:
 {
-  # Shell, editor, git and CLI tools; shared with the headless hosts (see cli.nix).
+  # Shell, editor, git and CLI tools; shared with the headless hosts.
   imports = [ ./cli.nix ];
 
   home.username = "kaitotlex";
@@ -33,6 +33,30 @@
   };
   #programs.rio.enable = true;
   programs.vesktop.enable = true;
+  # functorOS turns Vencord's updater off, and its settings.json is a read-only
+  # store link, so Vencord froze at whatever build it first downloaded. Once
+  # Discord's client moved on, Vencord broke ("i.A is not a constructor", only
+  # NoTrack loading). Let the stock updater keep it current.
+  programs.vesktop.vencord.settings.autoUpdate = lib.mkForce true;
+
+  # No animations anywhere, compositor or shell. scroll reads the mouse setting
+  # from here too, see modules/scroll.nix.
+  programs.niri.settings = {
+    animations.enable = false;
+    input.mouse.natural-scroll = true;
+    # The focus ring only outlines the focused window; the border outlines them all.
+    layout = {
+      border = {
+        enable = lib.mkForce true;
+        width = 2;
+      };
+      focus-ring.enable = lib.mkForce false;
+    };
+  };
+  programs.dank-material-shell.settings = {
+    animationDuration = 0;
+    reduceMotion = true;
+  };
 
   # Signing needs the GPG key, which only the desktops have.
   programs.git.signing = {

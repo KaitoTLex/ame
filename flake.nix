@@ -1,14 +1,11 @@
 {
   description = "KaitoTLex's modification to the already functional functorOS";
   inputs = {
-    # Follow the nixpkgs in functorOS, which is verified to build properly before release.
-    # github:kaitotlex/functorOS is a stale mirror (agenix wiring reverted there);
-    # the canonical repo is the forgejo instance, which has agenix committed.
-    # Pinned one commit before 6e493f4 ("housekeeping"), which dropped
-    # nix-index-database but still sets `programs.comma.enable`, an option
-    # home-manager doesn't have. Unpin once upstream fixes it.
-    functorOS.url = "github:youwen5/functorOS/aa7f6b4e2c81b465125254379afec684f9bdff72";
-    #functorOS.url = "git+https://code.functor.systems/kaitotlex/functorOS.git";
+    # The canonical functorOS is the forgejo instance (agenix committed,
+    # nix-index dropped, overlay build fixes). github:youwen5/functorOS lags it
+    # and github:kaitotlex/functorOS is a stale mirror. nixpkgs follows
+    # functorOS's lock (a channel tarball), which its overlays are fixed against.
+    functorOS.url = "github:youwen5/functorOS/5fd24f5f5c71790f022a340d344e20091dac76ff";
     functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
     functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     #functorOS.inputs.apple-firmware.url = "github:binary-star-systems/apple-firmware";
@@ -47,6 +44,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MIT-OpenCompute/xilinx-flake";
     };
+    # scroll: sway fork with a scrolling layout. A second session next to niri
+    # when functorOS.desktop.scroll.enable is set (modules/scroll.nix).
+    scroll-flake = {
+      url = "github:Diax170/scroll-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     snowfall-lib = {
       url = "github:snowfallorg/lib";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -65,19 +68,6 @@
 
     polycule-nix = {
       url = "github:KaitoTLex/Polycule-Nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent/v2026.9.14";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # scroll: dawsers' sway fork with a scrolling layout, kronii's session
-    # (hosts/kronii/scroll.nix). Not in nixpkgs; this flake packages it, rebased
-    # on upstream daily, with NixOS and home-manager modules.
-    scroll = {
-      url = "git+https://codeberg.org/OliMoli/scroll-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -124,28 +114,27 @@
           functorOS
           ;
       };
-
-      # Home configurations live in home/<user>; see home/kaitotlex/default.nix.
-      kaitotlexIdentity = {
+      inherit (nixpkgs) lib;
+      scrollMod = import ./modules/scroll.nix { inherit inputs; };
+      kaitotlex = functorOSLib.user.instantiate {
         username = "kaitotlex";
         homeDirectory = "/home/kaitotlex";
         fullName = "KaitoTLex";
         email = "renl@kaitotlex.systems";
         configureGitUser = true;
+        configuration = {
+          imports = [
+            ./home/kaitotlex.nix
+            scrollMod.home
+          ];
+          # niri everywhere; functorOS.desktop.scroll adds scroll beside it.
+          functorOS.desktop.niri.enable = lib.mkDefault true;
+          # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
+          # functorOS.desktop.waybar.variant = "compact";
+          # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
+          home.stateVersion = "26.05";
+        };
       };
-      kaitotlex = functorOSLib.user.instantiate (
-        kaitotlexIdentity
-        // {
-          configuration = {
-            imports = [ ./home/kaitotlex ];
-            functorOS.desktop.niri.enable = true;
-            # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
-            # functorOS.desktop.waybar.variant = "compact";
-            # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-            home.stateVersion = "26.05";
-          };
-        }
-      );
       # Work account on shirakami-fubuki; home lives on its own NVMe.
       futabatlex = functorOSLib.user.instantiate {
         username = "futabatlex";
@@ -154,25 +143,13 @@
         email = "renl@kaitotlex.systems";
         configureGitUser = true;
         configuration = {
-          imports = [ ./home/futabatlex ];
+          imports = [
+            ./home/futabatlex.nix
+          ];
           functorOS.desktop.niri.enable = true;
           home.stateVersion = "26.05";
         };
       };
-
-      # Every host is modules/common.nix plus hosts/<hostname>/default.nix,
-      # which imports its own hardware-configuration.nix and extra modules.
-      mkHost =
-        { hostname, users }:
-        functorOSLib.system.instantiate {
-          inherit hostname users;
-          configuration = {
-            imports = [
-              (import ./modules/common.nix inputs)
-              (import ./hosts/${hostname} inputs)
-            ];
-          };
-        };
 
       supportedSystems = [
         "x86_64-linux"
@@ -185,29 +162,71 @@
       nixosConfigurations = {
         # Mini-ITX desktop, Ryzen 7 7800X3D. Builds and deploys the
         # rest of the fleet with `ame` (pkgs/ame).
-        shirakami-fubuki = mkHost {
+        shirakami = functorOSLib.system.instantiate {
           hostname = "shirakami-fubuki";
           users = [
             kaitotlex
             futabatlex
           ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./hosts/common.nix inputs)
+                ./hosts/shirakami-fubuki/hardware-configuration.nix
+                (import ./hosts/shirakami-fubuki/default.nix inputs)
+              ];
+            };
         };
-        # Short name, same system.
-        shirakami = self.nixosConfigurations.shirakami-fubuki;
+
+        shirakami-fubuki = self.nixosConfigurations.shirakami;
 
         # MacBook Pro M1 Pro on Asahi.
-        kanade = mkHost {
+        kanade = functorOSLib.system.instantiate {
           hostname = "kanade";
           users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./hosts/common.nix inputs)
+                ./hosts/kanade/hardware-configuration.nix
+                (import ./hosts/kanade/default.nix inputs)
+              ];
+            };
         };
 
         # ASUS TUF Gaming A14, FA401EA (Ryzen AI MAX+ 392 "Strix Halo", iGPU only).
         # No hardware-configuration.nix: the generated hardware bits, the disk
         # layout and the machine-specific power/input tuning all live in
         # hosts/nanashi/default.nix.
-        nanashi = mkHost {
+        nanashi = functorOSLib.system.instantiate {
           hostname = "nanashi";
           users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./hosts/common.nix inputs)
+                (import ./hosts/nanashi/default.nix inputs)
+              ];
+            };
+        };
+
+        # ASUS ROG Zephyrus G14 2024, GA403UI (Ryzen 9 8945HS + RTX 4070 Laptop,
+        # MUX + Advanced Optimus panel switch).
+        blanc = functorOSLib.system.instantiate {
+          hostname = "blanc";
+          users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./hosts/common.nix inputs)
+                ./hosts/blanc/hardware-configuration.nix
+                (import ./hosts/blanc/default.nix inputs)
+              ];
+            };
         };
 
         # Threadripper 9970X FPGA build server and print-farm hub, now also a desktop
@@ -215,9 +234,17 @@
         # this checkout with `nh os switch .`; its unpublished services come
         # from the airi, koyori and osaka-greeter inputs above. See
         # hosts/kronii/default.nix.
-        kronii = mkHost {
+        kronii = functorOSLib.system.instantiate {
           hostname = "kronii";
           users = [ kaitotlex ];
+          configuration =
+            { ... }:
+            {
+              imports = [
+                (import ./hosts/common.nix inputs)
+                (import ./hosts/kronii/default.nix inputs)
+              ];
+            };
         };
         # kronii's old name. The running system still reports it until the
         # first switch from here, and nh picks the configuration by hostname.

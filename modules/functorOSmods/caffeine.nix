@@ -34,8 +34,22 @@
               #    already bundles a Nerd Font and does name->glyph lookup,
               #    so just register the two names it's missing and point
               #    the widget at it instead of DIcon.
+              #    As of dms-shell 6c57f60 the widget no longer swaps icon
+              #    names: it renders one "local_cafe" DIcon and expresses the
+              #    state through `filled:`/`color:` instead. So the name
+              #    binding is reintroduced here, and `filled:` has to go --
+              #    DNFIcon only has name/size/color, and assigning a
+              #    non-existent property makes QML drop the whole widget.
               oldIconMapOpen = "readonly property var iconMap: ({";
               newIconMapOpen = "readonly property var iconMap: ({\n            \"flask_on\": \"\\u{f0c3}\",\n            \"flask_off\": \"\\u{f13f5}\",";
+
+              # 3. Not caffeine, but same package. Quickshell's I3 backend loses
+              #    track of renamed workspaces, and scroll-niri.sh renames them
+              #    to make room above the first one, so the bar ended up with
+              #    pills like "1 1 1 1 5", all highlighted. Re-read the list on
+              #    every workspace event instead of trusting its bookkeeping.
+              oldI3Connections = "    Connections {\n        target: root.isSway || root.isScroll || root.isMiracle ? I3.workspaces : null";
+              newI3Connections = "    Connections {\n        target: root.isScroll ? I3 : null\n        function onRawEvent(event) {\n            if (event.type === \"workspace\")\n                I3.refreshWorkspaces();\n        }\n    }\n\n${oldI3Connections}";
             in
             old.postInstall
             + ''
@@ -47,7 +61,11 @@
 
               substituteInPlace $out/share/quickshell/dms/Modules/DBar/Widgets/IdleInhibitor.qml \
                 --replace-fail 'DIcon {' 'DNFIcon {' \
-                --replace-fail 'name: SessionService.idleInhibited ? "motion_sensor_active" : "motion_sensor_idle"' 'name: SessionService.idleInhibited ? "flask_on" : "flask_off"'
+                --replace-fail 'name: "local_cafe"' 'name: SessionService.idleInhibited ? "flask_on" : "flask_off"' \
+                --replace-fail 'filled: SessionService.idleInhibited' '// filled: DNFIcon has no such property'
+
+              substituteInPlace $out/share/quickshell/dms/Services/CompositorService.qml \
+                --replace-fail ${lib.escapeShellArg oldI3Connections} ${lib.escapeShellArg newI3Connections}
             '';
         })
       );
@@ -62,7 +80,14 @@
           showOnLastDisplay = true;
           leftWidgets = [
             "launcherButton"
-            "workspaceSwitcher"
+            {
+              id = "workspaceSwitcher";
+              enabled = true;
+              # Small numbered pills, nothing else.
+              showWorkspaceIndex = true;
+              workspaceIndicatorCompact = true;
+              workspaceDragReorder = false;
+            }
             {
               id = "focusedWindow";
               enabled = true;
@@ -110,12 +135,14 @@
               enabled = true;
             }
           ];
-          spacing = 4;
+          # Gapless: flush with the screen edge, nothing between the bar and
+          # its popups, and no rounded corners showing wallpaper at the ends.
+          spacing = 0;
           innerPadding = 4;
           bottomGap = 0;
           transparency = 1;
           widgetTransparency = 1;
-          squareCorners = false;
+          squareCorners = true;
           noBackground = false;
           gothCornersEnabled = false;
           gothCornerRadiusOverride = false;
@@ -129,8 +156,9 @@
           autoHideDelay = 250;
           openOnOverview = false;
           visible = true;
-          popupGapsAuto = true;
-          popupGapsManual = 4;
+          # Auto never goes below 4, so it has to be manual to reach 0.
+          popupGapsAuto = false;
+          popupGapsManual = 0;
         }
       ];
     };

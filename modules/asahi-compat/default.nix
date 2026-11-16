@@ -14,9 +14,13 @@ let
     fex = prev.fex.override { fmt = prev.fmt_11; };
     muvm = prev.muvm.override { inherit fex; };
 
+    # Host nixpkgs.config too, so the gtk2 handler in hosts/common.nix
+    # reaches the Xilinx FHS env built from this set.
     asahiX86Packages = import inputs.nixpkgs {
       system = "x86_64-linux";
-      config.allowUnfree = true;
+      config = prev.config // {
+        allowUnfree = true;
+      };
     };
 
     asahiFexInit = final.callPackage ./fex-init.nix { };

@@ -6,12 +6,14 @@ let
   # Pre-generated on kanade (~/.ssh/nanashi_host_ed25519_key); install the
   # private half as /etc/ssh/ssh_host_ed25519_key on nanashi.
   nanashi = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG4poHv6dmBSi1zPSRNUbv4LLS6LhUldvq4BJBWEb/1/ root@nanashi";
+  blanc = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOHYuQldqKemK0b9LWag47nu4rPBsaYs+U9Hfnli1pt2 root@nixos";
 in
 {
   "eduroam.age".publicKeys = [
     shirakami-fubuki
     kanade
     nanashi
+    blanc
   ];
 
   "ghtoken.age".publicKeys = [
@@ -20,11 +22,16 @@ in
     nanashi
   ];
 
-  "hermes-env.age".publicKeys = [
-    shirakami-fubuki
-  ];
-
-  "hermes-matrix-env.age".publicKeys = [
+  # harmonia's binary-cache signing key. Only shirakami needs the private
+  # half: it is the only machine that serves the cache. nanashi and kanade
+  # verify with the PUBLIC half, which is not secret and is declared inline
+  # in each host's nix.settings.trusted-public-keys.
+  #
+  # Generate with:
+  #   nix key generate-secret --key-name ame-cache-1 > /tmp/k && \
+  #     agenix -e modules/secrets/harmonia-signing-key.age < /tmp/k && rm /tmp/k
+  #   nix key convert-secret-to-public < <the same key>   # -> the public half
+  "harmonia-signing-key.age".publicKeys = [
     shirakami-fubuki
   ];
 }

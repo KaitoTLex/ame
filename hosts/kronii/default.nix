@@ -17,8 +17,7 @@
 #   dns.nix          ad-blocking DNS for the tailnet (unbound + crab-hole)
 #   ssh.nix          who can log in, as kaitotlex and as root
 #   cooling.nix      NVIDIA driver and chassis fans (fantui.py)
-#   desktop.nix      the desktop on the Arc: monitors, keyd, audio, gaming
-#   scroll.nix       scroll, the compositor a login starts (in place of niri)
+#   desktop.nix      niri on the Arc, monitors, keyd, audio, gaming
 #   llm.nix          llama.cpp on the B60
 #   bifrost.nix      AI gateway (web UI, logs, virtual keys) in front of llm.nix
 #   unpublished.nix  the three local inputs' modules, configured by
@@ -44,10 +43,8 @@ inputs:
     ./ssh.nix
     ./cooling.nix
     (import ./desktop.nix inputs)
-    (import ./scroll.nix inputs)
+    (import ./board.nix inputs)
     (import ./unpublished.nix inputs)
-    # The LLM stack on the Arc (llm.nix, bifrost.nix): llama.cpp shares the B60
-    # with the desktop (desktop.nix); its 17 GB model leaves the compositor a few GB.
     ./llm.nix
     ./bifrost.nix
   ];
@@ -61,7 +58,7 @@ inputs:
   # pictures on 2026-11-15 (anime/suiseiComets.jpg, math/Suibif.png and
   # vtubers/sui/* are the others); 1048x642, so it is scaled up on the ultrawide.
   functorOS.theming = {
-    wallpaper = "${inputs.wallpapers}/anime/kyukurarinSui.jpg";
+    wallpaper = "${inputs.wallpapers}/anime/sui.jpg";
     polarity = "dark";
     base16Scheme = ../../assets/schemes/suisei.yaml;
   };

@@ -1,30 +1,56 @@
 # shellcheck shell=bash
 # Build the whole fleet on this machine, then push it out over tailscale.
-# `flake` and `hosts` are filled in by default.nix.
+# `flake`, `hosts` and `cache_url` are filled in by default.nix.
+
+# $flake, $hosts, $cache_url, $cache, $this_host and $ssh_opts all come from
+# the prelude in default.nix, which is concatenated ahead of both .sh files.
 
 usage() {
   cat <<EOF
-usage: ame <command> [host...]
+usage: ame <command> [args...]
 
-Builds the ame flake for each machine here, then activates it.
+Fleet builds and the generation registry for the ame flake.
 
-commands:
-  build    build only, don't touch any machine
-  switch   build, then activate right away
-  boot     build, then activate on next reboot
-  test     build, then activate without making it the boot default
-  update   update flake.lock, then build
+build and deploy:
+  build [host...]     build only, don't touch any machine
+  switch [host...]    build, then activate right away
+  boot [host...]      build, then activate on next reboot
+  test [host...]      build, then activate without making it the boot default
+  update [host...]    update flake.lock, then build
+
+generations:
+  fetch [gen]         fetch a generation's closure for THIS host from the
+                      binary cache (default: latest). Does not activate.
+  record [gen]        append the just-built closures as a generation
+                      (default label: YYYY-MM)
+  digest [gen]        print the update digest for a generation (default: latest)
+
+status:
+  check current       what this host is running, and whether it is behind
+  check gen           list recorded generations
+  check cache         is the binary cache reachable
+  check flake         git state of the flake checkout
+  check all           all four
 
 hosts: ${hosts[*]} (default: all)
 
-A host that's offline is still built and kept under ~/.cache/ame, so the
-next run only has to copy it over.
+A host that's offline is still built and kept under \$XDG_CACHE_HOME/ame, so
+the next run only has to copy it over.
+
+See ame(1) for the full manual.
 EOF
 }
 
 action=${1:-}
 case $action in
   build | switch | boot | test | update) shift ;;
+  fetch | record | digest | check)
+    shift
+    # Dispatch to the cmd_* function sourced from ame-registry.sh. Quoted so
+    # the name is never glob-expanded; $action is already whitelisted above.
+    "cmd_$action" "$@"
+    exit $?
+    ;;
   "" | -h | --help | help)
     usage
     exit 0
@@ -46,16 +72,6 @@ for target in "${targets[@]}"; do
     exit 2
   fi
 done
-
-flake=${AME_FLAKE:-$flake}
-cache=${XDG_CACHE_HOME:-$HOME/.cache}/ame
-this_host=$(</proc/sys/kernel/hostname)
-
-# BatchMode so a missing key fails fast instead of hanging on a prompt.
-# accept-new trusts a host's key the first time it's seen and refuses it if
-# it ever changes afterwards.
-ssh_opts=(-o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=accept-new)
-export NIX_SSHOPTS="${ssh_opts[*]}"
 
 if [[ $action == update ]]; then
   nix flake update --flake "$flake"
