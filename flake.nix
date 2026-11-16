@@ -72,6 +72,32 @@
       url = "github:NousResearch/hermes-agent/v2026.9.14";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # kronii's unpublished services. Their checkouts exist on kronii alone, so
+    # these three resolve only there. Other hosts never evaluate them (only
+    # hosts/kronii reads them), but `nix flake update` with no argument needs
+    # them all and so only works on kronii; elsewhere update inputs by name.
+    #
+    # airi: Vivado tool layer and the Phase 0 bench harness.
+    airi = {
+      url = "path:/home/kaitotlex/Source/airi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # koyori: the print-farm hub ("Takanashi Kiara"), a Rust crate. Only its
+    # NixOS module is used, built against this nixpkgs. Read from the checkout's
+    # git tree: committed or git-added files only. After a change there,
+    # `nix flake update koyori` here to pick it up.
+    koyori = {
+      url = "git+file:///home/kaitotlex/Source/koyori";
+      flake = false;
+    };
+    # osaka-greeter: the console login screen and status board (greetd). A copy
+    # synced from the workstation checkout; `nix flake update osaka-greeter`
+    # after syncing.
+    osaka-greeter = {
+      url = "path:/home/kaitotlex/Source/osaka-greeter";
+      flake = false;
+    };
   };
 
   outputs =
@@ -108,29 +134,6 @@
             # functorOS.desktop.hyprland.screenlocker.useCrashFix = true;
             # functorOS.desktop.waybar.variant = "compact";
             # functorOS.desktop.hyprland.screenlocker.monitor = "eDP-1";
-            home.stateVersion = "26.05";
-          };
-        }
-      );
-      # kaitotlex on headless hosts: the terminal half of home/kaitotlex, no desktop.
-      kaitotlexHeadless = functorOSLib.user.instantiate (
-        kaitotlexIdentity
-        // {
-          configuration = {
-            imports = [ ./home/kaitotlex/cli.nix ];
-            # No kitty, browser or desktop apps, but keep the terminal half of
-            # functorOS's program set: archive tools (zip, unzip, 7z, xz) and the
-            # nix helpers (nom, nurl), the same ones the desktops get.
-            functorOS.programs.enable = false;
-            functorOS.programs.bulk = {
-              enable = true;
-              archiveTools.enable = true;
-              nixCliTools.enable = true;
-              instantMessaging.enable = false;
-              desktopApps.enable = false;
-              misc.enable = false;
-            };
-            functorOS.utils.audio.enable = false;
             home.stateVersion = "26.05";
           };
         }
@@ -199,19 +202,18 @@
           users = [ kaitotlex ];
         };
 
-        # Threadripper 9970X FPGA build server, headless. Builds itself from
-        # ~/Source/osaka, which adds nixosModules.kronii on top; see hosts/kronii/default.nix.
+        # Threadripper 9970X FPGA build server and print-farm hub, now also a desktop
+        # (Arc Pro B60 for the monitors, Tesla V100 for koyori). Builds itself from
+        # this checkout with `nh os switch .`; its unpublished services come
+        # from the airi, koyori and osaka-greeter inputs above. See
+        # hosts/kronii/default.nix.
         kronii = mkHost {
           hostname = "kronii";
-          users = [ kaitotlexHeadless ];
+          users = [ kaitotlex ];
         };
-      };
-
-      nixosModules = {
-        # kronii's unpublished services (airi, koyori, osaka-greeter), as a
-        # function from their flakes to a module, since the checkouts only
-        # exist on kronii. ~/Source/osaka calls it; see hosts/kronii/unpublished.nix.
-        kronii = import ./hosts/kronii/unpublished.nix;
+        # kronii's old name. The running system still reports it until the
+        # first switch from here, and nh picks the configuration by hostname.
+        osaka = self.nixosConfigurations.kronii;
       };
 
       # `nix fmt`

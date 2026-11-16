@@ -1,10 +1,6 @@
-# Headless functorOS: no desktop, audio, bluetooth or printing, plus the
-# server defaults kronii had under ServOS (never sleep, bounded journal,
-# reboot on panic, BBR, disk health).
-#
-# functorOS's networking module is off, since it forces NetworkManager on and
-# points DNS at Cloudflare. The host brings its own systemd-networkd and opens
-# SSH on whichever interfaces should have it.
+# Server defaults for a box that stays up: never sleep, bounded journal, reboot
+# on panic, BBR, disk health, key-only sshd. kronii had these under ServOS.
+# Add headless.nix on a host with no monitor.
 {
   pkgs,
   lib,
@@ -14,24 +10,10 @@
   functorOS = {
     # Only "laptop" and "desktop" exist; config.nix says laptop.
     formFactor = lib.mkForce "desktop";
-    desktop.enable = false;
-    system = {
-      audio.enable = false;
-      core.bluetooth.enable = false;
-      printing.enable = false;
-      fonts.enable = false;
-      networking.enable = false;
-    };
+    # Forces NetworkManager on and points DNS at Cloudflare; the host brings its
+    # own systemd-networkd instead.
+    system.networking.enable = false;
   };
-
-  # functorOS turns these on regardless of its own options (localization
-  # doesn't check *.input.enable, stylix doesn't check theming.plymouth.enable).
-  # No desktop for fcitx5 to attach to, and boot messages should reach the
-  # console for whoever plugs in a monitor.
-  i18n.inputMethod.enable = lib.mkForce false;
-  boot.plymouth.enable = lib.mkForce false;
-  boot.consoleLogLevel = lib.mkForce 4;
-  boot.initrd.verbose = lib.mkForce true;
 
   networking.firewall.enable = true;
   services.openssh = {

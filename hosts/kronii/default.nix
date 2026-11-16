@@ -1,28 +1,29 @@
-# kronii: Threadripper 9970X FPGA build server. Headless (an Arc Pro B60 with
-# nothing plugged in, plus a passive Tesla V100; see cooling.nix), formerly
-# ServOS. The B60 serves a local LLM; see llm.nix.
+# kronii: Threadripper 9970X FPGA build server and print-farm hub, and since
+# 2026-11 a desktop too: an ASUS VG34VQL3A ultrawide and a VG249 (1080p) hang
+# off the Arc Pro B60, which is temporary; the RTX 3050 takes the monitors over
+# when it goes. The passive Tesla V100 runs koyori's vision model (koyori.nix,
+# cooling.nix). Formerly ServOS, then headless. The B60 used to serve a local
+# LLM (llm.nix, bifrost.nix); that is switched off below.
 #
-# Everything imported here builds on any ame host. airi, koyori and
-# osaka-greeter aren't published, so their checkouts only exist on kronii and
-# can't be ame inputs (every `ame update` elsewhere would need them).
-# unpublished.nix wraps them as `ame.nixosModules.kronii`; ~/Source/osaka on kronii is
-# a small flake that passes its checkouts in and extends
-# nixosConfigurations.kronii with it. That is what kronii actually builds from,
-# and why kronii isn't in shirakami's `ame` host list.
+# Built from this checkout: `nh os switch .` in ~/.config/ame (alias nixr).
+# airi, koyori and osaka-greeter aren't published, so their checkouts only
+# exist on kronii; flake.nix takes them as local inputs that only this host
+# evaluates (see unpublished.nix). That is why kronii isn't in shirakami's
+# `ame` host list: nothing else can resolve those inputs.
 #
 #   boot.nix         kernel and Secure Boot (lanzaboote)
 #   storage.nix      btrfs mount options and scrubbing
 #   network.nix      bonded LAN link, tailscale exit node, firewall
 #   dns.nix          ad-blocking DNS for the tailnet (unbound + crab-hole)
 #   ssh.nix          who can log in, as kaitotlex and as root
-#   cooling.nix      GPU drivers and chassis fans (fantui.py)
+#   cooling.nix      NVIDIA driver and chassis fans (fantui.py)
+#   desktop.nix      niri on the Arc, monitors, keyd, audio, gaming
 #   llm.nix          llama.cpp on the B60
 #   bifrost.nix      AI gateway (web UI, logs, virtual keys) in front of llm.nix
-#
-# Applied by ~/Source/osaka through unpublished.nix, not imported here:
-#   airi.nix         services.airi: Vivado and the bench harness
-#   koyori.nix       services.koyori: the print-farm hub
-#   greeter.nix      services.osaka-greeter: console login screen
+#   unpublished.nix  the three local inputs' modules, configured by
+#     airi.nix         services.airi: Vivado and the bench harness
+#     koyori.nix       services.koyori: the print-farm hub and detector
+#     greeter.nix      services.osaka-greeter: login screen on the 1080p monitor
 inputs:
 {
   pkgs,
@@ -41,6 +42,8 @@ inputs:
     ./dns.nix
     ./ssh.nix
     ./cooling.nix
+    (import ./desktop.nix inputs)
+    (import ./unpublished.nix inputs)
     # The LLM stack on the Arc (llm.nix, bifrost.nix) is switched off; the files
     # stay so it can come back by uncommenting these two lines.
     # ./llm.nix
@@ -50,15 +53,15 @@ inputs:
   # Installed on 26.05; modules/common.nix's 26.11 is for newer installs.
   system.stateVersion = lib.mkForce "26.05";
 
-  functorOS.flakeLocation = lib.mkForce "/home/kaitotlex/Source/osaka";
+  functorOS.flakeLocation = lib.mkForce "/home/kaitotlex/.config/ame";
 
-  # Only the console and terminal tools get themed here; nanashi's scheme, so
-  # ssh sessions from it look the same. The image is required but never shown,
-  # so it's a small file from this repo rather than the wallpapers input.
+  # Suisei, like the scheme. Picked at random from the wallpapers input's Suisei
+  # pictures on 2026-11-15 (anime/suiseiComets.jpg, math/Suibif.png and
+  # vtubers/sui/* are the others); 1048x642, so it is scaled up on the ultrawide.
   functorOS.theming = {
-    wallpaper = ../../assets/watsonExe.jpeg;
+    wallpaper = "${inputs.wallpapers}/anime/kyukurarinSui.jpg";
     polarity = "dark";
-    base16Scheme = ../../assets/schemes/shigure-ui.yaml;
+    base16Scheme = ../../assets/schemes/suisei.yaml;
   };
 
   # Synthesis/implementation runs want every core clocked up, and airi-bench
@@ -80,6 +83,7 @@ inputs:
     dmidecode
     edac-utils
     config.boot.kernelPackages.cpupower
+    pre-commit
     # FPGA/HDL work; Vivado itself comes from airi.
     verilator
     gnumake

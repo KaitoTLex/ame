@@ -1,11 +1,11 @@
 # kronii's GPUs and cooling.
 #
-# The Tesla V100 (11:00.0) is a passive datacenter card: it has no fan of its
-# own and relies entirely on chassis airflow. The Arc Pro B60 (e3:00.0) stays
-# on xe; its own fan is firmware-controlled. The chassis fans follow a
-# temperature curve over the hottest of CPU, B60, board and NVIDIA sensors
-# (fanctl-config.sh), unless fantui pins a channel to a fixed speed or hands
-# it back to the BIOS.
+# The Tesla V100 (01:00.0) is a passive datacenter card: it has no fan of its
+# own and relies entirely on chassis airflow. The Arc Pro B60 (e3:00.0) drives
+# the monitors for now (desktop.nix) and stays on xe; its own fan is
+# firmware-controlled. The chassis fans follow a temperature curve over the
+# hottest of CPU, B60, board and NVIDIA sensors (fanctl-config.sh), unless
+# fantui pins a channel to a fixed speed or hands it back to the BIOS.
 {
   config,
   lib,
