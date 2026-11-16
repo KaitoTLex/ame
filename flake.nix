@@ -73,6 +73,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # scroll: dawsers' sway fork with a scrolling layout, kronii's session
+    # (hosts/kronii/scroll.nix). Not in nixpkgs; this flake packages it, rebased
+    # on upstream daily, with NixOS and home-manager modules.
+    scroll = {
+      url = "git+https://codeberg.org/OliMoli/scroll-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # kronii's unpublished services. Their checkouts exist on kronii alone, so
     # these three resolve only there. Other hosts never evaluate them (only
     # hosts/kronii reads them), but `nix flake update` with no argument needs

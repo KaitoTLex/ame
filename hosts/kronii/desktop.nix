@@ -1,5 +1,6 @@
-# kronii as a desktop, set up like shirakami-fubuki: niri with the functorOS
-# rice, the same keyd remaps, the Steinberg IXO22, Steam. The monitors hang off
+# kronii as a desktop, set up like shirakami-fubuki: the functorOS
+# rice (DMS), the same keyd remaps, the Steinberg IXO22, Steam; the compositor
+# is scroll (scroll.nix). The monitors hang off
 # the Arc Pro B60 (xe) for now, both on DisplayPort: the ASUS VG34VQL3A
 # ultrawide on DP-4 and the ASUS VG249 (1080p) on DP-1. When the Arc leaves and
 # they move to the RTX 3050, the connector names here and in greeter.nix change
@@ -95,6 +96,8 @@ inputs:
     # No EasyEffects, as on shirakami.
     functorOS.utils.audio.enable = false;
 
+    # Only a niri session needs this: scroll brings its own Xwayland. niri
+    # --session exports NIRI_SOCKET to the user manager before the target.
     systemd.user.services.xwayland-satellite = {
       Unit = {
         Description = "Xwayland outside your Wayland";
@@ -102,6 +105,7 @@ inputs:
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
         Requisite = [ "graphical-session.target" ];
+        ConditionEnvironment = "NIRI_SOCKET";
       };
       Service = {
         Type = "notify";

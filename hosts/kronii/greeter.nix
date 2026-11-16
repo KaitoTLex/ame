@@ -1,8 +1,8 @@
 # osaka-greeter: the login screen and status board, on the 1080p monitor only.
 # greetd runs a bare niri as the greeter user with the ultrawide (DP-4) switched
 # off and the board fullscreen in foot on the VG249 (DP-1); a login starts
-# niri-session and the user's niri lights both monitors (desktop.nix). If the
-# board exits on its own the compositor quits too, so greetd brings it back.
+# scroll (scroll.nix), which lights both monitors. If the board exits on its
+# own the compositor quits too, so greetd brings it back.
 # functorOS's ly is off (desktop.nix). The connector names change with the
 # monitors' move to the 3050 (`niri msg outputs`).
 #
@@ -57,6 +57,6 @@ in
   services.osaka-greeter = {
     enable = true;
     greeterCommand = "${lib.getExe niri} -c ${greeterConfig}";
-    session = [ "${niri}/bin/niri-session" ];
+    session = [ "${config.programs.scroll.package}/bin/scroll" ];
   };
 }
