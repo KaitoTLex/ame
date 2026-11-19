@@ -8,7 +8,7 @@
 #
 # The options come from koyori's own NixOS module (nix/module.nix in its checkout),
 # which unpublished.nix imports; this file only configures it.
-{ ... }:
+{ pkgs, ... }:
 {
   services.koyori = {
     hub.enable = true;
@@ -22,11 +22,19 @@
     };
     # WebRTC for live camera view from browsers on the LAN.
     go2rtc.openFirewall = true;
+    # Both built-in slicing backends are part of the system generation: Prusa's
+    # profiles/G-code and native Bambu/X2D profiles/sliced 3MFs from OrcaSlicer.
+    slicer = {
+      enable = true;
+      package = pkgs.prusa-slicer;
+      bambuPackage = pkgs.orca-slicer;
+    };
     # farm-detector: runs the failure model for the hub, on localhost only, on the Tesla
     # V100 (GPU 0 in nvidia-smi; the RTX 3050 is GPU 1, for koyori-train). It loads every
     # model at start and keeps it warm, and restarts itself if the GPU stops answering.
     # The V100 is Volta (compute capability 7.0): koyori builds onnxruntime for it against
-    # CUDA 12 and cuDNN 9.11.1, the last releases that support it. Models are added in the
+    # CUDA 12 and cuDNN 9.10.2, the last releases that support it (with 9.11.1 every model
+    # failed on its first convolution, so detection was off). Models are added in the
     # web UI (Settings, Detector) or with farmctl model add.
     detector.enable = true;
     detector.gpu = 0;
@@ -39,8 +47,17 @@
       # Tailscale logins. Everyone else on the tailnet can look; the LAN is read-only.
       admins = [ "ren@alpa.ca" ];
     };
-    # The farm's slicing defaults, over every Prusa preset: the web UI starts from them
-    # and anything changed there still wins.
+    # The printer room. Scan it explicitly, not only whatever subnet the hub's own
+    # interface happens to be on, so printers are found again after a service restart
+    # (and after a DHCP lease moves one). The first scan waits for the pollers to mark
+    # an unreachable printer Offline, then follows it by serial.
+    settings.discovery = {
+      enabled = true;
+      interval = 300.0;
+      subnets = [ "192.168.1.0/24" ];
+    };
+    # The farm's slicing defaults, over every Prusa preset and translated for Bambu:
+    # the web UI starts from them, and anything changed there still wins.
     settings.slicer.defaults = {
       fill_density = "20%";
       fill_pattern = "gyroid";

@@ -83,8 +83,11 @@
     };
     # koyori: the print-farm hub ("Takanashi Kiara"), a Rust crate. Only its
     # NixOS module is used, built against this nixpkgs. Read from the checkout's
-    # git tree: committed or git-added files only. After a change there,
-    # `nix flake update koyori` here to pick it up.
+    # git tree: tracked files, including uncommitted changes; git-add new files.
+    # Deliberately absent from flake.lock while the local checkout is dirty:
+    # otherwise rebuilds silently use the old locked revision, losing fixes such
+    # as X2D/N6 matching. Nix's "unlocked input" warning is expected. Once the
+    # source is committed, `nix flake update koyori` can pin that revision again.
     koyori = {
       url = "git+file:///home/kaitotlex/Source/koyori";
       flake = false;
