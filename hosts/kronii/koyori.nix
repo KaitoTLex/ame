@@ -70,6 +70,12 @@
       site_name = "Takanashi Kiara";
       listen_host = "0.0.0.0";
       listen_port = 80;
+      # A printer's own PrusaLink service sometimes restarts (or its Wi-Fi drops) for a
+      # few seconds while it keeps printing. Do not flip it to OFFLINE on the first
+      # missed poll: five failures at the backoff below is about a minute of trouble.
+      # The hub then keeps polling and returns to the printer's state by itself.
+      offline_after = 5;
+      request_timeout = 8.0;
       # Every name and address the site is opened by; others get 403.
       allowed_hosts = [
         "kronii"

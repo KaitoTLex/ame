@@ -3,8 +3,9 @@
   inputs = {
     # The canonical functorOS is the forgejo instance (agenix committed,
     # nix-index dropped, overlay build fixes). github:youwen5/functorOS lags it
-    # and github:kaitotlex/functorOS is a stale mirror. nixpkgs follows
-    # functorOS's lock (a channel tarball), which its overlays are fixed against.
+    # and github:kaitotlex/functorOS is a stale mirror. nixpkgs follows functorOS's lock (a channel tarball), which its overlays are fixed against.
+    # Pinned to the rev the running system was built from: the forgejo HEAD now moves
+    # to a manga-tui that does not build, and its HTTPS endpoint goes through SSH.
     functorOS.url = "github:youwen5/functorOS/5fd24f5f5c71790f022a340d344e20091dac76ff";
     functorOS.inputs.zen-browser.url = "github:KaitoTLex/zen-browser-flake";
     functorOS.inputs.zen-browser.inputs.nixpkgs.follows = "nixpkgs";
