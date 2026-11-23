@@ -1120,11 +1120,11 @@
         "plugins-remote-ssh": "plugins-remote-ssh"
       },
       "locked": {
-        "lastModified": 1794631123,
-        "narHash": "sha256-fILlOVsEfBGfgOEOpeR+YvNa5+CQeOSmVQVXEZIRTsQ=",
+        "lastModified": 1794961352,
+        "narHash": "sha256-PqGg/T4sSNiKZE40nRXhT7fiDQKZmrvj1HUWDvIqpWg=",
         "owner": "kaitotlex",
         "repo": "vix1",
-        "rev": "1c3f9e32cff026ec6b902a1b79731095ebb7674c",
+        "rev": "18d9769d782bec68cc36c3b729159d95303c4a28",
         "type": "github"
       },
       "original": {
@@ -1190,11 +1190,11 @@
     "plugins-blink-ripgrep": {
       "flake": false,
       "locked": {
-        "lastModified": 1794191880,
-        "narHash": "sha256-my11Bdp1H73EdMI0BDevbcqcDctLjL3GREq0WllwOPI=",
+        "lastModified": 1794881906,
+        "narHash": "sha256-86LAOxGcqKKOmaYj9BhOEj6PBh77pLRKW1IQ+tmG4is=",
         "owner": "mikavilpas",
         "repo": "blink-ripgrep.nvim",
-        "rev": "c2e6dffbab87688dbca05e464edb6eee749a847f",
+        "rev": "910991252e8a77fb26fdcd388036420aa41ca003",
         "type": "github"
       },
       "original": {
@@ -1390,11 +1390,11 @@
         "scroll-stable": "scroll-stable"
       },
       "locked": {
-        "lastModified": 1794714096,
-        "narHash": "sha256-ov6pyyONzaftDawVrbzSPttANQ0owMYtg+hBesxke7E=",
+        "lastModified": 1795408576,
+        "narHash": "sha256-A925yYzuGj4V9XkQsA9oz8T5GBiGGEP0LQLPJGcYsNU=",
         "owner": "Diax170",
         "repo": "scroll-flake",
-        "rev": "0a0fb03653949538639140fa62e2f86452f5c69d",
+        "rev": "517ddc75980f9b9037004e2f427f8ac5ca19d4ea",
         "type": "github"
       },
       "original": {
@@ -1406,11 +1406,11 @@
     "scroll-git": {
       "flake": false,
       "locked": {
-        "lastModified": 1794680434,
-        "narHash": "sha256-F6dIQv8aNm4J9+eQFxDAzQf8ARZlY0exXSgAFHVDFbg=",
+        "lastModified": 1795393540,
+        "narHash": "sha256-yfB6Ur2FCaYsyQlOkpLK3BFTef1GKQLldHLBGUJfPMA=",
         "owner": "dawsers",
         "repo": "scroll",
-        "rev": "c75e84e4ac2a8dacf49814f07223a85f1fef89b5",
+        "rev": "2b3abcac77045b1fbe66deebec66563bea3b0bd0",
         "type": "github"
       },
       "original": {
@@ -1778,11 +1778,11 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1792363872,
-        "narHash": "sha256-2Uz3qyqYDZH2zV8WTz5iXUvD4vzLKTPQvVE6PA2IBDE=",
+        "lastModified": 1794813629,
+        "narHash": "sha256-8g30RATb96lzHdAgru1E1swOy0pFKkVskNuxKknBPoU=",
         "owner": "kaitotlex",
         "repo": "wallpaper",
-        "rev": "0f2db3a3602c17930a9a15981af4fc5b74ef8cae",
+        "rev": "51cefd69fbdcc618a8462f13050ee62897e77613",
         "type": "github"
       },
       "original": {

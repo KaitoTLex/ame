@@ -239,7 +239,7 @@ in
 
   functorOS = {
     theming = {
-      wallpaper = "${inputs.wallpapers}/vtubers/uiDate.jpg";
+      wallpaper = "${inputs.wallpapers}/ultrawide/ui-jan.png";
       polarity = "dark";
       base16Scheme = ../../scheme/shigure-ui.yaml;
     };
