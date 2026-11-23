@@ -93,13 +93,6 @@
       url = "git+file:///home/kaitotlex/Source/koyori";
       flake = false;
     };
-    # osaka-greeter: the console login screen and status board (greetd). A copy
-    # synced from the workstation checkout; `nix flake update osaka-greeter`
-    # after syncing.
-    osaka-greeter = {
-      url = "path:/home/kaitotlex/Source/osaka-greeter";
-      flake = false;
-    };
   };
 
   outputs =
@@ -236,7 +229,7 @@
         # Threadripper 9970X FPGA build server and print-farm hub, now also a desktop
         # (Arc Pro B60 for the monitors, Tesla V100 for koyori). Builds itself from
         # this checkout with `nh os switch .`; its unpublished services come
-        # from the airi, koyori and osaka-greeter inputs above. See
+        # from the airi and koyori inputs above. See
         # hosts/kronii/default.nix.
         kronii = functorOSLib.system.instantiate {
           hostname = "kronii";

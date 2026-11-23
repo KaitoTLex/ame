@@ -1,6 +1,6 @@
-# The scroll session's monitor layout. The osaka-greeter status board used to run
+# The scroll session's monitor layout. A status board used to run
 # here in demo mode, fullscreen on the 1080p monitor (DP-1); it is switched off,
-# so DP-1 is an ordinary output again. The login screen (greeter.nix) is separate.
+# so DP-1 is an ordinary output again.
 inputs:
 {
   lib,

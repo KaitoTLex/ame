@@ -732,6 +732,22 @@
         "type": "github"
       }
     },
+    "koyori": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795232693,
+        "narHash": "sha256-YjQLqOvLvdiWw5csjvkfrEDbLsu8vaCEUKVcNWlVSZg=",
+        "ref": "refs/heads/main",
+        "rev": "3711c2e126c9e5ec191b74cd7539956d3c4be481",
+        "revCount": 102,
+        "type": "git",
+        "url": "file:///home/kaitotlex/Source/koyori"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/kaitotlex/Source/koyori"
+      }
+    },
     "lanzaboote": {
       "inputs": {
         "crane": "crane_3",
@@ -1121,11 +1137,11 @@
         "plugins-remote-ssh": "plugins-remote-ssh"
       },
       "locked": {
-        "lastModified": 1794631123,
-        "narHash": "sha256-fILlOVsEfBGfgOEOpeR+YvNa5+CQeOSmVQVXEZIRTsQ=",
+        "lastModified": 1794961352,
+        "narHash": "sha256-PqGg/T4sSNiKZE40nRXhT7fiDQKZmrvj1HUWDvIqpWg=",
         "owner": "kaitotlex",
         "repo": "vix1",
-        "rev": "1c3f9e32cff026ec6b902a1b79731095ebb7674c",
+        "rev": "18d9769d782bec68cc36c3b729159d95303c4a28",
         "type": "github"
       },
       "original": {
@@ -1188,27 +1204,14 @@
         "type": "github"
       }
     },
-    "osaka-greeter": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1794780942,
-        "narHash": "sha256-0Of2IiOa3duk5vOF6pEBKOuisuqsT4duN6/jcGiebUM=",
-        "path": "/home/kaitotlex/Source/osaka-greeter",
-        "type": "path"
-      },
-      "original": {
-        "path": "/home/kaitotlex/Source/osaka-greeter",
-        "type": "path"
-      }
-    },
     "plugins-blink-ripgrep": {
       "flake": false,
       "locked": {
-        "lastModified": 1794191880,
-        "narHash": "sha256-my11Bdp1H73EdMI0BDevbcqcDctLjL3GREq0WllwOPI=",
+        "lastModified": 1794881906,
+        "narHash": "sha256-86LAOxGcqKKOmaYj9BhOEj6PBh77pLRKW1IQ+tmG4is=",
         "owner": "mikavilpas",
         "repo": "blink-ripgrep.nvim",
-        "rev": "c2e6dffbab87688dbca05e464edb6eee749a847f",
+        "rev": "910991252e8a77fb26fdcd388036420aa41ca003",
         "type": "github"
       },
       "original": {
@@ -1316,6 +1319,7 @@
         "corecycler": "corecycler",
         "functorOS": "functorOS",
         "functoros-apple-silicon": "functoros-apple-silicon",
+        "koyori": "koyori",
         "lanzaboote": "lanzaboote",
         "nix-xilinx": "nix-xilinx",
         "nixpkgs": [
@@ -1324,7 +1328,6 @@
         ],
         "nixpkgs-linux71": "nixpkgs-linux71",
         "nixvim": "nixvim",
-        "osaka-greeter": "osaka-greeter",
         "polycule-nix": "polycule-nix",
         "scroll-flake": "scroll-flake",
         "snowfall-lib": "snowfall-lib",
@@ -1405,11 +1408,11 @@
         "scroll-stable": "scroll-stable"
       },
       "locked": {
-        "lastModified": 1794714096,
-        "narHash": "sha256-ov6pyyONzaftDawVrbzSPttANQ0owMYtg+hBesxke7E=",
+        "lastModified": 1795408576,
+        "narHash": "sha256-A925yYzuGj4V9XkQsA9oz8T5GBiGGEP0LQLPJGcYsNU=",
         "owner": "Diax170",
         "repo": "scroll-flake",
-        "rev": "0a0fb03653949538639140fa62e2f86452f5c69d",
+        "rev": "517ddc75980f9b9037004e2f427f8ac5ca19d4ea",
         "type": "github"
       },
       "original": {
@@ -1421,11 +1424,11 @@
     "scroll-git": {
       "flake": false,
       "locked": {
-        "lastModified": 1794680434,
-        "narHash": "sha256-F6dIQv8aNm4J9+eQFxDAzQf8ARZlY0exXSgAFHVDFbg=",
+        "lastModified": 1795393540,
+        "narHash": "sha256-yfB6Ur2FCaYsyQlOkpLK3BFTef1GKQLldHLBGUJfPMA=",
         "owner": "dawsers",
         "repo": "scroll",
-        "rev": "c75e84e4ac2a8dacf49814f07223a85f1fef89b5",
+        "rev": "2b3abcac77045b1fbe66deebec66563bea3b0bd0",
         "type": "github"
       },
       "original": {
@@ -1778,11 +1781,11 @@
     "wallpapers": {
       "flake": false,
       "locked": {
-        "lastModified": 1794813629,
-        "narHash": "sha256-8g30RATb96lzHdAgru1E1swOy0pFKkVskNuxKknBPoU=",
+        "lastModified": 1795418092,
+        "narHash": "sha256-sHCH2n5btxaCtBR2H0wM0Fx6lU25XdjTYKWZKIJIm7w=",
         "owner": "kaitotlex",
         "repo": "wallpaper",
-        "rev": "51cefd69fbdcc618a8462f13050ee62897e77613",
+        "rev": "7c670aac3fa6bbe6e4a1470fe6f01372d023f73c",
         "type": "github"
       },
       "original": {

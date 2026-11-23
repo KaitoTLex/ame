@@ -2,8 +2,9 @@
 # rice, the same keyd remaps, the Steinberg IXO22, Steam. The monitors hang off
 # the Arc Pro B60 (xe) for now, both on DisplayPort: the ASUS VG34VQL3A
 # ultrawide on DP-4 and the ASUS VG249 (1080p) on DP-1. When the Arc leaves and
-# they move to the RTX 3050, the connector names here and in greeter.nix change
-# (`niri msg outputs` lists them). The login screen is greeter.nix.
+# they move to the RTX 3050, the connector names here change
+# (`niri msg outputs` lists them). Login is a plain console getty (functorOS's
+# ly stays off below).
 #
 # As of 2026-11-15 the kernel offers the ultrawide nothing above 1920x1080: its
 # EDID advertises 3440x1440, so the DP link isn't training at full rate (cable,
@@ -16,7 +17,7 @@ inputs:
 }:
 {
   functorOS = {
-    # ly would also take tty1; greeter.nix runs osaka-greeter there instead.
+    # Log in on the console (tty1) and start niri by hand; no graphical greeter.
     desktop.greeter.enable = false;
     extras.gaming.enable = true;
     # Not functorOS's nvidia setup (open kernel modules, latest driver): the V100

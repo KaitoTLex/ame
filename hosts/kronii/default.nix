@@ -6,7 +6,7 @@
 # LLM (llm.nix, bifrost.nix); that is switched off below.
 #
 # Built from this checkout: `nh os switch .` in ~/.config/ame (alias nixr).
-# airi, koyori and osaka-greeter aren't published, so their checkouts only
+# airi and koyori aren't published, so their checkouts only
 # exist on kronii; flake.nix takes them as local inputs that only this host
 # evaluates (see unpublished.nix). That is why kronii isn't in shirakami's
 # `ame` host list: nothing else can resolve those inputs.
@@ -20,10 +20,9 @@
 #   desktop.nix      niri on the Arc, monitors, keyd, audio, gaming
 #   llm.nix          llama.cpp on the B60
 #   bifrost.nix      AI gateway (web UI, logs, virtual keys) in front of llm.nix
-#   unpublished.nix  the three local inputs' modules, configured by
+#   unpublished.nix  the two local inputs' modules, configured by
 #     airi.nix         services.airi: Vivado and the bench harness
 #     koyori.nix       services.koyori: the print-farm hub and detector
-#     greeter.nix      services.osaka-greeter: login screen on the 1080p monitor
 inputs:
 {
   pkgs,
@@ -58,7 +57,7 @@ inputs:
   # pictures on 2026-11-15 (anime/suiseiComets.jpg, math/Suibif.png and
   # vtubers/sui/* are the others); 1048x642, so it is scaled up on the ultrawide.
   functorOS.theming = {
-    wallpaper = "${inputs.wallpapers}/anime/sui.jpg";
+    wallpaper = "${inputs.wallpapers}/ultrawide/sui-jan.png";
     polarity = "dark";
     base16Scheme = ../../assets/schemes/suisei.yaml;
   };
