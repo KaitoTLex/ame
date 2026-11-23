@@ -35,6 +35,7 @@ in
   nixpkgs.overlays = lib.mkAfter [
     (import ../modules/kmod-aggregator-fix.nix)
     (import ../modules/polars-libgit2-fix.nix)
+    (import ../modules/crab-hole-jemalloc-fix.nix)
   ];
 
   # kaitoPkgs is mostly desktop apps; headless hosts pick their own tools.
