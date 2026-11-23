@@ -46,7 +46,8 @@ inputs:
     nct6683 = true; # newer Nuvoton chip variant on some MSI boards; no-op if not present
     spd5118 = true; # AM5 is DDR5-only -- DIMM temps via the SPD hub
   };
-  # scroll next to niri. Same DMS, same keymap, zero gaps. modules/scroll.nix.
+  # scroll as the default session, niri next to it. Same DMS, same keymap, zero
+  # gaps. modules/scroll.nix.
   functorOS.desktop.scroll.enable = true;
   ame.unifi-endpoint.enable = true;
 

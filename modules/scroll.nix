@@ -1,9 +1,11 @@
-# scroll (sway fork, scrolling layout) next to functorOS's niri.
+# scroll (sway fork, scrolling layout) as the session functorOS logs into,
+# with niri kept next to it.
 #
 # functorOS ships niri + dank-material-shell (DMS) with a fixed keymap. This
-# module adds scroll as a second session, riced the same way: same DMS, same
-# keymap, same monitors. Nothing in functorOS is modified and niri stays
-# installed, so the greeter (ly) offers both.
+# module adds scroll as the default session, riced the same way: same DMS,
+# same keymap, same monitors. Nothing in functorOS is modified, niri stays
+# installed, and ly (functorOS's greeter) offers both, with scroll the entry
+# it opens on.
 #
 # One module, two halves: `nixos` (system) and `home` (home-manager). The
 # flake wires both. Enable with `functorOS.desktop.scroll.enable = true` at
@@ -14,8 +16,8 @@
 # no command for are in scroll-niri.sh. Monitors and the touchpad are read from
 # programs.niri.settings, so a host only declares them once.
 #
-# Gaps: zero. `gaps inner 0`, `gaps outer 0`, `smart_gaps off`, a 2px outline
-# on every window, no rounded corners. DMS's bar sits in the layer shell with no spacing or
+# Gaps: zero. `gaps inner 0` (extraConfig), `gaps outer 0`, `smart_gaps off`, a
+# 2px outline on every window, no rounded corners. DMS's bar sits in the layer shell with no spacing or
 # popup gap, see functorOSmods/caffeine.nix.
 { inputs }:
 {
@@ -28,7 +30,7 @@
       imports = [ inputs.scroll-flake.nixosModules.default ];
 
       options.functorOS.desktop.scroll = {
-        enable = lib.mkEnableOption "scroll as a second functorOS compositor, next to niri";
+        enable = lib.mkEnableOption "scroll as the default functorOS compositor, next to niri";
         package = lib.mkOption {
           type = lib.types.package;
           default = inputs.scroll-flake.packages.${pkgs.stdenv.hostPlatform.system}.scroll-stable;
@@ -43,7 +45,10 @@
           wrapperFeatures.gtk = true;
           # functorOS's niri path uses xwayland-satellite; scroll has built-in Xwayland.
           xwayland.enable = true;
-          extraSessionCommands = ''
+          # mkAfter appends to the copy in /etc/scroll/config.d/nixos.conf. The
+          # module's own generated config is loaded after that file and sets
+          # these too, so plain definitions here would never be reached.
+          extraSessionCommands = lib.mkAfter ''
             export XDG_CURRENT_DESKTOP=scroll
             export XDG_SESSION_DESKTOP=scroll
             export QT_QPA_PLATFORM=wayland
@@ -71,6 +76,36 @@
 
         # functorOS's greeter lists sessions from displayManager.sessionPackages.
         # programs.scroll and programs.niri each add their own .desktop there.
+        #
+        # scroll first makes it the default: ly opens on the first entry of that
+        # list, and none of the greeters is handed a "default session". nixpkgs
+        # adds programs.scroll.package again further down the list; ly then only
+        # has to save the user's choice (numbers only) to stay put.
+        #
+        # The same priority as its own definition in nixpkgs (mkBefore, 500), so
+        # the list stays "scroll, niri, scroll, steam": setting the option
+        # anywhere with a plain list would take the nixpkgs entry away instead.
+        services.displayManager.sessionPackages = lib.mkOrder 500 [ cfg.package ];
+
+        # ly is left to functorOS (`functorOS.desktop.greeter`), which also
+        # themes it from stylix. It writes the save file it checks session names
+        # against to its own home, so that home has to be there: a fresh one is
+        # created and cleared at every boot, and nothing reaches ly before it is.
+        # Without it ly cannot remember a session and falls back to its default,
+        # the first entry, scroll. ly has no account of its own, so its home is
+        # root's (the directory stays 0700, and only the session indexes are in
+        # it).
+        systemd.tmpfiles.settings."10-ly-session-choice" = lib.mkIf config.services.displayManager.ly.enable {
+          "/var/lib/ly".d = {
+            user = "root";
+            group = "root";
+            mode = "0700";
+          };
+        };
+        systemd.services.display-manager = lib.mkIf config.services.displayManager.ly.enable {
+          after = lib.mkAfter [ "systemd-tmpfiles-setup.service" ];
+          wants = [ "systemd-tmpfiles-setup.service" ];
+        };
       };
     };
 
@@ -180,10 +215,8 @@
             menu = "${dms} ipc call spotlight toggle";
 
             # ---- gapless ----
-            gaps = {
-              inner = 0;
-              outer = 0;
-            };
+            # Only the edges; the scroll gap is zeroed in extraConfig.
+            gaps.outer = 0;
             window = {
               border = 2;
               titlebar = false;
@@ -379,6 +412,10 @@
             cycle_size_wrap true
 
             # ---- gapless, square ----
+            # `gaps inner` is the gap between windows in the scroll strip. The
+            # hm option can't set it to 0 (null means leave the default, 10), so
+            # it is zeroed here, ahead of anything else that touches it.
+            gaps inner 0
             smart_gaps off
             smart_borders off
             floating_modifier ${mod} normal

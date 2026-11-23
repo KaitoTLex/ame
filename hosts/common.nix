@@ -54,6 +54,9 @@ in
     config.allowUnfree = true;
     defaultEditor = vix;
     formFactor = "laptop";
+    # niri stays installed next to scroll (functorOS.desktop.scroll, per host),
+    # and DMS keeps its niri integration; hosts that log into scroll anyway.
+    desktop.niri.enable = lib.mkDefault true;
     desktop.localization.chinese = {
       input.enable = true;
       script = "traditional";

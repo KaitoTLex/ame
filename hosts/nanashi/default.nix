@@ -150,7 +150,8 @@ in
   services.asusd.enable = true;
   services.fwupd.enable = true;
 
-  # scroll next to niri. Same DMS, same keymap, zero gaps. modules/scroll.nix.
+  # scroll as the default session, niri next to it. Same DMS, same keymap, zero
+  # gaps. modules/scroll.nix.
   functorOS.desktop.scroll.enable = true;
 
   services.tailscale.enable = true;

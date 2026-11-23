@@ -3,8 +3,8 @@
 # the Arc Pro B60 (xe) for now, both on DisplayPort: the ASUS VG34VQL3A
 # ultrawide on DP-4 and the ASUS VG249 (1080p) on DP-1. When the Arc leaves and
 # they move to the RTX 3050, the connector names here change
-# (`niri msg outputs` lists them). Login is a plain console getty (functorOS's
-# ly stays off below).
+# (`niri msg outputs` lists them). Login goes through functorOS's greeter, ly,
+# at its defaults (below).
 #
 # As of 2026-11-15 the kernel offers the ultrawide nothing above 1920x1080: its
 # EDID advertises 3440x1440, so the DP link isn't training at full rate (cable,
@@ -17,8 +17,9 @@ inputs:
 }:
 {
   functorOS = {
-    # Log in on the console (tty1) and start niri by hand; no graphical greeter.
-    desktop.greeter.enable = false;
+    # functorOS's greeter (ly) at its defaults, themed from stylix; it offers
+    # scroll and niri from displayManager.sessionPackages.
+    desktop.greeter.enable = true;
     extras.gaming.enable = true;
     # Not functorOS's nvidia setup (open kernel modules, latest driver): the V100
     # needs the legacy 580 branch, which cooling.nix configures directly.
