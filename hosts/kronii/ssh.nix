@@ -7,6 +7,7 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGd1/dOHQnbqICZ6aAVu25IcZshlfGfXvXcvIJ8As4h5 kaitotlex@shirakami-fubuki"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMwfHIQZRf1T89mkTnsCO24+q7B027UoolG1hgEYdQi4 lrcocobao@icloud.com"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIClg0nwuttf6f601gNInczrafRkiknhSMfIB2ccsvGgx ren@boston"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH+c7TaA8LjC3bD4Zc38QBGdPthPx3y6yweEc8bqd8rf kaitotlex@kanade"
     # The shigure-ui hermes agent, so it can run jobs here.
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAx5PcDJ1T5pm4SUhpe03FuV6lPdJENcQt/dUIL/4KoD hermes-shigure-ui@shigure-ui"
   ];

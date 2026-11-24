@@ -67,4 +67,6 @@ with pkgs;
   openutau
   ticker
   jdk25
+  slacky
+  sunshine
 ]
